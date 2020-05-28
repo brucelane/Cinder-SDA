@@ -233,13 +233,13 @@ namespace videodromm {
 		bool							getBoolUniformValueByIndex(unsigned int aCtrl) {
 			return mVDAnimation->getBoolUniformValueByIndex(aCtrl);
 		}
-		float							getFloatUniformValueByIndex(unsigned int aCtrl) {
-			return mVDAnimation->getFloatUniformValueByIndex(aCtrl);
+		float							getUniformValue(unsigned int aCtrl) {
+			return mVDAnimation->getUniformValue(aCtrl);
 		};
-		float							getFloatUniformValueByName(const string& aCtrlName) {
-			return mVDAnimation->getFloatUniformValueByName(aCtrlName);
+		float							getUniformValueByName(const string& aCtrlName) {
+			return mVDAnimation->getUniformValueByName(aCtrlName);
 		};
-		void							setFloatUniformValueByIndex(unsigned int aCtrl, float aValue) {
+		void							setUniformValue(unsigned int aCtrl, float aValue) {
 			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
 			//! 20200526 mVDWebsocket->changeFloatValue(aCtrl, aValue);
 		};
@@ -264,7 +264,7 @@ namespace videodromm {
 		string							getAudioTextureName() { return mVDAnimation->getAudioTextureName(); };
 		float *							getFreqs() { return mVDAnimation->iFreqs; };
 		int								getFreqIndexSize() { return mVDAnimation->getFreqIndexSize(); };
-		float							getFreq(unsigned int aFreqIndex) { return mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFREQ0 + aFreqIndex); };
+		float							getFreq(unsigned int aFreqIndex) { return mVDAnimation->getUniformValue(mVDSettings->IFREQ0 + aFreqIndex); };
 		int								getFreqIndex(unsigned int aFreqIndex) { return mVDAnimation->getFreqIndex(aFreqIndex); };
 		void							setFreqIndex(unsigned int aFreqIndex, unsigned int aFreq) { mVDAnimation->setFreqIndex(aFreqIndex, aFreq); };
 		int								getFFTWindowSize() { return mVDAnimation->mFFTWindowSize; };
@@ -282,10 +282,10 @@ namespace videodromm {
 		//void							setMixCrossfade(unsigned int aWarpIndex, float aCrossfade) { mVDSettings->xFade = aCrossfade; mVDSettings->xFadeChanged = true; };
 		//float							getMixCrossfade(unsigned int aWarpIndex) { return mVDSettings->xFade; };
 		float							getCrossfade() {
-			return mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IXFADE);
+			return mVDAnimation->getUniformValue(mVDSettings->IXFADE);
 		};
 		void							setCrossfade(float aCrossfade) {
-			mVDAnimation->setFloatUniformValueByIndex(mVDSettings->IXFADE, aCrossfade);
+			mVDAnimation->setUniformValue(mVDSettings->IXFADE, aCrossfade);
 		};
 		void							setFboAIndex(unsigned int aIndex, unsigned int aFboIndex);
 		void							setFboBIndex(unsigned int aIndex, unsigned int aFboIndex);

@@ -57,7 +57,7 @@ VDAnimation::VDAnimation(VDSettingsRef aVDSettings) {
 	load();
 	loadAnimation();
 
-	setVec3UniformValueByIndex(mVDSettings->IRESOLUTION, vec3(getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY), 1.0));
+	setVec3UniformValueByIndex(mVDSettings->IRESOLUTION, vec3(getUniformValue(mVDSettings->IRESOLUTIONX), getUniformValue(mVDSettings->IRESOLUTIONY), 1.0));
 }
 
 //! uniform to json
@@ -352,7 +352,7 @@ ci::gl::TextureRef VDAnimation::getAudioTexture() {
 			for (size_t i = 0; i < mDataSize; i++) {
 				float f = mMagSpectrum[i];
 				db = audio::linearToDecibel(f);
-				f = db * getFloatUniformValueByName("iAudioMult");
+				f = db * getUniformValueByName("iAudioMult");
 				if (f > maxVolume)
 				{
 					maxVolume = f;
@@ -430,7 +430,7 @@ void VDAnimation::update() {
 	else {
 		// duration = 0.2
 		//timeline().apply(&mVDSettings->iBadTv, 60.0f, 0.0f, 0.2f, EaseInCubic());
-		mVDUniform->setFloatUniformValueByIndex(mVDSettings->IBADTV, 5.0f);
+		mVDUniform->setUniformValue(mVDSettings->IBADTV, 5.0f);
 	}
 
 	mVDSettings->iChannelTime[0] = getElapsedSeconds();
@@ -441,8 +441,8 @@ void VDAnimation::update() {
 	if (mUseTimeWithTempo)
 	{
 		// Ableton Link from openframeworks websockets
-		mVDUniform->setFloatUniformValueByIndex(mVDSettings->ITIME, 
-			mVDUniform->getFloatUniformValueByIndex(mVDSettings->ITIME) * mVDSettings->iSpeedMultiplier * mVDUniform->getFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR));
+		mVDUniform->setUniformValue(mVDSettings->ITIME, 
+			mVDUniform->getUniformValue(mVDSettings->ITIME) * mVDSettings->iSpeedMultiplier * mVDUniform->getUniformValue(mVDSettings->ITIMEFACTOR));
 		//shaderUniforms["iElapsed"].floatValue = shaderUniforms["iPhase"].floatValue * mVDSettings->iSpeedMultiplier * shaderUniforms["iTimeFactor"].floatValue;
 		// sos
 		// IBARBEAT = IBAR * 4 + IBEAT
@@ -450,24 +450,24 @@ void VDAnimation::update() {
 		if (current == 426 || current == 428 || current == 442) { mLastBar = 0; } //38 to set iStart
 		if (mLastBar != getIntUniformValueByIndex(mVDSettings->IBAR)) {
 			mLastBar =getIntUniformValueByIndex(mVDSettings->IBAR);
-			//if (mLastBar != 5 && mLastBar != 9 && mLastBar < 113) mVDSettings->iStart = mVDSession->getFloatUniformValueByIndex(mVDSettings->ITIME);
+			//if (mLastBar != 5 && mLastBar != 9 && mLastBar < 113) mVDSettings->iStart = mVDSession->getUniformValue(mVDSettings->ITIME);
 			// TODO CHECK
-			//if (mLastBar != 107 && mLastBar != 111 && mLastBar < 205) mVDSettings->iStart = mVDSession->getFloatUniformValueByIndex(mVDSettings->ITIME);
-			if (mLastBar < 419 && mLastBar > 424) { mVDSettings->iStart = getFloatUniformValueByIndex(mVDSettings->ITIME); }
+			//if (mLastBar != 107 && mLastBar != 111 && mLastBar < 205) mVDSettings->iStart = mVDSession->getUniformValue(mVDSettings->ITIME);
+			if (mLastBar < 419 && mLastBar > 424) { mVDSettings->iStart = getUniformValue(mVDSettings->ITIME); }
 		}
 	}
 	else
 	{
-		mVDUniform->setFloatUniformValueByIndex(mVDSettings->ITIME,
-			getElapsedSeconds() * mVDSettings->iSpeedMultiplier * mVDUniform->getFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR));
+		mVDUniform->setUniformValue(mVDSettings->ITIME,
+			getElapsedSeconds() * mVDSettings->iSpeedMultiplier * mVDUniform->getUniformValue(mVDSettings->ITIMEFACTOR));
 
 		//shaderUniforms[mVDSettings->ITIME].floatValue = getElapsedSeconds() * mVDSettings->iSpeedMultiplier * shaderUniforms[mVDSettings->ITIMEFACTOR].floatValue;//mVDSettings->iTimeFactor;
 		//shaderUniforms["iElapsed"].floatValue = getElapsedSeconds() * mVDSettings->iSpeedMultiplier * shaderUniforms["iTimeFactor"].floatValue;//mVDSettings->iTimeFactor;
 	}
 	// iResolution
-	mVDUniform->setVec3UniformValueByIndex(mVDSettings->IRESOLUTION, vec3(getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY), 1.0));
-	mVDUniform->setVec2UniformValueByIndex(mVDSettings->RESOLUTION, vec2(getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY)));
-	mVDUniform->setVec2UniformValueByIndex(mVDSettings->RENDERSIZE, vec2(getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY)));	
+	mVDUniform->setVec3UniformValueByIndex(mVDSettings->IRESOLUTION, vec3(getUniformValue(mVDSettings->IRESOLUTIONX), getUniformValue(mVDSettings->IRESOLUTIONY), 1.0));
+	mVDUniform->setVec2UniformValueByIndex(mVDSettings->RESOLUTION, vec2(getUniformValue(mVDSettings->IRESOLUTIONX), getUniformValue(mVDSettings->IRESOLUTIONY)));
+	mVDUniform->setVec2UniformValueByIndex(mVDSettings->RENDERSIZE, vec2(getUniformValue(mVDSettings->IRESOLUTIONX), getUniformValue(mVDSettings->IRESOLUTIONY)));	
 	
 	// iDate
 	time_t now = time(0);
@@ -483,9 +483,9 @@ void VDAnimation::update() {
 
 	int time = (currentTime - startTime)*1000000.0;
 
-	int elapsed = mVDUniform->getFloatUniformValueByIndex( mVDSettings->IDELTATIME) * 1000000.0;
-	int elapsedBeatPerBar = mVDUniform->getFloatUniformValueByIndex(mVDSettings->IDELTATIME) / 
-		(mVDUniform->getFloatUniformValueByIndex(mVDSettings->IBEATSPERBAR) + 1)*1000000.0;
+	int elapsed = mVDUniform->getUniformValue( mVDSettings->IDELTATIME) * 1000000.0;
+	int elapsedBeatPerBar = mVDUniform->getUniformValue(mVDSettings->IDELTATIME) / 
+		(mVDUniform->getUniformValue(mVDSettings->IBEATSPERBAR) + 1)*1000000.0;
 	/*if (elapsedBeatPerBar > 0)
 	{
 		double moduloBeatPerBar = (time % elapsedBeatPerBar) / 1000000.0;
@@ -500,7 +500,7 @@ void VDAnimation::update() {
 	if (elapsed > 0)
 	{
 		double modulo = (time % elapsed) / 1000000.0;
-		mVDUniform->setFloatUniformValueByIndex(mVDSettings->ITEMPOTIME, (float)abs(modulo));
+		mVDUniform->setUniformValue(mVDSettings->ITEMPOTIME, (float)abs(modulo));
 
 		/* not used shaderUniforms["iDeltaTime"].floatValue = (float)abs(modulo);
 		if (shaderUniforms["iTempoTime"].floatValue < previousTime)
@@ -508,34 +508,34 @@ void VDAnimation::update() {
 			//iBar++;
 			//if (mAutoBeatAnimation) mVDSettings->iPhase++;
 		}*/
-		previousTime = mVDUniform->getFloatUniformValueByIndex(mVDSettings->ITEMPOTIME);
+		previousTime = mVDUniform->getUniformValue(mVDSettings->ITEMPOTIME);
 
 		// TODO (modulo < 0.1) ? tempoMvg->setNameColor(ColorA::white()) : tempoMvg->setNameColor(UIController::DEFAULT_NAME_COLOR);
 		/*for (unsigned int anim = 1; anim < 29; anim++)
 		{
 			if (shaderUniforms[anim].autotime)
 			{
-				setFloatUniformValueByIndex(anim, (modulo < 0.1) ? shaderUniforms[anim].maxValue : shaderUniforms[anim].minValue);
+				setUniformValue(anim, (modulo < 0.1) ? shaderUniforms[anim].maxValue : shaderUniforms[anim].minValue);
 			}
 			else
 			{
 				if (shaderUniforms[anim].automatic) {
-					setFloatUniformValueByIndex(anim, lmap<float>(shaderUniforms[mVDSettings->ITEMPOTIME].floatValue, 0.00001, getFloatUniformValueByIndex(mVDSettings->IDELTATIME), shaderUniforms[anim].minValue, shaderUniforms[anim].maxValue));
+					setUniformValue(anim, lmap<float>(shaderUniforms[mVDSettings->ITEMPOTIME].floatValue, 0.00001, getUniformValue(mVDSettings->IDELTATIME), shaderUniforms[anim].minValue, shaderUniforms[anim].maxValue));
 				}
 				else
 				{
 					if (shaderUniforms[anim].autobass) {
-						setFloatUniformValueByIndex(anim, (getFloatUniformDefaultValueByIndex(anim) + 0.01f) * getFloatUniformValueByIndex(mVDSettings->IFREQ0) / 25.0f);
+						setUniformValue(anim, (getFloatUniformDefaultValueByIndex(anim) + 0.01f) * getUniformValue(mVDSettings->IFREQ0) / 25.0f);
 					}
 					else
 					{
 						if (shaderUniforms[anim].automid) {
-							setFloatUniformValueByIndex(anim, (getFloatUniformDefaultValueByIndex(anim) + 0.01f) * getFloatUniformValueByIndex(mVDSettings->IFREQ1) / 5.0f);
+							setUniformValue(anim, (getFloatUniformDefaultValueByIndex(anim) + 0.01f) * getUniformValue(mVDSettings->IFREQ1) / 5.0f);
 						}
 						else
 						{
 							if (shaderUniforms[anim].autotreble) {
-								setFloatUniformValueByIndex(anim, (getFloatUniformDefaultValueByIndex(anim) + 0.01f) * getFloatUniformValueByIndex(mVDSettings->IFREQ2) / 2.0f);
+								setUniformValue(anim, (getFloatUniformDefaultValueByIndex(anim) + 0.01f) * getUniformValue(mVDSettings->IFREQ2) / 2.0f);
 							}
 						}
 					}
@@ -544,13 +544,13 @@ void VDAnimation::update() {
 		}*/
 
 		// foreground color vec3 update
-		mVDUniform->setVec3UniformValueByIndex(mVDSettings->ICOLOR, vec3(getFloatUniformValueByIndex(mVDSettings->IFR), getFloatUniformValueByIndex(mVDSettings->IFG), getFloatUniformValueByIndex(mVDSettings->IFB)));
+		mVDUniform->setVec3UniformValueByIndex(mVDSettings->ICOLOR, vec3(getUniformValue(mVDSettings->IFR), getUniformValue(mVDSettings->IFG), getUniformValue(mVDSettings->IFB)));
 
 		// background color vec3 update
-		mVDUniform->setVec3UniformValueByIndex(mVDSettings->IBACKGROUNDCOLOR, vec3(getFloatUniformValueByIndex(mVDSettings->IBR), getFloatUniformValueByIndex(mVDSettings->IBG), getFloatUniformValueByIndex(mVDSettings->IBB)));
+		mVDUniform->setVec3UniformValueByIndex(mVDSettings->IBACKGROUNDCOLOR, vec3(getUniformValue(mVDSettings->IBR), getUniformValue(mVDSettings->IBG), getUniformValue(mVDSettings->IBB)));
 
 		// mouse vec4 update
-		mVDUniform->setVec4UniformValueByIndex(mVDSettings->IMOUSE, vec4(getFloatUniformValueByIndex(mVDSettings->IMOUSEX), getFloatUniformValueByIndex(mVDSettings->IMOUSEY), getFloatUniformValueByIndex(mVDSettings->IMOUSEZ), 0.0f));
+		mVDUniform->setVec4UniformValueByIndex(mVDSettings->IMOUSE, vec4(getUniformValue(mVDSettings->IMOUSEX), getUniformValue(mVDSettings->IMOUSEY), getUniformValue(mVDSettings->IMOUSEZ), 0.0f));
 
 		// TODO migrate:
 		if (mVDSettings->autoInvert)
@@ -564,7 +564,7 @@ void VDAnimation::update() {
 		}
 		else
 		{
-			mVDSettings->mCamEyePointZ = mVDSettings->autoEyePointZ ? lmap<float>(shaderUniforms[mVDSettings->ITEMPOTIME].floatValue, 0.00001, getFloatUniformValueByIndex(mVDSettings->IDELTATIME), mVDSettings->minEyePointZ, mVDSettings->maxEyePointZ) : mVDSettings->mCamEyePointZ;
+			mVDSettings->mCamEyePointZ = mVDSettings->autoEyePointZ ? lmap<float>(shaderUniforms[mVDSettings->ITEMPOTIME].floatValue, 0.00001, getUniformValue(mVDSettings->IDELTATIME), mVDSettings->minEyePointZ, mVDSettings->maxEyePointZ) : mVDSettings->mCamEyePointZ;
 		}*/
 
 	}
@@ -602,7 +602,7 @@ void VDAnimation::calculateTempo()
 		tAverage += buffer[i];
 	}
 	averageTime = (double)(tAverage / buffer.size());
-	setFloatUniformValueByIndex(mVDSettings->IDELTATIME, averageTime);
+	setUniformValue(mVDSettings->IDELTATIME, averageTime);
 	setBpm(60 / averageTime);
 }
 

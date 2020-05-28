@@ -74,7 +74,7 @@ namespace videodromm
 			return shaderUniforms[aIndex].textureIndex;
 		}
 
-		bool setFloatUniformValueByIndex(unsigned int aIndex, float aValue) {
+		bool setUniformValue(unsigned int aIndex, float aValue) {
 			bool rtn = false;
 			// we can't change TIME at index 0
 			if (aIndex > 0) {
@@ -232,7 +232,7 @@ namespace videodromm
 
 			return shaderUniforms[stringToIndex(aName)].maxValue;
 		}
-		float							getFloatUniformValueByIndex(unsigned int aIndex) {
+		float							getUniformValue(unsigned int aIndex) {
 			return shaderUniforms[aIndex].floatValue;
 		}
 		float							getFloatUniformDefaultValueByIndex(unsigned int aIndex) {
@@ -244,9 +244,9 @@ namespace videodromm
 		int								getSampler2DUniformValueByName(const string& aName) {
 			return shaderUniforms[stringToIndex(aName)].textureIndex;
 		}
-		float							getFloatUniformValueByName(const string& aName) {
+		float							getUniformValueByName(const string& aName) {
 			if (aName == "") {
-				CI_LOG_V("getFloatUniformValueByName name empty");
+				CI_LOG_V("getUniformValueByName name empty");
 				return 1.0f;
 			}
 			else {

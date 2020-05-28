@@ -82,10 +82,6 @@ VDUniform::VDUniform(VDSettingsRef aVDSettings) {
 		// background blue
 		createFloatUniform("iBB", mVDSettings->IBB, 1.0f); // 28
 
-		// iResolutionX (should be fbowidth?) 
-		createFloatUniform("iResolutionX", mVDSettings->IRESOLUTIONX, mVDSettings->mRenderWidth, 320.01f, 4280.0f); // 29
-		// iResolutionY (should be fboheight?)  
-		createFloatUniform("iResolutionY", mVDSettings->IRESOLUTIONY, mVDSettings->mRenderHeight, 240.01f, 2160.0f); // 30
 
 		// weight mix fbo texture 0
 		createFloatUniform("iWeight0", mVDSettings->IWEIGHT0, 1.0f); // 31
@@ -150,14 +146,20 @@ VDUniform::VDUniform(VDSettingsRef aVDSettings) {
 		createIntUniform("iBeatsPerBar", mVDSettings->IBEATSPERBAR, 4); // 59
 
 		// vec3
-		createVec3Uniform("iResolution", mVDSettings->IRESOLUTION, vec3(getFloatUniformValueByName("iResolutionX"), getFloatUniformValueByName("iResolutionY"), 1.0)); // 120
+		// iResolutionX (should be fbowidth?) 
+		createFloatUniform("iResolutionX", mVDSettings->IRESOLUTIONX, mVDSettings->mRenderWidth, 320.01f, 4280.0f); // 121
+		// iResolutionY (should be fboheight?)  
+		createFloatUniform("iResolutionY", mVDSettings->IRESOLUTIONY, mVDSettings->mRenderHeight, 240.01f, 2160.0f); // 122
+		createVec3Uniform("iResolution", mVDSettings->IRESOLUTION, vec3(getUniformValue(mVDSettings->IRESOLUTIONX), getUniformValue(mVDSettings->IRESOLUTIONY), 1.0)); // 120
+
+
 		createVec3Uniform("iColor", mVDSettings->ICOLOR, vec3(0.45, 0.0, 1.0)); // 61
 		createVec3Uniform("iBackgroundColor", mVDSettings->IBACKGROUNDCOLOR); // 62
 		//createVec3Uniform("iChannelResolution[0]", 63, vec3(mVDSettings->mFboWidth, mVDSettings->mFboHeight, 1.0));
 
 		// vec4
-		createVec4Uniform("iMouse", mVDSettings->IMOUSE, vec4(320.0f, 240.0f, 0.0f, 0.0f));
-		createVec4Uniform("iDate", 71, vec4(2019.0f, 12.0f, 1.0f, 5.0f));
+		createVec4Uniform("iMouse", mVDSettings->IMOUSE, vec4(320.0f, 240.0f, 0.0f, 0.0f));//70
+		createVec4Uniform("iDate", mVDSettings->IDATE, vec4(2019.0f, 12.0f, 1.0f, 5.0f));//71
 
 		// boolean
 		// invert
@@ -198,7 +200,7 @@ VDUniform::VDUniform(VDSettingsRef aVDSettings) {
 
 		// vec2
 		createVec2Uniform("resolution", mVDSettings->RESOLUTION, vec2(1280.0f, 720.0f)); // hydra 150
-		createVec2Uniform("RENDERSIZE", mVDSettings->RENDERSIZE, vec2(getFloatUniformValueByName("iResolutionX"), getFloatUniformValueByName("iResolutionY"))); // isf 151
+		createVec2Uniform("RENDERSIZE", mVDSettings->RENDERSIZE, vec2(getUniformValueByName("iResolutionX"), getUniformValueByName("iResolutionY"))); // isf 151
 
 		// vec4 kinect2
 		createVec4Uniform("iSpineBase", 200, vec4(320.0f, 240.0f, 0.0f, 0.0f));

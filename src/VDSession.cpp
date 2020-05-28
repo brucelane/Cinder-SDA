@@ -164,7 +164,7 @@ void VDSession::update(unsigned int aClassIndex) {
 		}
 		if (mVDWebsocket->hasReceivedShader()) {
 			string receivedShader = mVDWebsocket->getReceivedShader();
-			if (mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IXFADE) < 0.5) {
+			if (mVDAnimation->getUniformValue(mVDSettings->IXFADE) < 0.5) {
 				setFragmentShaderString(2, receivedShader);
 				mShaderLeft = receivedShader;
 			}
@@ -181,15 +181,15 @@ void VDSession::update(unsigned int aClassIndex) {
 		}
 		// TODO: CHECK index if (mVDSettings->iGreyScale)
 		//{
-		//	mVDWebsocket->changeFloatValue(1, mVDAnimation->getFloatUniformValueByIndex(3));
-		//	mVDWebsocket->changeFloatValue(2, mVDAnimation->getFloatUniformValueByIndex(3));
-		//	mVDWebsocket->changeFloatValue(5, mVDAnimation->getFloatUniformValueByIndex(7));
-		//	mVDWebsocket->changeFloatValue(6, mVDAnimation->getFloatUniformValueByIndex(7));
+		//	mVDWebsocket->changeFloatValue(1, mVDAnimation->getUniformValue(3));
+		//	mVDWebsocket->changeFloatValue(2, mVDAnimation->getUniformValue(3));
+		//	mVDWebsocket->changeFloatValue(5, mVDAnimation->getUniformValue(7));
+		//	mVDWebsocket->changeFloatValue(6, mVDAnimation->getUniformValue(7));
 		//}
 		*/
 		// fps calculated in main app
 
-	mVDSettings->sFps = toString(floor(getFloatUniformValueByIndex(mVDSettings->IFPS)));
+	mVDSettings->sFps = toString(floor(getUniformValue(mVDSettings->IFPS)));
 	mVDAnimation->update();
 	/*}
 	else {
@@ -237,14 +237,14 @@ void VDSession::renderPostToFbo()
 		mWarpTexture->bind(40);
 		gl::ScopedGlslProg prog(mGlslPost);
 
-		// not used yet mGlslPost->uniform("TIME", getFloatUniformValueByIndex(mVDSettings->ITIME) - mVDSettings->iStart);;
+		// not used yet mGlslPost->uniform("TIME", getUniformValue(mVDSettings->ITIME) - mVDSettings->iStart);;
 		mGlslPost->uniform("iResolution", vec3(mVDSettings->mFboWidth, mVDSettings->mFboHeight, 1.0));
 		mGlslPost->uniform("iChannel0", 40); // texture 0
-		mGlslPost->uniform("iSobel", getFloatUniformValueByIndex(mVDSettings->ISOBEL));
-		mGlslPost->uniform("iExposure", getFloatUniformValueByIndex(mVDSettings->IEXPOSURE));
-		mGlslPost->uniform("iTrixels", getFloatUniformValueByIndex(mVDSettings->ITRIXELS)); // trixels if > 0.
-		mGlslPost->uniform("iZoom", getFloatUniformValueByIndex(mVDSettings->IZOOM));
-		mGlslPost->uniform("iChromatic", getFloatUniformValueByIndex(mVDSettings->ICHROMATIC));
+		mGlslPost->uniform("iSobel", getUniformValue(mVDSettings->ISOBEL));
+		mGlslPost->uniform("iExposure", getUniformValue(mVDSettings->IEXPOSURE));
+		mGlslPost->uniform("iTrixels", getUniformValue(mVDSettings->ITRIXELS)); // trixels if > 0.
+		mGlslPost->uniform("iZoom", getUniformValue(mVDSettings->IZOOM));
+		mGlslPost->uniform("iChromatic", getUniformValue(mVDSettings->ICHROMATIC));
 		mGlslPost->uniform("iFlipV", (int)getBoolUniformValueByIndex(mVDSettings->IFLIPPOSTV));
 		mGlslPost->uniform("iFlipH", (int)getBoolUniformValueByIndex(mVDSettings->IFLIPPOSTH));
 		mGlslPost->uniform("iInvert", (int)getBoolUniformValueByIndex(mVDSettings->IINVERT));
@@ -581,45 +581,45 @@ bool VDSession::handleKeyDown(KeyEvent &event)
 				//break;
 			case KeyEvent::KEY_x:
 				// trixels
-				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->ITRIXELS, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ITRIXELS) + 0.05f);
+				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->ITRIXELS, mVDAnimation->getUniformValue(mVDSettings->ITRIXELS) + 0.05f);
 				break;
 			case KeyEvent::KEY_r:
 				if (isAltDown) {
-					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IBR, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IBR), false, true, isShiftDown, isModDown);
+					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IBR, mVDAnimation->getUniformValue(mVDSettings->IBR), false, true, isShiftDown, isModDown);
 				}
 				else {
-					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IFR, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFR), false, true, isShiftDown, isModDown);
+					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IFR, mVDAnimation->getUniformValue(mVDSettings->IFR), false, true, isShiftDown, isModDown);
 				}
 				break;
 			case KeyEvent::KEY_g:
 				if (isAltDown) {
-					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IBG, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IBG), false, true, isShiftDown, isModDown);
+					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IBG, mVDAnimation->getUniformValue(mVDSettings->IBG), false, true, isShiftDown, isModDown);
 				}
 				else {
-					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IFG, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFG), false, true, isShiftDown, isModDown);
+					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IFG, mVDAnimation->getUniformValue(mVDSettings->IFG), false, true, isShiftDown, isModDown);
 				}
 				break;
 			case KeyEvent::KEY_b:
 				if (isAltDown) {
-					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IBB, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IBB), false, true, isShiftDown, isModDown);
+					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IBB, mVDAnimation->getUniformValue(mVDSettings->IBB), false, true, isShiftDown, isModDown);
 				}
 				else {
-					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IFB, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFB), false, true, isShiftDown, isModDown);
+					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IFB, mVDAnimation->getUniformValue(mVDSettings->IFB), false, true, isShiftDown, isModDown);
 				}
 				break;
 			case KeyEvent::KEY_a:
-				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IFA, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFA), false, true, isShiftDown, isModDown);
+				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IFA, mVDAnimation->getUniformValue(mVDSettings->IFA), false, true, isShiftDown, isModDown);
 				break;
 			case KeyEvent::KEY_u:
 				// chromatic
 				// TODO find why can't put value >0.9 or 0.85!
-				newValue = mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ICHROMATIC) + 0.05f;
+				newValue = mVDAnimation->getUniformValue(mVDSettings->ICHROMATIC) + 0.05f;
 				if (newValue > 1.0f) newValue = 0.0f;
 				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->ICHROMATIC, newValue);
 				break;
 			case KeyEvent::KEY_p:
 				// pixelate
-				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IPIXELATE, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IPIXELATE) + 0.05f);
+				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IPIXELATE, mVDAnimation->getUniformValue(mVDSettings->IPIXELATE) + 0.05f);
 				break;
 			case KeyEvent::KEY_y:
 				// glitch
@@ -635,25 +635,25 @@ bool VDSession::handleKeyDown(KeyEvent &event)
 				break;
 			case KeyEvent::KEY_z:
 				// zoom
-				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IZOOM, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IZOOM) - 0.05f);
+				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IZOOM, mVDAnimation->getUniformValue(mVDSettings->IZOOM) - 0.05f);
 				break;
 				/* removed temp for Sky Project case KeyEvent::KEY_LEFT:
 					//mVDTextures->rewindMovie();
-					if (mVDAnimation->getFloatUniformValueByIndex(21) > 0.1f) mVDWebsocket->changeFloatValue(21, mVDAnimation->getFloatUniformValueByIndex(21) - 0.1f);
+					if (mVDAnimation->getUniformValue(21) > 0.1f) mVDWebsocket->changeFloatValue(21, mVDAnimation->getUniformValue(21) - 0.1f);
 					break;
 				case KeyEvent::KEY_RIGHT:
 					//mVDTextures->fastforwardMovie();
-					if (mVDAnimation->getFloatUniformValueByIndex(21) < 1.0f) mVDWebsocket->changeFloatValue(21, mVDAnimation->getFloatUniformValueByIndex(21) + 0.1f);
+					if (mVDAnimation->getUniformValue(21) < 1.0f) mVDWebsocket->changeFloatValue(21, mVDAnimation->getUniformValue(21) + 0.1f);
 					break;*/
 			case KeyEvent::KEY_PAGEDOWN:
 			case KeyEvent::KEY_RIGHT:
 				// crossfade right
-				//! 20200526 if (mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IXFADE) < 1.0f) mVDWebsocket->changeFloatValue(mVDSettings->IXFADE, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IXFADE) + 0.1f);
+				//! 20200526 if (mVDAnimation->getUniformValue(mVDSettings->IXFADE) < 1.0f) mVDWebsocket->changeFloatValue(mVDSettings->IXFADE, mVDAnimation->getUniformValue(mVDSettings->IXFADE) + 0.1f);
 				break;
 			case KeyEvent::KEY_PAGEUP:
 			case KeyEvent::KEY_LEFT:
 				// crossfade left
-				//! 20200526 if (mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IXFADE) > 0.0f) mVDWebsocket->changeFloatValue(mVDSettings->IXFADE, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IXFADE) - 0.1f);
+				//! 20200526 if (mVDAnimation->getUniformValue(mVDSettings->IXFADE) > 0.0f) mVDWebsocket->changeFloatValue(mVDSettings->IXFADE, mVDAnimation->getUniformValue(mVDSettings->IXFADE) - 0.1f);
 				break;
 			case KeyEvent::KEY_UP:
 				// imgseq next
@@ -959,14 +959,14 @@ void VDSession::updateHydraUniforms() {
 					index = std::stoi(name.substr(firstDigit));
 					textName = name.substr(0, firstDigit);
 					if (mVDAnimation->isExistingUniform(textName)) {
-						mGlslHydra->uniform(name, mVDAnimation->getFloatUniformValueByName(textName));
+						mGlslHydra->uniform(name, mVDAnimation->getUniformValueByName(textName));
 					}
 					else {
 						mVDAnimation->createFloatUniform(name, 400 + index, 0.31f, 0.0f, 1000.0f);
 					}
 				}
 				else {
-					mGlslHydra->uniform(name, mVDAnimation->getFloatUniformValueByName(name));
+					mGlslHydra->uniform(name, mVDAnimation->getUniformValueByName(name));
 				}
 				break;
 			case 1:
@@ -1018,8 +1018,8 @@ void VDSession::updateHydraUniforms() {
 				}
 			}
 		}
-		mGlslHydra->uniform("time", mVDAnimation->getFloatUniformValueByIndex(0));
-		mGlslHydra->uniform("resolution", vec2(mVDAnimation->getFloatUniformValueByName("iResolutionX"), mVDAnimation->getFloatUniformValueByName("iResolutionY")));
+		mGlslHydra->uniform("time", mVDAnimation->getUniformValue(0));
+		mGlslHydra->uniform("resolution", vec2(mVDAnimation->getUniformValueByName("iResolutionX"), mVDAnimation->getUniformValueByName("iResolutionY")));
 
 
 	}
@@ -1168,12 +1168,12 @@ ci::gl::Texture2dRef VDSession::getRenderTexture()
 	getMixetteTexture()->bind(0);
 	gl::ScopedGlslProg prog(mGlslRender);
 	mGlslRender->uniform("TIME", (float)getElapsedSeconds());
-	mGlslRender->uniform("iResolution", vec3(mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY), 1.0));
+	mGlslRender->uniform("iResolution", vec3(mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONX), mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONY), 1.0));
 	mGlslRender->uniform("iChannel0", 0); // texture 0
-	mGlslRender->uniform("iExposure", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IEXPOSURE));
-	mGlslRender->uniform("iSobel", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ISOBEL));
-	mGlslRender->uniform("iChromatic", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ICHROMATIC));
-	gl::drawSolidRect(Rectf(0, 0, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY)));
+	mGlslRender->uniform("iExposure", mVDAnimation->getUniformValue(mVDSettings->IEXPOSURE));
+	mGlslRender->uniform("iSobel", mVDAnimation->getUniformValue(mVDSettings->ISOBEL));
+	mGlslRender->uniform("iChromatic", mVDAnimation->getUniformValue(mVDSettings->ICHROMATIC));
+	gl::drawSolidRect(Rectf(0, 0, mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONX), mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONY)));
 	// setup the viewport to match the dimensions of the FBO
 	gl::ScopedViewport scpVp(ivec2(0), mRenderFbo->getSize());
 	mRenderedTexture = mRenderFbo->getColorTexture();
@@ -1196,7 +1196,7 @@ ci::gl::Texture2dRef VDSession::getRenderTexture()
 
 	//mImage->bind(0);
 	gl::ScopedGlslProg prog(mGlslMixette);
-	mGlslMixette->uniform("iResolution", vec3(mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY), 1.0));
+	mGlslMixette->uniform("iResolution", vec3(mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONX), mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONY), 1.0));
 	mGlslMixette->uniform("iChannel0", 0); // texture 0
 	mGlslMixette->uniform("iChannel1", 1);
 	mGlslMixette->uniform("iChannel2", 2);
@@ -1205,16 +1205,16 @@ ci::gl::Texture2dRef VDSession::getRenderTexture()
 	mGlslMixette->uniform("iChannel5", 5);
 	mGlslMixette->uniform("iChannel6", 6);
 	mGlslMixette->uniform("iChannel7", 7);
-	mGlslMixette->uniform("iWeight0", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT0));	// weight of channel 0
-	mGlslMixette->uniform("iWeight1", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT1));	// weight of channel 1
-	mGlslMixette->uniform("iWeight2", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT2));	// weight of channel 2
-	mGlslMixette->uniform("iWeight3", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT3));
-	mGlslMixette->uniform("iWeight4", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT4));
-	mGlslMixette->uniform("iWeight5", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT5));
-	mGlslMixette->uniform("iWeight6", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT6));
-	mGlslMixette->uniform("iWeight7", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT7));
+	mGlslMixette->uniform("iWeight0", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT0));	// weight of channel 0
+	mGlslMixette->uniform("iWeight1", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT1));	// weight of channel 1
+	mGlslMixette->uniform("iWeight2", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT2));	// weight of channel 2
+	mGlslMixette->uniform("iWeight3", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT3));
+	mGlslMixette->uniform("iWeight4", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT4));
+	mGlslMixette->uniform("iWeight5", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT5));
+	mGlslMixette->uniform("iWeight6", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT6));
+	mGlslMixette->uniform("iWeight7", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT7));
 	//gl::drawSolidRect(getWindowBounds());
-	gl::drawSolidRect(Rectf(0, 0, mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY)));
+	gl::drawSolidRect(Rectf(0, 0, mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONX), mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONY)));
 	// setup the viewport to match the dimensions of the FBO
 	gl::ScopedViewport scpVp(ivec2(0), mMixetteFbo->getSize());
 	mMixetteTexture = mMixetteFbo->getColorTexture();
@@ -1257,7 +1257,7 @@ void VDSession::renderHydra() {
 	gl::clear(Color::black());
 
 	gl::ScopedGlslProg glslScope(mGlslHydra);
-	// useless mGlslHydra->uniform("iCrossfade", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IXFADE));
+	// useless mGlslHydra->uniform("iCrossfade", mVDAnimation->getUniformValue(mVDSettings->IXFADE));
 
 	gl::drawSolidRect(Rectf(0, 0, mHydraFbo->getWidth(), mHydraFbo->getHeight()));
 }
@@ -1274,7 +1274,7 @@ void VDSession::renderHydra() {
 		mFboList[mVDAnimation->getIntUniformValueByName("iFboA")]->getRenderedTexture()->bind(0);
 		mFboList[mVDAnimation->getIntUniformValueByName("iFboB")]->getRenderedTexture()->bind(1);
 		gl::ScopedGlslProg glslScope(mGlslMix);
-		mGlslMix->uniform("iCrossfade", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IXFADE));
+		mGlslMix->uniform("iCrossfade", mVDAnimation->getUniformValue(mVDSettings->IXFADE));
 
 		gl::drawSolidRect(Rectf(0, 0, mMixFbos[0].fbo->getWidth(), mMixFbos[0].fbo->getHeight()));
 
@@ -1331,95 +1331,95 @@ void VDSession::updateMixUniforms() {
 	//vec4 mouse = mVDAnimation->getVec4UniformValueByName("iMouse");
 
 	mGlslMix->uniform("iBlendmode", mVDSettings->iBlendmode);
-	mGlslMix->uniform("TIME", mVDAnimation->getFloatUniformValueByIndex(0));
+	mGlslMix->uniform("TIME", mVDAnimation->getUniformValue(0));
 	// was vec3(mVDSettings->mFboWidth, mVDSettings->mFboHeight, 1.0)):
-	mGlslMix->uniform("iResolution", vec3(mVDAnimation->getFloatUniformValueByName("iResolutionX"), mVDAnimation->getFloatUniformValueByName("iResolutionY"), 1.0));
+	mGlslMix->uniform("iResolution", vec3(mVDAnimation->getUniformValueByName("iResolutionX"), mVDAnimation->getUniformValueByName("iResolutionY"), 1.0));
 	//mGlslMix->uniform("iChannelResolution", mVDSettings->iChannelResolution, 4);
 	// 20180318 mGlslMix->uniform("iMouse", mVDAnimation->getVec4UniformValueByName("iMouse"));
-	mGlslMix->uniform("iMouse", vec3(mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEX), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEY), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEZ)));
+	mGlslMix->uniform("iMouse", vec3(mVDAnimation->getUniformValue(mVDSettings->IMOUSEX), mVDAnimation->getUniformValue(mVDSettings->IMOUSEY), mVDAnimation->getUniformValue(mVDSettings->IMOUSEZ)));
 	mGlslMix->uniform("iDate", mVDAnimation->getVec4UniformValueByName("iDate"));
-	mGlslMix->uniform("iWeight0", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT0));	// weight of channel 0
-	mGlslMix->uniform("iWeight1", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT1));	// weight of channel 1
-	mGlslMix->uniform("iWeight2", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT2));	// weight of channel 2
-	mGlslMix->uniform("iWeight3", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT3)); // texture
-	mGlslMix->uniform("iWeight4", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT4)); // texture
+	mGlslMix->uniform("iWeight0", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT0));	// weight of channel 0
+	mGlslMix->uniform("iWeight1", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT1));	// weight of channel 1
+	mGlslMix->uniform("iWeight2", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT2));	// weight of channel 2
+	mGlslMix->uniform("iWeight3", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT3)); // texture
+	mGlslMix->uniform("iWeight4", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT4)); // texture
 	mGlslMix->uniform("iChannel0", 0); // fbo shader
 	mGlslMix->uniform("iChannel1", 1); // fbo shader
 	mGlslMix->uniform("iChannel2", 2); // texture 1
 	mGlslMix->uniform("iChannel3", 3); // texture 2
 	mGlslMix->uniform("iChannel4", 4); // texture 3
 
-	mGlslMix->uniform("iRatio", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRATIO));//check if needed: +1;
+	mGlslMix->uniform("iRatio", mVDAnimation->getUniformValue(mVDSettings->IRATIO));//check if needed: +1;
 	mGlslMix->uniform("iRenderXY", mVDSettings->mRenderXY);
-	mGlslMix->uniform("iZoom", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IZOOM));
-	mGlslMix->uniform("iAlpha", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFA) * mVDSettings->iAlpha);
-	mGlslMix->uniform("iChromatic", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ICHROMATIC));
-	mGlslMix->uniform("iRotationSpeed", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IROTATIONSPEED));
-	mGlslMix->uniform("iCrossfade", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IXFADE));
-	mGlslMix->uniform("iPixelate", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IPIXELATE));
-	mGlslMix->uniform("iExposure", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IEXPOSURE));
+	mGlslMix->uniform("iZoom", mVDAnimation->getUniformValue(mVDSettings->IZOOM));
+	mGlslMix->uniform("iAlpha", mVDAnimation->getUniformValue(mVDSettings->IFA) * mVDSettings->iAlpha);
+	mGlslMix->uniform("iChromatic", mVDAnimation->getUniformValue(mVDSettings->ICHROMATIC));
+	mGlslMix->uniform("iRotationSpeed", mVDAnimation->getUniformValue(mVDSettings->IROTATIONSPEED));
+	mGlslMix->uniform("iCrossfade", mVDAnimation->getUniformValue(mVDSettings->IXFADE));
+	mGlslMix->uniform("iPixelate", mVDAnimation->getUniformValue(mVDSettings->IPIXELATE));
+	mGlslMix->uniform("iExposure", mVDAnimation->getUniformValue(mVDSettings->IEXPOSURE));
 	mGlslMix->uniform("iToggle", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->ITOGGLE));
 	mGlslMix->uniform("iGreyScale", (int)mVDSettings->iGreyScale);
 	mGlslMix->uniform("iBackgroundColor", mVDAnimation->getVec3UniformValueByName("iBackgroundColor"));
 	mGlslMix->uniform("iVignette", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IVIGN));
 	mGlslMix->uniform("iInvert", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IINVERT));
-	mGlslMix->uniform("iTempoTime", mVDAnimation->getFloatUniformValueByName("iTempoTime"));
+	mGlslMix->uniform("iTempoTime", mVDAnimation->getUniformValueByName("iTempoTime"));
 	mGlslMix->uniform("iGlitch", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IGLITCH));
-	mGlslMix->uniform("iTrixels", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ITRIXELS));
-	mGlslMix->uniform("iRedMultiplier", mVDAnimation->getFloatUniformValueByName("iRedMultiplier"));
-	mGlslMix->uniform("iGreenMultiplier", mVDAnimation->getFloatUniformValueByName("iGreenMultiplier"));
-	mGlslMix->uniform("iBlueMultiplier", mVDAnimation->getFloatUniformValueByName("iBlueMultiplier"));
+	mGlslMix->uniform("iTrixels", mVDAnimation->getUniformValue(mVDSettings->ITRIXELS));
+	mGlslMix->uniform("iRedMultiplier", mVDAnimation->getUniformValueByName("iRedMultiplier"));
+	mGlslMix->uniform("iGreenMultiplier", mVDAnimation->getUniformValueByName("iGreenMultiplier"));
+	mGlslMix->uniform("iBlueMultiplier", mVDAnimation->getUniformValueByName("iBlueMultiplier"));
 	mGlslMix->uniform("iFlipH", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPH));
 	mGlslMix->uniform("iFlipV", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPV));
-	mGlslMix->uniform("iPixelX", mVDAnimation->getFloatUniformValueByName("iPixelX"));
-	mGlslMix->uniform("iPixelY", mVDAnimation->getFloatUniformValueByName("iPixelY"));
+	mGlslMix->uniform("iPixelX", mVDAnimation->getUniformValueByName("iPixelX"));
+	mGlslMix->uniform("iPixelY", mVDAnimation->getUniformValueByName("iPixelY"));
 	mGlslMix->uniform("iXorY", mVDSettings->iXorY);
-	mGlslMix->uniform("iBadTv", mVDAnimation->getFloatUniformValueByName("iBadTv"));
-	mGlslMix->uniform("iFps", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFPS));
-	mGlslMix->uniform("iContour", mVDAnimation->getFloatUniformValueByName("iContour"));
-	mGlslMix->uniform("iSobel", mVDAnimation->getFloatUniformValueByName("iSobel"));
+	mGlslMix->uniform("iBadTv", mVDAnimation->getUniformValueByName("iBadTv"));
+	mGlslMix->uniform("iFps", mVDAnimation->getUniformValue(mVDSettings->IFPS));
+	mGlslMix->uniform("iContour", mVDAnimation->getUniformValueByName("iContour"));
+	mGlslMix->uniform("iSobel", mVDAnimation->getUniformValueByName("iSobel"));
 
 }
 void VDSession::updateBlendUniforms() {
 	mCurrentBlend = getElapsedFrames() % mVDAnimation->getBlendModesCount();
 	mGlslBlend->uniform("iBlendmode", mCurrentBlend);
-	mGlslBlend->uniform("TIME", mVDAnimation->getFloatUniformValueByIndex(0));
+	mGlslBlend->uniform("TIME", mVDAnimation->getUniformValue(0));
 	mGlslBlend->uniform("iResolution", vec3(mVDSettings->mPreviewFboWidth, mVDSettings->mPreviewFboHeight, 1.0));
 	//mGlslBlend->uniform("iChannelResolution", mVDSettings->iChannelResolution, 4);
 	// 20180318 mGlslBlend->uniform("iMouse", mVDAnimation->getVec4UniformValueByName("iMouse"));
-	mGlslBlend->uniform("iMouse", vec3(mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEX), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEY), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEZ)));
+	mGlslBlend->uniform("iMouse", vec3(mVDAnimation->getUniformValue(mVDSettings->IMOUSEX), mVDAnimation->getUniformValue(mVDSettings->IMOUSEY), mVDAnimation->getUniformValue(mVDSettings->IMOUSEZ)));
 	mGlslBlend->uniform("iDate", mVDAnimation->getVec4UniformValueByName("iDate"));
-	mGlslBlend->uniform("iWeight0", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT0));	// weight of channel 0
-	mGlslBlend->uniform("iWeight1", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT1));	// weight of channel 1
-	mGlslBlend->uniform("iWeight2", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT2));	// weight of channel 2
-	mGlslBlend->uniform("iWeight3", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT3)); // texture
-	mGlslBlend->uniform("iWeight4", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT4)); // texture
+	mGlslBlend->uniform("iWeight0", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT0));	// weight of channel 0
+	mGlslBlend->uniform("iWeight1", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT1));	// weight of channel 1
+	mGlslBlend->uniform("iWeight2", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT2));	// weight of channel 2
+	mGlslBlend->uniform("iWeight3", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT3)); // texture
+	mGlslBlend->uniform("iWeight4", mVDAnimation->getUniformValue(mVDSettings->IWEIGHT4)); // texture
 	mGlslBlend->uniform("iChannel0", 0); // fbo shader
 	mGlslBlend->uniform("iChannel1", 1); // fbo shader
 	mGlslBlend->uniform("iChannel2", 2); // texture 1
 	mGlslBlend->uniform("iChannel3", 3); // texture 2
 	mGlslBlend->uniform("iChannel4", 4); // texture 3
 	mGlslBlend->uniform("iAudio0", 0);
-	mGlslBlend->uniform("iFreq0", mVDAnimation->getFloatUniformValueByName("iFreq0"));
-	mGlslBlend->uniform("iFreq1", mVDAnimation->getFloatUniformValueByName("iFreq1"));
-	mGlslBlend->uniform("iFreq2", mVDAnimation->getFloatUniformValueByName("iFreq2"));
-	mGlslBlend->uniform("iFreq3", mVDAnimation->getFloatUniformValueByName("iFreq3"));
+	mGlslBlend->uniform("iFreq0", mVDAnimation->getUniformValueByName("iFreq0"));
+	mGlslBlend->uniform("iFreq1", mVDAnimation->getUniformValueByName("iFreq1"));
+	mGlslBlend->uniform("iFreq2", mVDAnimation->getUniformValueByName("iFreq2"));
+	mGlslBlend->uniform("iFreq3", mVDAnimation->getUniformValueByName("iFreq3"));
 	mGlslBlend->uniform("iChannelTime", mVDSettings->iChannelTime, 4);
-	mGlslBlend->uniform("iColor", vec3(mVDAnimation->getFloatUniformValueByIndex(1), mVDAnimation->getFloatUniformValueByIndex(2), mVDAnimation->getFloatUniformValueByIndex(3)));
+	mGlslBlend->uniform("iColor", vec3(mVDAnimation->getUniformValue(1), mVDAnimation->getUniformValue(2), mVDAnimation->getUniformValue(3)));
 	mGlslBlend->uniform("iBackgroundColor", mVDAnimation->getVec3UniformValueByName("iBackgroundColor"));
-	mGlslBlend->uniform("iSteps", (int)mVDAnimation->getFloatUniformValueByIndex(10));
-	mGlslBlend->uniform("iRatio", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRATIO));
+	mGlslBlend->uniform("iSteps", (int)mVDAnimation->getUniformValue(10));
+	mGlslBlend->uniform("iRatio", mVDAnimation->getUniformValue(mVDSettings->IRATIO));
 	mGlslBlend->uniform("width", 1);
 	mGlslBlend->uniform("height", 1);
 	mGlslBlend->uniform("iRenderXY", mVDSettings->mRenderXY);
-	mGlslBlend->uniform("iZoom", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IZOOM));
-	mGlslBlend->uniform("iAlpha", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFA) * mVDSettings->iAlpha);
-	mGlslBlend->uniform("iChromatic", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ICHROMATIC));
-	mGlslBlend->uniform("iRotationSpeed", mVDAnimation->getFloatUniformValueByIndex(9));
+	mGlslBlend->uniform("iZoom", mVDAnimation->getUniformValue(mVDSettings->IZOOM));
+	mGlslBlend->uniform("iAlpha", mVDAnimation->getUniformValue(mVDSettings->IFA) * mVDSettings->iAlpha);
+	mGlslBlend->uniform("iChromatic", mVDAnimation->getUniformValue(mVDSettings->ICHROMATIC));
+	mGlslBlend->uniform("iRotationSpeed", mVDAnimation->getUniformValue(9));
 	mGlslBlend->uniform("iCrossfade", 0.5f);// blendmode only work if different than 0 or 1
-	mGlslBlend->uniform("iPixelate", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IPIXELATE));
-	mGlslBlend->uniform("iExposure", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IEXPOSURE));
-	mGlslBlend->uniform("iDeltaTime", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IDELTATIME));
+	mGlslBlend->uniform("iPixelate", mVDAnimation->getUniformValue(mVDSettings->IPIXELATE));
+	mGlslBlend->uniform("iExposure", mVDAnimation->getUniformValue(mVDSettings->IEXPOSURE));
+	mGlslBlend->uniform("iDeltaTime", mVDAnimation->getUniformValue(mVDSettings->IDELTATIME));
 	mGlslBlend->uniform("iFade", (int)mVDSettings->iFade);
 	mGlslBlend->uniform("iToggle", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->ITOGGLE));
 	mGlslBlend->uniform("iGreyScale", (int)mVDSettings->iGreyScale);
@@ -1430,22 +1430,22 @@ void VDSession::updateBlendUniforms() {
 	mGlslBlend->uniform("iInvert", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IINVERT));
 	mGlslBlend->uniform("iDebug", (int)mVDSettings->iDebug);
 	mGlslBlend->uniform("iShowFps", (int)mVDSettings->iShowFps);
-	mGlslBlend->uniform("iFps", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFPS));
-	mGlslBlend->uniform("iTempoTime", mVDAnimation->getFloatUniformValueByName("iTempoTime"));
+	mGlslBlend->uniform("iFps", mVDAnimation->getUniformValue(mVDSettings->IFPS));
+	mGlslBlend->uniform("iTempoTime", mVDAnimation->getUniformValueByName("iTempoTime"));
 	mGlslBlend->uniform("iGlitch", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IGLITCH));
-	mGlslBlend->uniform("iTrixels", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ITRIXELS));
+	mGlslBlend->uniform("iTrixels", mVDAnimation->getUniformValue(mVDSettings->ITRIXELS));
 	mGlslBlend->uniform("iSeed", mVDSettings->iSeed);
-	mGlslBlend->uniform("iRedMultiplier", mVDAnimation->getFloatUniformValueByName("iRedMultiplier"));
-	mGlslBlend->uniform("iGreenMultiplier", mVDAnimation->getFloatUniformValueByName("iGreenMultiplier"));
-	mGlslBlend->uniform("iBlueMultiplier", mVDAnimation->getFloatUniformValueByName("iBlueMultiplier"));
+	mGlslBlend->uniform("iRedMultiplier", mVDAnimation->getUniformValueByName("iRedMultiplier"));
+	mGlslBlend->uniform("iGreenMultiplier", mVDAnimation->getUniformValueByName("iGreenMultiplier"));
+	mGlslBlend->uniform("iBlueMultiplier", mVDAnimation->getUniformValueByName("iBlueMultiplier"));
 	mGlslBlend->uniform("iFlipH", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPH));
 	mGlslBlend->uniform("iFlipV", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPV));
-	mGlslBlend->uniform("iPixelX", mVDAnimation->getFloatUniformValueByName("IPIXELX"));
-	mGlslBlend->uniform("iPixelY", mVDAnimation->getFloatUniformValueByName("IPIXELY"));
+	mGlslBlend->uniform("iPixelX", mVDAnimation->getUniformValueByName("IPIXELX"));
+	mGlslBlend->uniform("iPixelY", mVDAnimation->getUniformValueByName("IPIXELY"));
 	mGlslBlend->uniform("iXorY", mVDSettings->iXorY);
-	mGlslBlend->uniform("iBadTv", mVDAnimation->getFloatUniformValueByName("iBadTv"));
-	mGlslBlend->uniform("iContour", mVDAnimation->getFloatUniformValueByName("iContour"));
-	mGlslBlend->uniform("iSobel", mVDAnimation->getFloatUniformValueByName("iSobel"));
+	mGlslBlend->uniform("iBadTv", mVDAnimation->getUniformValueByName("iBadTv"));
+	mGlslBlend->uniform("iContour", mVDAnimation->getUniformValueByName("iContour"));
+	mGlslBlend->uniform("iSobel", mVDAnimation->getUniformValueByName("iSobel"));
 
 }*/
 /*
@@ -1512,8 +1512,8 @@ mShaderLeft = "";
 mShaderRight = "";
 // hydra
 mHydraUniformsValuesString = "";
-mHydraFbo = gl::Fbo::create(mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY), fboFmt);
-mRenderFbo = gl::Fbo::create(mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY), fboFmt);
+mHydraFbo = gl::Fbo::create(mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONX), mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONY), fboFmt);
+mRenderFbo = gl::Fbo::create(mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONX), mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONY), fboFmt);
 */
 
 

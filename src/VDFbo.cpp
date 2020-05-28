@@ -190,16 +190,16 @@ namespace videodromm {
 			}
 			/*int f = 0;
 			for (auto &fbo : mTextureList) {
-				if (fbo->isValid() && mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT0 + f) > 0.05f) {
+				if (fbo->isValid() && mVDAnimation->getUniformValue(mVDSettings->IWEIGHT0 + f) > 0.05f) {
 					fbo->getTexture()->bind(f);
 				}
 				f++;
 			}
 			int t = 0;
 			for (auto &tex : mTextureList) {
-				if (tex->isValid() && mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT0 + t) > 0.1f) {
+				if (tex->isValid() && mVDAnimation->getUniformValue(mVDSettings->IWEIGHT0 + t) > 0.1f) {
 					mGlslMixette->uniform("iChannel" + toString(t), t);
-					mGlslMixette->uniform("iWeight" + toString(t), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT0 + t));
+					mGlslMixette->uniform("iWeight" + toString(t), mVDAnimation->getUniformValue(mVDSettings->IWEIGHT0 + t));
 				}
 				t++;
 			}*/
@@ -222,17 +222,17 @@ namespace videodromm {
 					{
 					case 0: // float
 						if (name == "TIME") {
-							mShader->uniform(name, mVDAnimation->getFloatUniformValueByName("TIME"));
+							mShader->uniform(name, mVDAnimation->getUniformValueByName("TIME"));
 						}
 						else {
 							if (mGlobal) {
 								{
-									mShader->uniform(name, mVDAnimation->getFloatUniformValueByName(name));
+									mShader->uniform(name, mVDAnimation->getUniformValueByName(name));
 								}
 							}
 							else {
 								//createFloatUniform(name, mVDAnimation->getUniformIndexForName(name), getIntUniformValueByName(name), mVDAnimation->getMinUniformValueByName(name), mVDAnimation->getMaxUniformValueByName(name));
-								mShader->uniform(name, mVDUniform->getFloatUniformValueByName(name));
+								mShader->uniform(name, mVDUniform->getUniformValueByName(name));
 							}
 						}
 						break;
@@ -305,7 +305,7 @@ namespace videodromm {
 				}
 			}
 			mShader->uniform("RENDERSIZE", vec2(mVDSettings->mFboWidth, mVDSettings->mFboHeight));
-			mShader->uniform("TIME", (float)getElapsedSeconds());// mVDAnimation->getFloatUniformValueByIndex(0));
+			mShader->uniform("TIME", (float)getElapsedSeconds());// mVDAnimation->getUniformValue(0));
 
 			gl::ScopedGlslProg glslScope(mShader);
 			// TODO: test gl::ScopedViewport sVp(0, 0, mFbo->getWidth(), mFbo->getHeight());	

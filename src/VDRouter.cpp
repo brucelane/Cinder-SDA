@@ -40,7 +40,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 				found = true;
 				i = msg[0].flt();
 				f = msg[1].flt() / 128;
-				mVDAnimation->setFloatUniformValueByIndex(i, f);
+				mVDAnimation->setUniformValue(i, f);
 				//ss << " midi from OSC " << i << " value " << f;
 			}
 			if (!found)
@@ -85,12 +85,12 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 					found = true;
 					f = msg[0].flt();
 					mVDAnimation->useTimeWithTempo();
-					mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIME, f);
+					mVDAnimation->setUniformValue(mVDSettings->ITIME, f);
 					//stringstream ss;
 					//ss << " " << f;
 					//CI_LOG_I("OSC: " << ctrl << " addr: " << addr);
 
-					//mVDAnimation->setFloatUniformValueByIndex(mVDSettings->IELAPSED, msg[0].flt());
+					//mVDAnimation->setUniformValue(mVDSettings->IELAPSED, msg[0].flt());
 				}
 			}
 			if (!found)
@@ -125,7 +125,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 					for (int a = 0; a < msg.getNumArgs(); a++) {
 						// get the argument type 'f'
 						if (msg.getArgType(i) == ArgType::FLOAT) {
-							f = msg[a].flt() * 200.0f * mVDAnimation->getFloatUniformValueByName("iAudioMult");
+							f = msg[a].flt() * 200.0f * mVDAnimation->getUniformValueByName("iAudioMult");
 							if (f > mVDAnimation->maxVolume)
 							{
 								mVDAnimation->maxVolume = f;
@@ -156,22 +156,22 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 					//	}
 					//	// sos specific
 					//	if (i == 119) { // B7 end
-					//		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR, 0.02f);
+					//		mVDAnimation->setUniformValue(mVDSettings->ITIMEFACTOR, 0.02f);
 					//	}
 					//	if (i == 120) { // C8 slow
-					//		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR, 0.1f);
+					//		mVDAnimation->setUniformValue(mVDSettings->ITIMEFACTOR, 0.1f);
 					//	}
 					//	if (i == 121) { // C#8
-					//		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR, 0.18f);
+					//		mVDAnimation->setUniformValue(mVDSettings->ITIMEFACTOR, 0.18f);
 					//	}
 					//	if (i == 122) { // D8
-					//		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR, 0.25f);
+					//		mVDAnimation->setUniformValue(mVDSettings->ITIMEFACTOR, 0.25f);
 					//	}
 					//	if (i == 123) { // D#8
-					//		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR, 0.35f);
+					//		mVDAnimation->setUniformValue(mVDSettings->ITIMEFACTOR, 0.35f);
 					//	}
 					//	if (i == 124) { // E8 fast
-					//		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR, 1.0f);
+					//		mVDAnimation->setUniformValue(mVDSettings->ITIMEFACTOR, 1.0f);
 					//	}
 					//}
 				}
@@ -205,8 +205,8 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 					int previousBar = mVDAnimation->getIntUniformValueByIndex(mVDSettings->IBAR);
 
 					if (previousBar != msg[0].int32()) {
-						mVDSettings->iBarDuration = mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ITIME) - mBarStart;
-						mBarStart = mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ITIME);
+						mVDSettings->iBarDuration = mVDAnimation->getUniformValue(mVDSettings->ITIME) - mBarStart;
+						mBarStart = mVDAnimation->getUniformValue(mVDSettings->ITIME);
 					}
 					// TODO END
 					mVDAnimation->setIntUniformValueByIndex(mVDSettings->IBAR, msg[0].int32());
@@ -249,7 +249,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 							found = true;
 							f = msg[0].flt();
 							i = std::stoi(addr.substr(lastSlashIndex + 1)) + 8;
-							mVDAnimation->setFloatUniformValueByIndex(i, f);
+							mVDAnimation->setUniformValue(i, f);
 						}
 
 						if (!found)
@@ -261,7 +261,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 								found = true;
 								f = msg[0].flt();
 								i = std::stoi(addr.substr(lastSlashIndex + 1)) + 32; // 24 + 8
-								mVDAnimation->setFloatUniformValueByIndex(i, f);
+								mVDAnimation->setUniformValue(i, f);
 							}
 						}
 
@@ -274,7 +274,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 								found = true;
 								f = msg[0].flt();
 								i = std::stoi(addr.substr(lastSlashIndex + 1)) + 56; // 48 + 8
-								mVDAnimation->setFloatUniformValueByIndex(i, f);
+								mVDAnimation->setUniformValue(i, f);
 							}
 						}
 						if (!found)
@@ -286,7 +286,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 								found = true;
 								f = msg[0].flt();
 								i = std::stoi(addr.substr(index + ctrl.length()));
-								mVDAnimation->setFloatUniformValueByIndex(i, f);// starts at 1: mVDSettings->IFR G B
+								mVDAnimation->setUniformValue(i, f);// starts at 1: mVDSettings->IFR G B
 							}
 						}
 						if (!found)
@@ -298,7 +298,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 								found = true;
 								f = msg[0].flt();
 								i = std::stoi(addr.substr(index + ctrl.length())) + 10;
-								mVDAnimation->setFloatUniformValueByIndex(i, f);
+								mVDAnimation->setUniformValue(i, f);
 							}
 						}
 						if (!found)
@@ -681,7 +681,7 @@ void VDRouter::midiListener(midi::Message msg) {
 		//midiVelocity = msg.velocity;
 		//midiNormalizedValue = lmap<float>(midiVelocity, 0.0, 127.0, 0.0, 1.0);
 		//// quick hack!
-		//mVDAnimation->setFloatUniformValueByIndex(14, 1.0f + midiNormalizedValue);
+		//mVDAnimation->setUniformValue(14, 1.0f + midiNormalizedValue);
 		midiPitch = msg.pitch;
 		// midimix solo mode
 		/*if (midiPitch == 27) midiSticky = true;
@@ -737,7 +737,7 @@ void VDRouter::midiListener(midi::Message msg) {
 		midiValue = msg.value;
 		midiNormalizedValue = lmap<float>(midiValue, 0.0, 127.0, 0.0, 1.0);
 		ss << " pb Chn: " << midiChannel << " CC: " << midiControl << " Val: " << midiValue << " NVal: " << midiNormalizedValue;
-		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->IMOUSEX, midiValue);
+		mVDAnimation->setUniformValue(mVDSettings->IMOUSEX, midiValue);
 		break;
 	default:
 		ss << " unknown status: " << msg.status;
@@ -814,7 +814,7 @@ void VDRouter::updateParams(int iarg0, float farg1) {
 	}
 	//if (iarg0 > 0 && iarg0 < 49) {
 		// float values 
-		//mVDWebsocket->wsWrite("{\"params\" :[{ \"name\":" + toString(iarg0) + ",\"value\":" + toString(mVDAnimation->getFloatUniformValueByIndex(iarg0)) + "}]}");
+		//mVDWebsocket->wsWrite("{\"params\" :[{ \"name\":" + toString(iarg0) + ",\"value\":" + toString(mVDAnimation->getUniformValue(iarg0)) + "}]}");
 	//}
 }
 
@@ -824,10 +824,10 @@ void VDRouter::colorWrite()
 #if defined( CINDER_MSW )
 	// lights4events
 	char col[97];
-	int r = (int)(mVDAnimation->getFloatUniformValueByIndex(1) * 255);
-	int g = (int)(mVDAnimation->getFloatUniformValueByIndex(2) * 255);
-	int b = (int)(mVDAnimation->getFloatUniformValueByIndex(3) * 255);
-	int a = (int)(mVDAnimation->getFloatUniformValueByIndex(4) * 255);
+	int r = (int)(mVDAnimation->getUniformValue(1) * 255);
+	int g = (int)(mVDAnimation->getUniformValue(2) * 255);
+	int b = (int)(mVDAnimation->getUniformValue(3) * 255);
+	int a = (int)(mVDAnimation->getUniformValue(4) * 255);
 	//sprintf(col, "#%02X%02X%02X", r, g, b);
 	sprintf(col, "{\"type\":\"action\", \"parameters\":{\"name\":\"FC\",\"parameters\":{\"color\":\"#%02X%02X%02X%02X\",\"fading\":\"NONE\"}}}", a, r, g, b);
 	//! 20200526 mVDWebsocket->wsWrite(col);

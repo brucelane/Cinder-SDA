@@ -82,10 +82,10 @@ namespace videodromm
 		};
 
 		float							getFboFloatUniformValueByIndex(unsigned int aCtrl, unsigned int aFboIndex) {
-			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getFloatUniformValueByIndex(aCtrl);
+			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getUniformValue(aCtrl);
 		};
 		bool							setFboFloatUniformValueByIndex(unsigned int aCtrl, unsigned int aFboIndex, float aValue) {
-			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->setFloatUniformValueByIndex(aCtrl, aValue);
+			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->setUniformValue(aCtrl, aValue);
 		};*/
 		bool									getGlobal(unsigned int aFboIndex) {
 			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getGlobal();
@@ -235,11 +235,11 @@ namespace videodromm
 		float							getWarpCrossfade(unsigned int aWarpIndex) {
 			//if (aWarpIndex > mWarpList.size() - 1) aWarpIndex = 0;
 			//return mWarpList[aWarpIndex]->ABCrossfade;
-			return mVDAnimation->getFloatUniformValueByIndex( mVDSettings->IXFADE);
+			return mVDAnimation->getUniformValue( mVDSettings->IXFADE);
 		};
 		void							setWarpCrossfade(unsigned int aWarpIndex, float aCrossfade) {
 			//if (aWarpIndex < mWarpList.size()) mWarpList[aWarpIndex]->ABCrossfade = aCrossfade;
-			mVDAnimation->setFloatUniformValueByIndex(mVDSettings->IXFADE, aCrossfade);
+			mVDAnimation->setUniformValue(mVDSettings->IXFADE, aCrossfade);
 		};
 		void							updateWarpName(unsigned int aWarpIndex);
 		//void							crossfadeWarp(unsigned int aWarpIndex, float aValue) { timeline().apply(&mWarpList[aWarpIndex]->ABCrossfade, aValue, 2.0f); };

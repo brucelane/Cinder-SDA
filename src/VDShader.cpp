@@ -328,8 +328,8 @@ bool VDShader::setFragmentString(const string& aFragmentShaderString, const stri
 					{
 					case 0:
 						// float
-						mShader->uniform(uniformName, mVDAnimation->getFloatUniformValueByName(uniformName));
-						mCurrentUniformsString += "uniform float " + uniformName + "; // " + toString(mVDAnimation->getFloatUniformValueByName(uniformName)) + "\n";
+						mShader->uniform(uniformName, mVDAnimation->getUniformValueByName(uniformName));
+						mCurrentUniformsString += "uniform float " + uniformName + "; // " + toString(mVDAnimation->getUniformValueByName(uniformName)) + "\n";
 						if (uniformName != "TIME") {
 							mISFUniforms += ",\n"
 								"		{\n"
@@ -337,7 +337,7 @@ bool VDShader::setFragmentString(const string& aFragmentShaderString, const stri
 								"			\"TYPE\" : \"float\", \n"
 								"			\"MIN\" : " + toString(mVDAnimation->getMinUniformValueByName(uniformName)) + ",\n"
 								"			\"MAX\" : " + toString(mVDAnimation->getMaxUniformValueByName(uniformName)) + ",\n"
-								"			\"DEFAULT\" : " + toString(mVDAnimation->getFloatUniformValueByName(uniformName)) + "\n"
+								"			\"DEFAULT\" : " + toString(mVDAnimation->getUniformValueByName(uniformName)) + "\n"
 								"		}\n";
 						}
 						break;
@@ -349,8 +349,8 @@ bool VDShader::setFragmentString(const string& aFragmentShaderString, const stri
 					case 2:
 						// vec2 IRESOLUTION IRESOLUTIONX IRESOLUTIONY
 						mShader->uniform(uniformName, mVDAnimation->getVec2UniformValueByName(uniformName));
-						//mShader->uniform(uniformName + "x", mVDAnimation->getFloatUniformValueByName(uniformName + "x"),
-						//	mVDAnimation->getFloatUniformValueByName(uniformName + "y")));
+						//mShader->uniform(uniformName + "x", mVDAnimation->getUniformValueByName(uniformName + "x"),
+						//	mVDAnimation->getUniformValueByName(uniformName + "y")));
 						mCurrentUniformsString += "uniform vec2 " + uniformName + "; // " + toString(mVDAnimation->getVec2UniformValueByName(uniformName)) + "\n";
 						break;
 					case 3:
@@ -487,10 +487,10 @@ ci::gl::Texture2dRef VDShader::getFboTexture() {
 				switch (uniformType)
 				{
 				case 0: // float
-					mShader->uniform(name, mVDAnimation->getFloatUniformValueByName(name));
+					mShader->uniform(name, mVDAnimation->getUniformValueByName(name));
 					if (name == "TIME") {
 						// globally
-						mShader->uniform(name, mVDAnimation->getFloatUniformValueByName("TIME"));
+						mShader->uniform(name, mVDAnimation->getUniformValueByName("TIME"));
 					}
 					break;
 				case 1: // sampler2D
@@ -530,7 +530,7 @@ ci::gl::Texture2dRef VDShader::getFboTexture() {
 			}
 		}
 		mShader->uniform("RENDERSIZE", vec2(mVDSettings->mPreviewFboWidth, mVDSettings->mPreviewFboHeight));
-		mShader->uniform("TIME", (float)getElapsedSeconds());// mVDAnimation->getFloatUniformValueByIndex(0));
+		mShader->uniform("TIME", (float)getElapsedSeconds());// mVDAnimation->getUniformValue(0));
 
 		gl::ScopedGlslProg glslScope(mShader);
 		// TODO: test gl::ScopedViewport sVp(0, 0, mFbo->getWidth(), mFbo->getHeight());	

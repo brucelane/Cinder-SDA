@@ -69,12 +69,12 @@ namespace videodromm
 		bool							getUseTimeWithTempo() { return mUseTimeWithTempo; };
 		float							iTempoTimeBeatPerBar;
 		float							getBpm() {
-			return getFloatUniformValueByIndex(mVDSettings->IBPM);
+			return getUniformValue(mVDSettings->IBPM);
 		};
 		void							setBpm(float aBpm) {
 			if (aBpm > 0.0f) {
-				setFloatUniformValueByIndex(mVDSettings->IBPM, aBpm);
-				setFloatUniformValueByIndex(mVDSettings->IDELTATIME, 60 / aBpm);
+				setUniformValue(mVDSettings->IBPM, aBpm);
+				setUniformValue(mVDSettings->IDELTATIME, 60 / aBpm);
 			}
 		};
 		void							tapTempo();
@@ -146,8 +146,8 @@ namespace videodromm
 		bool							toggleMid(unsigned int aIndex);
 		bool							toggleTreble(unsigned int aIndex);
 		void							resetAutoAnimation(unsigned int aIndex);*/
-		bool							setFloatUniformValueByIndex(unsigned int aIndex, float aValue) {
-			return mVDUniform->setFloatUniformValueByIndex(aIndex, aValue);
+		bool							setUniformValue(unsigned int aIndex, float aValue) {
+			return mVDUniform->setUniformValue(aIndex, aValue);
 		}
 
 		bool							setBoolUniformValueByIndex(unsigned int aIndex, bool aValue) {
@@ -207,8 +207,8 @@ namespace videodromm
 		vec4							getVec4UniformValueByIndex(unsigned int aIndex) {
 			return shaderUniforms[aIndex].vec4Value;
 		};*/
-		float							getFloatUniformValueByIndex(unsigned int aIndex) {
-			return mVDUniform->getFloatUniformValueByIndex(aIndex);
+		float							getUniformValue(unsigned int aIndex) {
+			return mVDUniform->getUniformValue(aIndex);
 		}
 		float							getFloatUniformDefaultValueByIndex(unsigned int aIndex) {
 			return mVDUniform->getFloatUniformDefaultValueByIndex(aIndex);
@@ -219,8 +219,8 @@ namespace videodromm
 		int								getSampler2DUniformValueByName(const string& aName) {
 			return mVDUniform->getSampler2DUniformValueByName(aName);
 		}
-		float							getFloatUniformValueByName(const string& aName) {		
-				return mVDUniform->getFloatUniformValueByName(aName);		
+		float							getUniformValueByName(const string& aName) {		
+				return mVDUniform->getUniformValueByName(aName);		
 		}
 		
 		vec2							getVec2UniformValueByName(const string& aName) {
