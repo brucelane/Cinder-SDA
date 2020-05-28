@@ -55,6 +55,9 @@ namespace videodromm
 		int								getUniformType(unsigned int aIndex) {
 			return shaderUniforms[aIndex].uniformType;
 		}
+		int								getUniformTypeByName(const string& aName) {
+			return shaderUniforms[stringToIndex(aName)].uniformType;
+		}		
 		string							getUniformName(unsigned int aIndex) {
 			return shaderUniforms[aIndex].name;
 		}

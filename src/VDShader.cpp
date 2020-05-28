@@ -323,7 +323,7 @@ bool VDShader::setFragmentString(const string& aFragmentShaderString, const stri
 				CI_LOG_V(mName + ", uniform name:" + uniformName);
 				// if uniform is handled
 				if (mVDAnimation->isExistingUniform(uniformName)) {
-					int uniformType = mVDAnimation->getUniformType(uniformName);
+					int uniformType = mVDAnimation->getUniformTypeByName(uniformName);
 					switch (uniformType)
 					{
 					case 0:
@@ -483,7 +483,7 @@ ci::gl::Texture2dRef VDShader::getFboTexture() {
 		for (const auto &uniform : mUniforms) {
 			name = uniform.getName();
 			if (mVDAnimation->isExistingUniform(name)) {
-				int uniformType = mVDAnimation->getUniformType(name);
+				int uniformType = mVDAnimation->getUniformTypeByName(name);
 				switch (uniformType)
 				{
 				case 0: // float

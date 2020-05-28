@@ -126,12 +126,12 @@ namespace videodromm
 		void							toggleAudioBuffered() { mAudioBuffered = !mAudioBuffered; };
 
 		// shaders
-		//bool							isExistingUniform(const string& aName);
-		//int								getUniformType(const string& aName);
-		/*int VDAnimation::getUniformType(const string& aName) {
-			return shaderUniforms[stringToIndex(aName)].uniformType;
-			mVDUniform->
+		int								getUniformTypeByName(const string& aName) {
+			return mVDUniform->getUniformTypeByName(aName);
 		}
+		bool							isExistingUniform(const string& aName) { return true; }; // TODO
+		
+		/*
 		string							getUniformNameForIndex(int aIndex) {
 			return shaderUniforms[aIndex].name; //controlIndexes[aIndex];
 		};*/
