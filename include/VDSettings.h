@@ -65,8 +65,7 @@ namespace videodromm {
 			IBR = 26,
 			IBG = 27,
 			IBB = 28,
-			IRESOLUTIONX = 29,
-			IRESOLUTIONY = 30,
+
 			IWEIGHT0 = 31,
 			IWEIGHT1 = 32,
 			IWEIGHT2 = 33,
@@ -97,7 +96,7 @@ namespace videodromm {
 			IOUTW = 56,
 			IOUTH = 57,
 			IBEATSPERBAR = 59,
-			IRESOLUTION = 60,
+
 			ICOLOR = 61,
 			IBACKGROUNDCOLOR = 62,
 			IMOUSE = 70,
@@ -109,6 +108,9 @@ namespace videodromm {
 			IGREYSCALE = 87,
 			ICLEAR = 88,	// 
 
+			IRESOLUTION = 120,
+			IRESOLUTIONX = 121,
+			IRESOLUTIONY = 122,
 
 			IDEBUG = 129,
 			IXORY = 130,

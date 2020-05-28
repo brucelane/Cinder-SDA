@@ -210,8 +210,8 @@ namespace videodromm
 		ci::gl::Texture2dRef			mRenderedTexture;
 		ci::gl::Texture2dRef			getFboTexture();
 		// uniforms
-		map<int, string>				controlIndexes;
-		map<string, VDUniform>			shaderUniforms;
+		//map<int, string>				controlIndexes;
+		//map<string, VDUniform>			shaderUniforms;
 		void							createBoolUniform(const string& aName, int aCtrlIndex, bool aValue = false) {
 			controlIndexes[aCtrlIndex] = aName;
 			shaderUniforms[aName].boolValue = aValue;

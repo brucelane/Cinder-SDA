@@ -2,13 +2,15 @@
 <cinder>
 <template name="VD: Basic" parent="org.libcinder.apptemplates.basicopengl">
 	<requires>com.sophiadigitalart.vd</requires>
-	<requires>com.wk.websocketpp</requires>
+	<requires>nl.cowlumbus.warping</requires>
 	<platform os="msw">
 		<requires>fr.batchass.spout</requires>
 		<requires>mb.cinder.midi2</requires>
 	</platform>
 	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
 	<asset>assets/0.jpg</asset>
-	<asset>assets/textures.xml</asset>
+	<asset>assets/passthrough.vs</asset>
+	<asset>assets/post.glsl</asset>
+	<asset>assets/mixette.glsl</asset>
 </template>
 </cinder>
