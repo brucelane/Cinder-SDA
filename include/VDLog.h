@@ -1,3 +1,9 @@
+/*
+	VDLog
+	Handles logging to the filesystem and console.
+*/
+// TODO rewrite as a singleton
+
 #pragma once
 
 #include "cinder/Cinder.h"
@@ -18,15 +24,17 @@ namespace videodromm
 
 	class VDLog {
 	public:		
-		VDLog();
 
-		static VDLogRef	create()
-		{
-			return shared_ptr<VDLog>(new VDLog());
+		static VDLogRef	create() {
+			if (LOGGER.use_count() == 0) {
+				LOGGER = VDLogRef(new VDLog());
+			}
+			return LOGGER;
 		}
 
 	private:
-
+		static VDLogRef LOGGER;
+		VDLog();
 	};
 
 

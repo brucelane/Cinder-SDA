@@ -1,347 +1,364 @@
 #include "VDFbo.h"
 
-#include "cinder/gl/Texture.h"
-#include "cinder/Xml.h"
-
-using namespace ci;
-using namespace ci::app;
-
 namespace videodromm {
-	VDFbo::VDFbo(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
-		: mFilePathOrText("")
-		, mFboName("fbo")
+	VDFbo::VDFbo(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const JsonTree &json)
+		:mValid(false)
 	{
 		CI_LOG_V("VDFbo constructor");
 		mVDSettings = aVDSettings;
 		mVDAnimation = aVDAnimation;
-		mType = UNKNOWN;
+		string shaderFileName = "inputImage.fs";
+		mShaderName = mShaderFileName;
+		string shaderType = "fs";
+		mShaderFragmentString = "";
+		//string textureFileName = "0.jpg"; 
+		//mTextureName = mCurrentSeqFilename = mLastCachedFilename = textureFileName;
+		mInputTextureIndex = 0;
+		
+		if (json.hasChild("shader")) {
+			JsonTree shaderJsonTree(json.getChild("shader"));
+			mShaderName = mShaderFileName = (shaderJsonTree.hasChild("shadername")) ? shaderJsonTree.getValueForKey<string>("shadername") : "inputImage.fs";
+			mShaderFragmentString = (shaderJsonTree.hasChild("shadertext")) ? shaderJsonTree.getValueForKey<string>("shadertext") : "";
+			shaderType = (json.hasChild("shadertype")) ? json.getValueForKey<string>("shadertype") : "fs";
+		}
+		if (json.hasChild("texture")) {
 
-		mInputTextureIndex = 0; 
-		mInputTextureRef = ci::gl::Texture::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, ci::gl::Texture::Format().loadTopDown());
+			JsonTree textureJsonTree(json.getChild("texture"));
+			//tmp
+			//string tx = (textureJsonTree.hasChild("texturename")) ? textureJsonTree.getValueForKey<string>("texturename") : "0.jpg";
 
-		mPosX = mPosY = 0.0f;
-		mZoom = 1.0f;
+			createInputTexture(textureJsonTree);
+		}
+
+		//mShaderName = mShaderFileName = aShaderFilename;
+		//mTextureName =  mCurrentSeqFilename = mLastCachedFilename = aTextureFilename;
+		shaderInclude = loadString(loadAsset("shadertoy.vd"));
+
+		// init texture
+		//mTexture = ci::gl::Texture::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, ci::gl::Texture::Format().loadTopDown());
+		mRenderedTexture = ci::gl::Texture::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, ci::gl::Texture::Format().loadTopDown());
 		isReady = false;
-		mFlipV = mFlipH = false;
 
+		// init texture
 		// init the fbo whatever happens next
 		fboFmt.setColorTextureFormat(fmt);
 		mFbo = gl::Fbo::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, fboFmt);
-		mThumbFbo = gl::Fbo::create(mVDSettings->mPreviewWidth, mVDSettings->mPreviewHeight, fboFmt);
 		mError = "";
-		// init with passthru shader
-		//mShaderName = "0";
-		mFboName = "default";
+		mActive = true;
+		mValid = loadFragmentStringFromFile(mShaderName);
 
-		// load feedback fragment shader
-		try {
-			mFboTextureShader = gl::GlslProg::create(mVDSettings->getDefaultVextexShaderString(), mVDSettings->getDefaultFragmentShaderString());
-			CI_LOG_V("fbo default vtx-frag compiled");
+		if (mValid) {
+			CI_LOG_V("VDFbo constructor success");
 		}
-		catch (gl::GlslProgCompileExc &exc) {
-			mError = string(exc.what());
-			CI_LOG_V("fbo unable to load/compile vtx-frag shader:" + string(exc.what()));
+		else {
+			mVDSettings->mErrorMsg = "VDFbo constructor failed\n" + mVDSettings->mErrorMsg.substr(0, mVDSettings->mMsgLength);
 		}
-		catch (const std::exception &e) {
-			mError = string(e.what());
-			CI_LOG_V("fbo unable to load vtx-frag shader:" + string(e.what()));
-		}
-		if (mError.length() > 0) mVDSettings->mMsg = mError;
 	}
 	VDFbo::~VDFbo(void) {
 	}
 
-	XmlTree	VDFbo::toXml() const {
-		XmlTree		xml;
-		xml.setTag("details");
-		xml.setAttribute("path", mFilePathOrText);
-		xml.setAttribute("width", mVDSettings->mFboWidth);
-		xml.setAttribute("height", mVDSettings->mFboHeight);
-		xml.setAttribute("shadername", mFboName);
-		xml.setAttribute("inputtextureindex", mInputTextureIndex);
-		return xml;
-	}
-
-	bool VDFbo::fromXml(const XmlTree &xml) {
-		mId = xml.getAttributeValue<string>("id", "");
-		string mGlslPath = xml.getAttributeValue<string>("shadername", "0.frag");
-		mWidth = xml.getAttributeValue<int>("width", mVDSettings->mFboWidth);
-		mHeight = xml.getAttributeValue<int>("height", mVDSettings->mFboHeight);
-		// 20200216 bug fix? mInputTextureIndex = xml.getAttributeValue<int>("inputtextureindex", 0);
-		CI_LOG_V("fbo id " + mId + "fbo shadername " + mGlslPath);
-		mFboName = mGlslPath;
-		// 20161209 problem on Mac mFboTextureShader->setLabel(mShaderName);
-		return true;
-	}
-	void VDFbo::setFragmentShader(unsigned int aShaderIndex, string aFragmentShaderString, string aName) {
-		try {
-			mFboTextureShader = gl::GlslProg::create(mVDSettings->getDefaultVextexShaderString(), aFragmentShaderString);
-			mFboTextureFragmentShaderString = aFragmentShaderString; // set only if compiles successfully
-			// 20161209 problem on Mac mFboTextureShader->setLabel(aName);
-			mFboName = aName;
-			mShaderIndex = aShaderIndex;
-		}
-		catch (gl::GlslProgCompileExc &exc) {
-			mError = string(exc.what());
-			CI_LOG_V("fbo, unable to load/compile fragment shader:" + string(exc.what()));
-		}
-		catch (const std::exception &e) {
-			mError = string(e.what());
-			CI_LOG_V("fbo, unable to load fragment shader:" + string(e.what()));
-		}
-		mVDSettings->mNewMsg = true;
-		mVDSettings->mMsg = mError;
-	}
-	void VDFbo::setShaderIndex(unsigned int aShaderIndex) {
-		mShaderIndex = aShaderIndex;
-	}
-	void VDFbo::setPosition(int x, int y) {
-		mPosX = ((float)x / (float)mVDSettings->mFboWidth) - 0.5;
-		mPosY = ((float)y / (float)mVDSettings->mFboHeight) - 0.5;
-	}
-	void VDFbo::setZoom(float aZoom) {
-		mZoom = aZoom;
-	}
-
-	ci::ivec2 VDFbo::getSize() {
-		return mFbo->getSize();
-	}
-
-	ci::Area VDFbo::getBounds() {
-		return mFbo->getBounds();
-	}
-
-	GLuint VDFbo::getId() {
-		return mFbo->getId();
-	}
-
-	//std::string VDFbo::getName() {
-	//	return mShaderName + " fb:" + mId;
-	//	//return mShaderName + " " + mId;
-	//}
-	//std::string VDFbo::getShaderName() {
-	//	return mShaderName;
-	//}
-	void VDFbo::setInputTextureIndex(unsigned int aTextureIndex) {//VDTextureList aTextureList, 
-		//mTextureList = aTextureList;
-		//if (aTextureIndex > mTextureList.size() - 1) aTextureIndex = mTextureList.size() - 1;
-		mInputTextureIndex = aTextureIndex;
-	}
-	/*
-	precision mediump float;
-	uniform float frequency194;
-	uniform float sync195;
-	uniform float offset196;
-	uniform float r197;
-	uniform float g198;
-	uniform float b199;
-	uniform float frequency200;
-	uniform float sync201;
-	uniform float offset202;
-	uniform float amount204;
-	uniform sampler2D tex206;
-	uniform float multiple207;
-	uniform float offset208;
-	uniform float angle209;
-	uniform float speed210;
-	uniform float time;
-	uniform vec2 resolution;
-	varying vec2 uv;
-	//\tSimplex 3D Noise\n    //\tby Ian McEwan, Ashima Arts\n    
-	vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
-	vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
-	float _noise(vec3 v){
-	const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
-	const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
-	// First corner
-	vec3 i  = floor(v + dot(v, C.yyy) );
-	
-	*/
-	gl::GlslProgRef VDFbo::getShader() {
-		int index = 300;
-		int texIndex = 0;
-		string name;
-		auto &uniforms = mFboTextureShader->getActiveUniforms();
-		for (const auto &uniform : uniforms) {
-			name = uniform.getName();
-			//CI_LOG_V(mFboTextureShader->getLabel() + ", getShader uniform name:" + uniform.getName());
-			if (mVDAnimation->isExistingUniform(name)) {
-				int uniformType = mVDAnimation->getUniformType(name);
-				switch (uniformType)
-				{
-				case 0:
-					// float
-					mFboTextureShader->uniform(name, mVDAnimation->getFloatUniformValueByName(name));
-					break;
-				case 1:
-					// sampler2D
-					mFboTextureShader->uniform(name,  mInputTextureIndex);// cinder::gl::GlslProg::logUniformWrongType[1021] Uniform type mismatch for "iChannel0", expected SAMPLER_2D and received uint32_t
-					break;
-				case 2:
-					// vec2
-					mFboTextureShader->uniform(name, mVDAnimation->getVec2UniformValueByName(name));
-					break;
-				case 3:
-					// vec3
-					mFboTextureShader->uniform(name, mVDAnimation->getVec3UniformValueByName(name));
-					break;
-				case 4:
-					// vec4
-					mFboTextureShader->uniform(name, mVDAnimation->getVec4UniformValueByName(name));
-					break;
-				case 5:
-					// int
-					mFboTextureShader->uniform(name, mVDAnimation->getIntUniformValueByName(name));
-					break;
-				case 6:
-					// bool
-					mFboTextureShader->uniform(name, mVDAnimation->getBoolUniformValueByName(name));
-					break;
-				default:
-					break;
+	bool VDFbo::loadFragmentStringFromFile(const string& aFileName) {
+		mValid = false;
+		
+		if (aFileName.length() > 0) {
+			/*if (mType == MOVIE) {
+				try {
+					mShaderName = mShaderFileName = "video_texture.fs.glsl";
+					// TODO VDShaderRef shaderToLoad instance
+					mShader = gl::GlslProg::create(gl::GlslProg::Format()
+						.vertex(loadAsset("video_texture.vs.glsl"))
+						.fragment(loadAsset("video_texture.fs.glsl")));
+					mValid = true;
+					CI_LOG_V("fbo video_texture vtx-frag compiled");
+				}
+				catch (gl::GlslProgCompileExc &exc) {
+					mError = string(exc.what());
+					CI_LOG_V("fbo unable to load/compile vtx-frag video_texture shader:" + string(exc.what()));
+				}
+				catch (const std::exception &e) {
+					mError = string(e.what());
+					CI_LOG_V("fbo unable to load vtx-frag video_texture shader:" + string(e.what()));
 				}
 			}
+			else {*/
+			// load fragment shader
+			shaderToLoad = VDShader::create(mVDSettings, mVDAnimation, aFileName, mShaderFragmentString, getInputTexture());
+			if (shaderToLoad->isValid()) {
+				mShaderFileName = mFileNameWithExtension = shaderToLoad->getFileNameWithExtension();//was mFragFile.filename().string();
+				mShaderFragmentString = shaderToLoad->getFragmentString();//was loadString(loadFile(mFragFile));
+				mValid = setFragmentString(mShaderFragmentString, shaderToLoad->getFileNameWithExtension());// was mFragFile.filename().string());
+			}
+
 			else {
-				if (name != "ciModelViewProjection") {
-					mVDSettings->mMsg = mFboName + ", uniform not found:" + name + " type:" + toString( uniform.getType());
-					CI_LOG_V(mVDSettings->mMsg); 
-					int firstDigit = name.find_first_of("0123456789");
-					// if valid image sequence (contains a digit)
-					if (firstDigit > -1) {
-						index = std::stoi(name.substr(firstDigit));
-					}
-					switch (uniform.getType())
+				mError = "Invalid shader file " + aFileName;
+				// load default fragment shader
+				try {
+					mShaderName = mShaderFileName = "default.fs";
+					mShader = gl::GlslProg::create(mVDSettings->getDefaultVextexShaderString(), mVDSettings->getDefaultFragmentShaderString());
+					mValid = true;
+					CI_LOG_V("fbo default vtx-frag compiled");
+				}
+				catch (gl::GlslProgCompileExc &exc) {
+					mError = string(exc.what());
+					CI_LOG_V("fbo unable to load/compile vtx-frag shader:" + string(exc.what()));
+				}
+				catch (const std::exception &e) {
+					mError = string(e.what());
+					CI_LOG_V("fbo unable to load vtx-frag shader:" + string(e.what()));
+				}
+			}
+			//}
+		}
+		else {
+			mError = "aFileName empty";
+		}
+		if (mError.length() > 0) mVDSettings->mFboMsg = mError + "\n" + mVDSettings->mFboMsg.substr(0, mVDSettings->mMsgLength);
+		return mValid;
+	}
+
+	bool VDFbo::setFragmentString(const string& aFragmentShaderString, const string& aName) {
+
+		string mOriginalFragmentString = aFragmentShaderString;
+		string mOutputFragmentString = aFragmentShaderString;
+		mError = "";
+		mName = aName;
+		// we would like a name without extension
+		if (mName.length() == 0) {
+			mName = toString((int)getElapsedSeconds());
+		}
+		else {
+			int dotIndex = mName.find_last_of(".");
+			int slashIndex = mName.find_last_of("\\");
+
+			if (dotIndex != std::string::npos && dotIndex > slashIndex) {
+				mName = mName.substr(slashIndex + 1, dotIndex - slashIndex - 1);
+			}
+		}
+		mShaderName = mName + ".fs";
+
+		string mNotFoundUniformsString = "/* " + mName + "\n";
+		// filename to save
+		mValid = false;
+		// load fragment shader
+		CI_LOG_V("setFragmentString, loading" + mName);
+		try
+		{
+			// before compilation save .fs file to inspect errors
+			/*fileName = mName + ".fs";
+			fs::path receivedFile = getAssetPath("") / "glsl" / "received" / fileName;
+			ofstream mFragReceived(receivedFile.string(), std::ofstream::binary);
+			mFragReceived << aFragmentShaderString;
+			mFragReceived.close();
+			CI_LOG_V("file saved:" + receivedFile.string());	*/
+
+			std::size_t foundUniform = mOriginalFragmentString.find("uniform ");
+			if (foundUniform == std::string::npos) {
+				CI_LOG_V("loadFragmentStringFromFile, no mUniforms found, we add from shadertoy.inc");
+				mOutputFragmentString = "/* " + mName + " */\n" + shaderInclude + mOriginalFragmentString;
+			}
+			else {
+				mOutputFragmentString = "/* " + mName + " */\n" + mOriginalFragmentString;
+			}
+			// try to compile a first time to get active mUniforms
+			mShader = gl::GlslProg::create(mVDSettings->getDefaultVextexShaderString(), mOutputFragmentString);
+			// update only if success
+			mShaderFragmentString = mOutputFragmentString;
+			mVDSettings->mMsg = mName + " compiled(fbo)\n" + mVDSettings->mMsg.substr(0, mVDSettings->mMsgLength);
+			mValid = true;
+		}
+		catch (gl::GlslProgCompileExc &exc)
+		{
+			mError = mName + string(exc.what());
+			CI_LOG_V("setFragmentString, unable to compile live fragment shader:" + mError + " frag:" + mName);
+		}
+		catch (const std::exception &e)
+		{
+			mError = mName + string(e.what());
+			CI_LOG_V("setFragmentString, error on live fragment shader:" + mError + " frag:" + mName);
+		}
+		if (mError.length() > 0) mVDSettings->mFboMsg = mError + "\n" + mVDSettings->mFboMsg.substr(0, mVDSettings->mMsgLength);
+		return mValid;
+	}
+
+	ci::gl::Texture2dRef VDFbo::getFboTexture() {
+
+		if (mValid) {
+
+			gl::ScopedFramebuffer fbScp(mFbo);
+			if (mVDAnimation->getBoolUniformValueByIndex(mVDSettings->ICLEAR)) {
+				gl::clear(Color::black());
+			}
+			/*int f = 0;
+			for (auto &fbo : mTextureList) {
+				if (fbo->isValid() && mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT0 + f) > 0.05f) {
+					fbo->getTexture()->bind(f);
+				}
+				f++;
+			}
+			int t = 0;
+			for (auto &tex : mTextureList) {
+				if (tex->isValid() && mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT0 + t) > 0.1f) {
+					mGlslMixette->uniform("iChannel" + toString(t), t);
+					mGlslMixette->uniform("iWeight" + toString(t), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT0 + t));
+				}
+				t++;
+			}*/
+			for (size_t i = 1; i < 14; i++)
+			{
+				mTextureList[0]->getTexture(i)->bind(253 + i);
+			}
+			string name;
+			string texName;
+			int texNameEndIndex;
+			int texIndex;
+			int channelIndex = 0;
+			mUniforms = mShader->getActiveUniforms();
+			for (const auto &uniform : mUniforms) {
+				name = uniform.getName();
+				//CI_LOG_V(mShader->getLabel() + ", getShader uniform name:" + uniform.getName() + ", type:" + toString( uniform.getType() ));
+				if (mVDAnimation->isExistingUniform(name)) {
+					int uniformType = mVDAnimation->getUniformType(name);
+					switch (uniformType)
 					{
-					case 5126:
-						mVDAnimation->createFloatUniform(name, 400 + index, 0.31f, 0.0f, 1000.0f);
-						mFboTextureShader->uniform(name, mVDAnimation->getFloatUniformValueByName(name));
+					case 0: // float
+						if (name == "TIME") {
+							mShader->uniform(name, mVDAnimation->getFloatUniformValueByName("TIME"));
+						}
+						else {
+							if (mGlobal) {
+								{
+									mShader->uniform(name, mVDAnimation->getFloatUniformValueByName(name));
+								}
+							}
+							else {
+								createFloatUniform(name, mVDAnimation->getUniformIndexForName(name), getIntUniformValueByName(name), mVDAnimation->getMinUniformValueByName(name), mVDAnimation->getMaxUniformValueByName(name));
+								mShader->uniform(name, getFloatUniformValueByName(name));
+							}
+						}
 						break;
-					case 35664:
-						//mVDAnimation->createvec2(uniform.getName(), 310 + , 0);
-						//++;	
+					case 1: // sampler2D
+						texNameEndIndex = name.find_last_of("iChannel");
+						if (texNameEndIndex != std::string::npos) {
+							texName = name.substr(0, texNameEndIndex + 1);
+							texIndex = 0;// (int)(name.substr(texNameEndIndex + 1));
+							CI_LOG_V(toString(texNameEndIndex) + texName);
+							mShader->uniform(texName + toString(channelIndex), (uint32_t)(253 + channelIndex));
+							channelIndex++;
+						}
+						else {
+							mShader->uniform(name, (uint32_t)(0));
+						}
+						//mShader->uniform(name, 253);
+						for (size_t i = 1; i < 14; i++)
+						{
+							mShader->uniform(name, (uint32_t)(253 + i));
+						}
 						break;
-					case 35678:
-						mVDAnimation->createSampler2DUniform(uniform.getName(), 310 + texIndex, 0);
-						texIndex++;
+					case 2://GL_FLOAT_VEC2: // vec2
+						if (name == "RENDERSIZE") {
+							//mShader->uniform(name, vec2(mTexture->getWidth(), mTexture->getHeight()));
+							mShader->uniform(name, vec2(mVDSettings->mFboWidth, mVDSettings->mFboHeight));
+						}
+						else {
+							mShader->uniform(name, mVDAnimation->getVec2UniformValueByName(name));
+						}
+						break;
+					case 3://GL_FLOAT_VEC3: // vec3
+						mShader->uniform(name, mVDAnimation->getVec3UniformValueByName(name));
+						break;
+					case 4://GL_FLOAT_VEC4: // vec4
+						mShader->uniform(name, mVDAnimation->getVec4UniformValueByName(name));
+						break;
+					case 5: // int
+						// IBEAT 51
+						// IBAR 52
+						// IBARBEAT 53
+						if (mGlobal) {
+							mShader->uniform(name, mVDAnimation->getIntUniformValueByName(name));
+						}
+						else {
+							createIntUniform(name, mVDAnimation->getUniformIndexForName(name), getIntUniformValueByName(name)); // get same index as vdanimation
+							mShader->uniform(name, getIntUniformValueByName(name));
+						}
+
+						break;
+					case 6: // bool
+						if (mGlobal) {
+							mShader->uniform(name, mVDAnimation->getBoolUniformValueByName(name));
+						}
+						else {
+							createBoolUniform(name, mVDAnimation->getUniformIndexForName(name), getBoolUniformValueByName(name)); // get same index as vdanimation
+							mShader->uniform(name, getBoolUniformValueByName(name));
+						}
+
 						break;
 					default:
 						break;
 					}
 				}
+				else {
+					if (name != "ciModelViewProjection") {//type 35676
+						mError = "fbo uniform not found " + name;
+						mVDSettings->mErrorMsg = mError + "\n" + mVDSettings->mErrorMsg.substr(0, mVDSettings->mMsgLength);
+						CI_LOG_E(mError);
+					}
+				}
+			}
+			mShader->uniform("RENDERSIZE", vec2(mVDSettings->mFboWidth, mVDSettings->mFboHeight));
+			mShader->uniform("TIME", (float)getElapsedSeconds());// mVDAnimation->getFloatUniformValueByIndex(0));
+
+			gl::ScopedGlslProg glslScope(mShader);
+			// TODO: test gl::ScopedViewport sVp(0, 0, mFbo->getWidth(), mFbo->getHeight());	
+
+			gl::drawSolidRect(Rectf(0, 0, mVDSettings->mFboWidth, mVDSettings->mFboHeight));
+			mRenderedTexture = mFbo->getColorTexture();
+			if (!isReady) {
+				string filename = mName + "-" + mTextureList[0]->getTextureName() + ".jpg";
+				fs::path fr = getAssetPath("") / "thumbs" / filename;
+
+				if (!fs::exists(fr)) {
+					CI_LOG_V(fr.string() + " does not exist, creating");
+					Surface s8(mRenderedTexture->createSource());
+					writeImage(writeFile(fr), s8);
+				}
 			}
 		}
-		return mFboTextureShader;
+		return mRenderedTexture;
 	}
-	ci::gl::Texture2dRef VDFbo::getRenderedTexture() {
-		if (!isReady) {
-			// render once for init
+
+	ci::gl::Texture2dRef VDFbo::getTexture() {
+		if (mValid) {
+			if (!isReady) {
+				// render once for thumb
+				getFboTexture();
+				isReady = true;
+			}
 			getFboTexture();
-			updateThumbFile();
-			isReady = true;
 		}
 		return mRenderedTexture;
 	}
+	//! to json
+	JsonTree	VDFbo::toJson(bool save, unsigned int aIndex) const
+	{
+		JsonTree		json;
+		JsonTree shader = ci::JsonTree::makeArray("shader");
+		shader.addChild(ci::JsonTree("shadername", mShaderFileName));
+		shader.pushBack(ci::JsonTree("shadertype", "fs"));
+		json.addChild(shader);
+		JsonTree texture = ci::JsonTree::makeArray("texture");
+		texture.addChild(ci::JsonTree("texturename", mTextureList[0]->getTextureName()));
+		texture.pushBack(ci::JsonTree("texturetype", mTextureList[0]->getType()));
+		texture.pushBack(ci::JsonTree("texturemode", mTextureList[0]->getMode()));
+		json.addChild(texture);
 
-	ci::gl::Texture2dRef VDFbo::getFboTexture() {
-		// TODO move this:
-		getShader();
-		gl::ScopedFramebuffer fbScp(mFbo);
-		gl::clear(Color::black());
-
-		//if (mInputTextureIndex > mTextureList.size() - 1) mInputTextureIndex = 0;
-		//mTextureList[mInputTextureIndex]->getTexture()->bind(0);
-		mInputTextureRef->bind(0);
-		gl::ScopedGlslProg glslScope(mFboTextureShader);
-		// TODO: test gl::ScopedViewport sVp(0, 0, mFbo->getWidth(), mFbo->getHeight());
-
-		//gl::drawSolidRect(Rectf(0, 0, mVDSettings->mPreviewWidth, mVDSettings->mPreviewHeight));
-		gl::drawSolidRect(Rectf(0, 0, mVDSettings->mFboWidth, mVDSettings->mFboHeight));
-		mRenderedTexture = mFbo->getColorTexture();
-		return mRenderedTexture;
-	}
-
-	void VDFbo::updateThumbFile() {
-		getFboTexture();
-		if (mRenderedTexture) {
-			string filename = getName() + ".jpg";
-			fs::path fr = getAssetPath("") / "thumbs" / "jpg" / filename;
-
-			if (!fs::exists(fr)) {
-				CI_LOG_V(fr.string() + " does not exist, creating");
-				// TODO move this:
-				getShader();
-
-				gl::ScopedFramebuffer fbo(mThumbFbo);
-				gl::ScopedViewport viewport(0, 0, mThumbFbo->getWidth(), mThumbFbo->getHeight());
-				gl::ScopedMatrices matrices;
-				gl::setMatricesWindow(mThumbFbo->getSize(), false);
-
-
-				ci::gl::Texture2dRef mThumbTexture;
-				//gl::ScopedFramebuffer fbScp(mThumbFbo);
-				gl::clear(Color::black());
-				//gl::ScopedViewport scpVp(ivec2(0), mThumbFbo->getSize());
-				//if (mInputTextureIndex > mTextureList.size() - 1) mInputTextureIndex = 0;
-				//mTextureList[mInputTextureIndex]->getTexture()->bind(0);
-				mInputTextureRef->bind(0);
-				mFboTextureShader->uniform("iBlendmode", mVDSettings->iBlendmode);
-				mFboTextureShader->uniform("iTime", mVDAnimation->getFloatUniformValueByIndex(0));
-				// was vec3(mVDSettings->mFboWidth, mVDSettings->mFboHeight, 1.0)):
-				mFboTextureShader->uniform("iResolution", vec3(mThumbFbo->getWidth(), mThumbFbo->getHeight(), 1.0));
-				//mFboTextureShader->uniform("iChannelResolution", mVDSettings->iChannelResolution, 4);
-				// 20180318 mFboTextureShader->uniform("iMouse", mVDAnimation->getVec4UniformValueByName("iMouse"));
-				mFboTextureShader->uniform("iMouse", vec3(mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEX), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEY), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEZ)));
-				mFboTextureShader->uniform("iDate", mVDAnimation->getVec4UniformValueByName("iDate"));
-				mFboTextureShader->uniform("iWeight0", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT0));	// weight of channel 0
-				mFboTextureShader->uniform("iWeight1", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT1));	// weight of channel 1
-				mFboTextureShader->uniform("iWeight2", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT2));	// weight of channel 2
-				mFboTextureShader->uniform("iWeight3", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT3)); // texture
-				mFboTextureShader->uniform("iWeight4", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IWEIGHT4)); // texture
-				mFboTextureShader->uniform("iChannel0", 0); // fbo shader 
-				mFboTextureShader->uniform("iChannel1", 1); // fbo shader
-				mFboTextureShader->uniform("iChannel2", 2); // texture 1
-				mFboTextureShader->uniform("iChannel3", 3); // texture 2
-				mFboTextureShader->uniform("iChannel4", 4); // texture 3
-
-				mFboTextureShader->uniform("iRatio", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRATIO));//check if needed: +1;
-				mFboTextureShader->uniform("iRenderXY", mVDSettings->mRenderXY);
-				mFboTextureShader->uniform("iZoom", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IZOOM));
-				mFboTextureShader->uniform("iAlpha", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFA) * mVDSettings->iAlpha);
-				mFboTextureShader->uniform("iChromatic", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ICHROMATIC));
-				mFboTextureShader->uniform("iRotationSpeed", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IROTATIONSPEED));
-				mFboTextureShader->uniform("iCrossfade", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IXFADE));
-				mFboTextureShader->uniform("iPixelate", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IPIXELATE));
-				mFboTextureShader->uniform("iExposure", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IEXPOSURE));
-				mFboTextureShader->uniform("iToggle", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->ITOGGLE));
-				mFboTextureShader->uniform("iGreyScale", (int)mVDSettings->iGreyScale);
-				mFboTextureShader->uniform("iBackgroundColor", mVDAnimation->getVec3UniformValueByName("iBackgroundColor"));
-				mFboTextureShader->uniform("iVignette", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IVIGN));
-				mFboTextureShader->uniform("iInvert", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IINVERT));
-				mFboTextureShader->uniform("iTempoTime", mVDAnimation->getFloatUniformValueByName("iTempoTime"));
-				mFboTextureShader->uniform("iGlitch", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IGLITCH));
-				mFboTextureShader->uniform("iTrixels", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ITRIXELS));
-				mFboTextureShader->uniform("iRedMultiplier", mVDAnimation->getFloatUniformValueByName("iRedMultiplier"));
-				mFboTextureShader->uniform("iGreenMultiplier", mVDAnimation->getFloatUniformValueByName("iGreenMultiplier"));
-				mFboTextureShader->uniform("iBlueMultiplier", mVDAnimation->getFloatUniformValueByName("iBlueMultiplier"));
-				mFboTextureShader->uniform("iFlipH", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPH));
-				mFboTextureShader->uniform("iFlipV", (int)mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPV));
-				mFboTextureShader->uniform("pixelX", mVDAnimation->getFloatUniformValueByName("pixelX"));
-				mFboTextureShader->uniform("pixelY", mVDAnimation->getFloatUniformValueByName("pixelY"));
-				mFboTextureShader->uniform("iXorY", mVDSettings->iXorY);
-				mFboTextureShader->uniform("iBadTv", mVDAnimation->getFloatUniformValueByName("iBadTv"));
-				mFboTextureShader->uniform("iFps", mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFPS));
-				mFboTextureShader->uniform("iContour", mVDAnimation->getFloatUniformValueByName("iContour"));
-				mFboTextureShader->uniform("iSobel", mVDAnimation->getFloatUniformValueByName("iSobel"));
-
-				gl::ScopedGlslProg glslScope(mFboTextureShader);
-				gl::drawSolidRect(Rectf(0, 0, mThumbFbo->getWidth(), mThumbFbo->getHeight()));
-				
-				mThumbTexture = mThumbFbo->getColorTexture();
-				Surface s8(mThumbTexture->createSource());
-				writeImage(writeFile(fr), s8);				
-			}
+		if (save) {
+			string jsonFileName = mShaderName + ".json";
+			fs::path jsonFile = getAssetPath("") / mVDSettings->mAssetsPath / jsonFileName;
+			json.write(jsonFile);
+			string jsonFboFileName = "fbo" + toString(aIndex) + ".json";
+			fs::path jsonFboFile = getAssetPath("") / mVDSettings->mAssetsPath / jsonFboFileName;
+			json.write(jsonFboFile);
 		}
+		return json;
 	}
-
-} // namespace videodromm
-
+}

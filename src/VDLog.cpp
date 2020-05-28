@@ -2,6 +2,8 @@
 
 using namespace videodromm;
 
+VDLogRef VDLog::LOGGER;
+
 VDLog::VDLog()
 {
 	auto sysLogger = log::makeLogger<log::LoggerSystem>();

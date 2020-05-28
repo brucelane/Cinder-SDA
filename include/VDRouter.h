@@ -1,3 +1,12 @@
+/*
+	VDRouter
+	Handles routing of messages from the network and midi.
+	Input: websockets, osc, midi
+	Output: websockets
+*/
+// TODO separate websockets, osc, midi into different classes
+// TODO implement lazy loading for websockets, osc, midi
+// TODO choose output : OSC or websockets?
 #pragma once
 #include "cinder/Cinder.h"
 #include "cinder/app/App.h"
@@ -7,24 +16,29 @@
 #include "VDSettings.h"
 // Animation
 #include "VDAnimation.h"
-// Websocket
-#include "VDWebsocket.h"
 // Midi
 #include "MidiIn.h"
 // OSC
-#include "cinder/osc/Osc.h"
+//#include "cinder/osc/Osc.h"
 
 using namespace ci;
 using namespace ci::app;
-using namespace ci::osc;
+//using namespace ci::osc;
 using namespace std;
-using namespace asio;
-using namespace asio::ip; 
+//using namespace asio;
+//using namespace asio::ip; 
 using namespace videodromm;
+/*
+#define USE_UDP 1
 
+#if USE_UDP
 using Receiver = osc::ReceiverUdp;
 using protocol = asio::ip::udp;
-
+#else
+using Receiver = osc::ReceiverTcp;
+using protocol = asio::ip::tcp;
+#endif
+*/
 namespace videodromm
 {
 	// stores the pointer to the VDRouter instance
@@ -45,10 +59,10 @@ namespace videodromm
 
 	class VDRouter {
 	public:
-		VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWebsocketRef aVDWebsocket);
-		static VDRouterRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWebsocketRef aVDWebsocket)
+		VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
+		static VDRouterRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 		{
-			return shared_ptr<VDRouter>(new VDRouter(aVDSettings, aVDAnimation, aVDWebsocket));
+			return shared_ptr<VDRouter>(new VDRouter(aVDSettings, aVDAnimation));
 		}
 		//void						update();
 		void						shutdown();
@@ -56,6 +70,7 @@ namespace videodromm
 		void						updateParams(int iarg0, float farg1);
 		// MIDI
 		void						midiSetup();
+		void						saveMidiPorts();
 		int							getMidiInPortsCount() { return mMidiInputs.size(); };
 		string						getMidiInPortName(unsigned int i) { return (i < mMidiInputs.size()) ? mMidiInputs[i].portName : "No midi in ports"; };
 		bool						isMidiInConnected(unsigned int i) { return (i < mMidiInputs.size()) ? mMidiInputs[i].isConnected : false; };
@@ -81,8 +96,6 @@ namespace videodromm
 		VDSettingsRef				mVDSettings;
 		// Animation
 		VDAnimationRef				mVDAnimation;
-		// VDWebsocket
-		VDWebsocketRef				mVDWebsocket;
 		// lights4events
 		void						colorWrite();
 		bool						mFBOAChanged;
@@ -120,8 +133,8 @@ namespace videodromm
 		static const int			MAX = 16;
 		float						mBarStart = 0.0f;
 		// osc
-		shared_ptr<osc::ReceiverUdp>			mOscReceiver;
-		std::map<uint64_t, protocol::endpoint>	mConnections;
+		//shared_ptr<osc::ReceiverUdp>			mOscReceiver;
+		//std::map<uint64_t, protocol::endpoint>	mConnections;
 	};
 }
 

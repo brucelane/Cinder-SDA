@@ -1,3 +1,11 @@
+/*
+	VDShader
+	Handles shaders loading and sanitizing
+	Input from different sources: filesystem, hydra, bonzorezo, glsleditor, websockets
+	Output ISF format (Interactive Shader Format)
+*/
+// TODO store in database though api
+
 #pragma once
 
 #include "cinder/Cinder.h"
@@ -13,8 +21,6 @@
 #include "VDSettings.h"
 // Animation
 #include "VDAnimation.h"
-// Watchdog
-#include "Watchdog.h"
 // std regex
 #include <regex>
 
@@ -34,51 +40,74 @@ namespace videodromm
 
 	class VDShader {
 	public:
-		VDShader(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, string aFileOrPath, string aFragmentShaderString = "");
+		VDShader(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const string& aFileOrPath, const string& aShaderFragmentString, gl::TextureRef aTexture );
 		//void update();
-		static VDShaderRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, string aFileOrPath, string aFragmentShaderString = "")
+		static VDShaderRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const string& aFileOrPath, const string& aShaderFragmentString, gl::TextureRef aTexture)
+		{
+			return shared_ptr<VDShader>(new VDShader(aVDSettings, aVDAnimation, aFileOrPath, aShaderFragmentString, aTexture));
+		}
+		/*VDShader(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const string& aFileOrPath, const string& aFragmentShaderString = "");
+		//void update();
+		static VDShaderRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const string& aFileOrPath, const string& aFragmentShaderString = "")
 		{
 			return shared_ptr<VDShader>(new VDShader(aVDSettings, aVDAnimation, aFileOrPath, aFragmentShaderString));
-		}
+		}*/
 		//void fromXml(const XmlTree &xml);
-		gl::GlslProgRef					getShader();
-		string							getName();
+		//string							getName() { return mFileNameWithExtension; };
+		bool							isValid() { return mValid; };
 		string							getFileNameWithExtension() {return mFileNameWithExtension;};
-		bool							loadFragmentStringFromFile(string aFileName);
 		string							getFragmentString() {
-			if (mFragmentShaderString.empty()) mFragmentShaderString = "void main(void){vec2 uv = gl_FragCoord.xy / iResolution.xy;fragColor = texture(iChannel0, uv);}";
-			if (mFragmentShaderString.size() < 1 || mFragmentShaderString.size() > 256000) mFragmentShaderString = "void main(void){vec2 uv = gl_FragCoord.xy / iResolution.xy;fragColor = texture(iChannel0, uv);}";
+			//if (mFragmentShaderString.empty()) mFragmentShaderString = "void main(void){vec2 uv = gl_FragCoord.xy / iResolution.xy;fragColor = texture(iChannel0, uv);}";
+			//if (mFragmentShaderString.size() < 1 || mFragmentShaderString.size() > 256000) mFragmentShaderString = "void main(void){vec2 uv = gl_FragCoord.xy / iResolution.xy;fragColor = texture(iChannel0, uv);}";
 			return mFragmentShaderString;
 		};
-		bool							setFragmentString(string aFragmentShaderString, string aName = "");
 		// thumb image
-		//ci::gl::Texture2dRef			getThumb();
-		bool							isValid() { return mValid; };
+		// TODO ci::gl::Texture2dRef			getThumb();
+		/* 
+		NO: gl::GlslProgRef					getShader();
+		PRIVATE NOW bool							loadFragmentStringFromFile(const string& aFileName);
+		PRIVATE bool							setFragmentString(const string& aFragmentShaderString, const string& aName = "");
 		bool							isActive() { return mActive; };
 		void							setActive(bool active) { mActive = active; };
-		void							removeShader();
+		void							removeShader();*/
+		ci::gl::Texture2dRef			getThumbTexture();
+		void							setInputTexture(ci::gl::Texture2dRef aTextureRef) { mTexture = aTextureRef; };
 	private:
 		// Settings
 		VDSettingsRef					mVDSettings;
 		// Animation
 		VDAnimationRef					mVDAnimation;
 
-		string							mId;
-		gl::GlslProgRef					mShader;
-		string							mName;
+		//string							mName;
 		string							mText;
-		bool							mActive;
-		int								mMicroSeconds;
-		string							mError;
         bool							mValid;
-		//! fragment shader
-		std::string						mFragmentShaderString;
-		std::string						mFileNameWithExtension;
-		fs::path						mFragFile;
+		gl::GlslProgRef					mShader;
 		// include shader lines
 		std::string						shaderInclude;
+		fs::path mFragFilePath;
+		string							mError;
+		bool							loadFragmentStringFromFile();// keep PRIVATE
+		bool							setFragmentString(const string& aFragmentShaderString, const string& aName = "");// keep PRIVATE
+		std::string						mFileNameWithExtension;
+		std::string						mFragmentShaderString;
+		string							ext;
+		std::vector<ci::gl::GlslProg::Uniform> mUniforms;
 		// fbo
-		//gl::FboRef						mThumbFbo;
+		gl::Texture::Format				fmt;
+		gl::Fbo::Format					fboFmt;
+		gl::FboRef						mThumbFbo;
+		ci::gl::Texture2dRef			getFboTexture();
+		ci::gl::Texture2dRef			mRenderedTexture;
+		string							mName;
+		//! Input textures
+		gl::TextureRef					mTexture;
+
 		//ci::gl::Texture2dRef			mThumbTexture;
+		/*string							mId;
+		bool							mActive;
+		int								mMicroSeconds;
+		//! fragment shader
+		fs::path						mFragFile;
+		*/
 	};
 }

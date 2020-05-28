@@ -2,18 +2,23 @@
 
 using namespace videodromm;
 
-VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWebsocketRef aVDWebsocket) {
+VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 	mVDSettings = aVDSettings;
 	mVDAnimation = aVDAnimation;
-	mVDWebsocket = aVDWebsocket;
 	CI_LOG_V("VDRouter constructor");
 	mFBOAChanged = false;
 	mFBOBChanged = false;
 	// midi
 	if (mVDSettings->mMIDIOpenAllInputPorts) midiSetup();
 	// Osc
+	/*
 	if (mVDSettings->mOSCEnabled) {
 		mOscReceiver = std::make_shared<osc::ReceiverUdp>(mVDSettings->mOSCReceiverPort);
+		// Romina
+		mOscReceiver->setListener("*",
+			[&](const osc::Message &msg) {
+			string addr = msg.getAddress();
+		});
 		mOscReceiver->setListener("/*",
 			[&](const osc::Message &msg) {
 			// touchosc
@@ -22,11 +27,12 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWeb
 			int index = -1;
 			int i = 0;
 			float f = 1.0f;
-			stringstream ss;	
+			stringstream ss;
 			vec2 vv = vec2(0.0f);
 			string addr = msg.getAddress();
 			// handle all msg without page integer first
 			// midi cc in osc
+			ss << addr;
 			ctrl = "/cc";
 			index = addr.find(ctrl);
 			if (index != std::string::npos)
@@ -35,8 +41,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWeb
 				i = msg[0].flt();
 				f = msg[1].flt() / 128;
 				mVDAnimation->setFloatUniformValueByIndex(i, f);
-				ss << "midi from OSC " << addr << " " << i << " value " << f;
-				mVDSettings->mMidiMsg = ss.str();
+				//ss << " midi from OSC " << i << " value " << f;
 			}
 			if (!found)
 			{
@@ -56,7 +61,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWeb
 				if (index != std::string::npos)
 				{
 					found = true;
-					mVDAnimation->setAutoBeatAnimation(false);
+					//mVDAnimation->setAutoBeatAnimation(false);
 					mVDAnimation->setBpm(msg[0].flt());
 				}
 			}
@@ -82,19 +87,20 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWeb
 					mVDAnimation->useTimeWithTempo();
 					mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIME, f);
 					//stringstream ss;
-					ss << addr << " " << f;
+					//ss << " " << f;
 					//CI_LOG_I("OSC: " << ctrl << " addr: " << addr);
-					mVDSettings->mMsg = ss.str();
+
 					//mVDAnimation->setFloatUniformValueByIndex(mVDSettings->IELAPSED, msg[0].flt());
 				}
 			}
 			if (!found)
 			{
-				/*	float tempo from Transthor
-					SOS 160.0
-					HumanET	150
-					Hoover	135
-				*/
+				//	float tempo from Transthor
+				//	SOS 160.0
+				//	HumanET	150
+				//	Hoover	135
+				//	Massactiv whatelse 138.77
+				//
 				ctrl = "/tempo";
 				index = addr.find(ctrl);
 				if (index != std::string::npos)
@@ -103,6 +109,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWeb
 					mVDAnimation->useTimeWithTempo();
 					f = msg[0].flt();
 					mVDAnimation->setBpm(f);
+					//ss << " " << f;
 					//CI_LOG_I("tempo:" + toString(mVDAnimation->getBpm()));
 				}
 			}
@@ -115,21 +122,58 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWeb
 				{
 					found = true;
 					mVDAnimation->maxVolume = 0.0f;
-					for (int i = 0; i < msg.getNumArgs(); i++) {
+					for (int a = 0; a < msg.getNumArgs(); a++) {
 						// get the argument type 'f'
 						if (msg.getArgType(i) == ArgType::FLOAT) {
-							float f = msg[i].flt() * 200.0f;
+							f = msg[a].flt() * 200.0f * mVDAnimation->getFloatUniformValueByName("iAudioMult");
 							if (f > mVDAnimation->maxVolume)
 							{
 								mVDAnimation->maxVolume = f;
 							}
-							mVDAnimation->iFreqs[i] = f;
-							if (i == mVDAnimation->getFreqIndex(0)) mVDAnimation->setFloatUniformValueByName("iFreq0", f);
-							if (i == mVDAnimation->getFreqIndex(1)) mVDAnimation->setFloatUniformValueByName("iFreq1", f);
-							if (i == mVDAnimation->getFreqIndex(2)) mVDAnimation->setFloatUniformValueByName("iFreq2", f);
-							if (i == mVDAnimation->getFreqIndex(3)) mVDAnimation->setFloatUniformValueByName("iFreq3", f);
+							mVDAnimation->iFreqs[a] = f;
+							if (a == mVDAnimation->getFreqIndex(0)) mVDAnimation->setFloatUniformValueByName("iFreq0", f);
+							if (a == mVDAnimation->getFreqIndex(1)) mVDAnimation->setFloatUniformValueByName("iFreq1", f);
+							if (a == mVDAnimation->getFreqIndex(2)) mVDAnimation->setFloatUniformValueByName("iFreq2", f);
+							if (a == mVDAnimation->getFreqIndex(3)) mVDAnimation->setFloatUniformValueByName("iFreq3", f);
 						}
-					}				
+					}
+				}
+			}
+			if (!found)
+			{
+				// from Midithor (i=0 on noteoff) Midi1 to Midi8
+				ctrl = "/Midi";
+				index = addr.find(ctrl);
+				if (index != std::string::npos)
+				{
+					found = true;
+					// get the argument type 
+					//if (msg.getArgType(0) == ArgType::INTEGER_32) {
+					//	int i = msg[0].int32();
+					//	if (i > 80 && i < 109) {
+					//		mVDAnimation->setBoolUniformValueByIndex(i, !mVDAnimation->getBoolUniformValueByIndex(i));
+
+					//	}
+					//	// sos specific
+					//	if (i == 119) { // B7 end
+					//		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR, 0.02f);
+					//	}
+					//	if (i == 120) { // C8 slow
+					//		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR, 0.1f);
+					//	}
+					//	if (i == 121) { // C#8
+					//		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR, 0.18f);
+					//	}
+					//	if (i == 122) { // D8
+					//		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR, 0.25f);
+					//	}
+					//	if (i == 123) { // D#8
+					//		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR, 0.35f);
+					//	}
+					//	if (i == 124) { // E8 fast
+					//		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR, 1.0f);
+					//	}
+					//}
 				}
 			}
 			if (!found)
@@ -139,14 +183,14 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWeb
 				index = addr.find(ctrl);
 				if (index != std::string::npos)
 				{
-					found = true;			
+					found = true;
 					mVDAnimation->setIntUniformValueByIndex(mVDSettings->IBEAT, msg[0].int32() - 1);
 					mVDAnimation->setIntUniformValueByIndex(
 						mVDSettings->IBARBEAT,
 						mVDAnimation->getIntUniformValueByIndex(mVDSettings->IBAR) * 4 + mVDAnimation->getIntUniformValueByIndex(mVDSettings->IBEAT));
 
 					//CI_LOG_I("beat:" + toString(mVDSettings->IBEAT) + " " + toString(mVDAnimation->getIntUniformValueByIndex(mVDSettings->IBEAT)));
-	
+
 				}
 			}
 			if (!found)
@@ -184,7 +228,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWeb
 					mVDAnimation->setBpm(d0);
 					double d1 = msg[1].dbl();
 					int d2 = msg[2].int32();
-					mVDWebsocket->changeIntValue(mVDSettings->IBEAT, d2);
+					//! 20200526 mVDWebsocket->changeIntValue(mVDSettings->IBEAT, d2);
 				}
 			}
 			if (!found)
@@ -220,7 +264,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWeb
 								mVDAnimation->setFloatUniformValueByIndex(i, f);
 							}
 						}
-						
+
 						if (!found)
 						{
 							ctrl = "multifader";
@@ -331,19 +375,20 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWeb
 				}
 				catch (const std::exception& e) {
 					ss << addr << " not integer";
-					mVDSettings->mOSCMsg = ss.str();
+					mVDSettings->mErrorMsg += "\n" + ss.str();
 					CI_LOG_E("not integer: " << addr);
 				}
 			}
-			if (found) {
-				if (addr != "/play") mVDSettings->mOSCMsg = addr;
-				// nope too much disk io CI_LOG_I("OSC: " << ctrl << " addr: " << addr);
-			}
-			else {
+			if (!found) {
 				CI_LOG_E("not handled: " << msg.getNumArgs() << " addr: " << addr);
-				mVDSettings->mOSCMsg = "not handled: " + addr;
-				mVDSettings->mMsg = "osc not handled: " + addr;
+				//mVDSettings->mOSCMsg += "\nnot handled: " + addr;
+				mVDSettings->mErrorMsg = "osc not handled: " + addr + "\n" + mVDSettings->mErrorMsg.substr(0, mVDSettings->mMsgLength);
 			}
+			if (addr != "/play") {
+				ss << " f:" << f << " i:" << i;
+				mVDSettings->mOSCMsg = ss.str();
+			}
+
 		});
 
 		try {
@@ -367,7 +412,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, VDWeb
 				return true;
 		});
 	}
-	
+	*/
 	mSelectedWarp = 0;
 	mSelectedFboA = 1;
 	mSelectedFboB = 2;
@@ -383,7 +428,24 @@ void VDRouter::shutdown() {
 	mMidiOut2.closePort();
 
 }
-
+void VDRouter::saveMidiPorts() {
+	JsonTree		json;
+	JsonTree midiin = ci::JsonTree::makeArray("midiin");
+	for (int j = 0; j < mMidiInputs.size(); j++)
+	{
+		midiin.addChild(ci::JsonTree("midiinname", mMidiInputs[j].portName));
+	}
+	json.addChild(midiin);
+	JsonTree midiout = ci::JsonTree::makeArray("midiout");
+	for (int j = 0; j < mMidiOutputs.size(); j++)
+	{
+		midiout.addChild(ci::JsonTree("midioutname", mMidiOutputs[j].portName));
+	}
+	json.addChild(midiout);
+	string jsonFileName = "midi.json";
+	fs::path jsonFile = getAssetPath("") / jsonFileName;
+	json.write(jsonFile);
+}
 void VDRouter::midiSetup() {
 	stringstream ss;
 	ss << "setupMidi ";
@@ -442,36 +504,37 @@ void VDRouter::midiSetup() {
 	else {
 		ss << "no midi out Ports found";
 	}
+	saveMidiPorts();
 	midiControlType = "none";
 	midiControl = midiPitch = midiVelocity = midiNormalizedValue = midiValue = midiChannel = 0;
 	ss << std::endl;
-	mVDSettings->mNewMsg = true;
-	mVDSettings->mMidiMsg = ss.str();
+	mVDSettings->mMidiMsg = ss.str() + "\n" + mVDSettings->mMidiMsg.substr(0, mVDSettings->mMsgLength);
 	CI_LOG_V(ss.str());
 }
 
 void VDRouter::openMidiInPort(int i) {
 	CI_LOG_V("openMidiInPort: " + toString(i));
-		stringstream ss;
-		if (i < mMidiIn0.getNumPorts()) {
-			if (i == 0) {
-				mMidiIn0.openPort(i);
-				mMidiIn0.midiSignal.connect(std::bind(&VDRouter::midiListener, this, std::placeholders::_1));
-			}
-			if (i == 1) {
-				mMidiIn1.openPort(i);
-				mMidiIn1.midiSignal.connect(std::bind(&VDRouter::midiListener, this, std::placeholders::_1));
-			}
-			if (i == 2) {
-				mMidiIn2.openPort(i);
-				mMidiIn2.midiSignal.connect(std::bind(&VDRouter::midiListener, this, std::placeholders::_1));
-			}
+	stringstream ss;
+	if (i < mMidiIn0.getNumPorts()) {
+		if (i == 0) {
+			mMidiIn0.openPort(i);
+			mMidiIn0.midiSignal.connect(std::bind(&VDRouter::midiListener, this, std::placeholders::_1));
 		}
-		mMidiInputs[i].isConnected = true;
-		ss << "Opening MIDI in port " << i << " " << mMidiInputs[i].portName << std::endl;
-		mVDSettings->mMsg = ss.str();
-		CI_LOG_V(ss.str());
-		mVDSettings->mNewMsg = true;
+		if (i == 1) {
+			mMidiIn1.openPort(i);
+			mMidiIn1.midiSignal.connect(std::bind(&VDRouter::midiListener, this, std::placeholders::_1));
+		}
+		if (i == 2) {
+			mMidiIn2.openPort(i);
+			mMidiIn2.midiSignal.connect(std::bind(&VDRouter::midiListener, this, std::placeholders::_1));
+		}
+	}
+	mMidiInputs[i].isConnected = true;
+	ss << "Opening MIDI in port " << i << " " << mMidiInputs[i].portName << std::endl;
+
+	mVDSettings->mMidiMsg = ss.str() + "\n" + mVDSettings->mMidiMsg.substr(0, mVDSettings->mMsgLength);
+
+	CI_LOG_V(ss.str());
 }
 void VDRouter::closeMidiInPort(int i) {
 
@@ -543,8 +606,7 @@ void VDRouter::openMidiOutPort(int i) {
 		}
 	}
 	ss << std::endl;
-	mVDSettings->mMsg = ss.str();
-	mVDSettings->mNewMsg = true;
+	mVDSettings->mMidiMsg = ss.str() + "\n" + mVDSettings->mMidiMsg.substr(0, mVDSettings->mMsgLength);
 	CI_LOG_V(ss.str());
 }
 void VDRouter::closeMidiOutPort(int i) {
@@ -567,6 +629,7 @@ void VDRouter::closeMidiOutPort(int i) {
 
 void VDRouter::midiListener(midi::Message msg) {
 	stringstream ss;
+	ss << "MIDI port: " << mMidiIn0.getPortName(msg.port);
 	midiChannel = msg.channel;
 	switch (msg.status)
 	{
@@ -575,24 +638,24 @@ void VDRouter::midiListener(midi::Message msg) {
 		midiControl = msg.control;
 		midiValue = msg.value;
 		midiNormalizedValue = lmap<float>(midiValue, 0.0, 127.0, 0.0, 1.0);
-		ss << "MIDI cc Chn: " << midiChannel << " CC: " << midiControl  << " Val: " << midiValue << " NVal: " << midiNormalizedValue;
+		ss << " cc Chn: " << midiChannel << " CC: " << midiControl << " Val: " << midiValue << " NVal: " << midiNormalizedValue;
 		CI_LOG_V("Midi: " + ss.str());
 
 		if (midiControl > 20 && midiControl < 49) {
 			/*if (midiControl > 20 && midiControl < 29) {
 				mSelectedWarp = midiControl - 21;
-			} 
+			}
 			if (midiControl > 40 && midiControl < 49) {
 				mSelectedFboB = midiControl - 41;
 				mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOB, mSelectedFboB);
 			}
 			*/
 			//if (midiControl > 30 && midiControl < 39) {
-				mVDWebsocket->changeFloatValue(midiControl, midiNormalizedValue);
-				//mSelectedFboA = midiControl - 31;
-				//mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOA, mSelectedFboA);
-			//}
-			
+			//! 20200526 mVDWebsocket->changeFloatValue(midiControl, midiNormalizedValue);
+			//mSelectedFboA = midiControl - 31;
+			//mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOA, mSelectedFboA);
+		//}
+
 		}
 		else {
 			updateParams(midiControl, midiNormalizedValue);
@@ -614,8 +677,7 @@ void VDRouter::midiListener(midi::Message msg) {
 				mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOB, mSelectedFboB);
 			}
 		*/
-		//midiControlType = "/on";
-		//midiPitch = msg.pitch;
+		midiControlType = "/on";
 		//midiVelocity = msg.velocity;
 		//midiNormalizedValue = lmap<float>(midiVelocity, 0.0, 127.0, 0.0, 1.0);
 		//// quick hack!
@@ -639,9 +701,9 @@ void VDRouter::midiListener(midi::Message msg) {
 			mFBOBChanged = true;
 		}
 		if (midiPitch > 17 && midiPitch < 24) {
-			mVDAnimation->setBoolUniformValueByIndex(midiPitch + 80-17, true);
+			mVDAnimation->setBoolUniformValueByIndex(midiPitch + 80 - 17, true);
 		}
-		ss << "MIDI noteon Chn: " << midiChannel << " Pitch: " << midiPitch;
+		ss << " noteon Chn: " << midiChannel << " Pitch: " << midiPitch;
 		CI_LOG_V("Midi: " + ss.str());
 		break;
 	case MIDI_NOTE_OFF:
@@ -655,27 +717,37 @@ void VDRouter::midiListener(midi::Message msg) {
 			midiSticky = false;
 		}
 		if (!midiSticky) {*/
-			//mVDAnimation->setBoolUniformValueByIndex(midiPitch + 80, false);
-		/*}
-		else {
-			if (midiPitch == midiStickyPrevIndex) {
-				mVDAnimation->setBoolUniformValueByIndex(midiPitch + 80, !midiStickyPrevValue);
-			}
-		}*/
-		ss << "MIDI noteoff Chn: " << midiChannel << " Pitch: " << midiPitch;
+		//mVDAnimation->setBoolUniformValueByIndex(midiPitch + 80, false);
+	/*}
+	else {
+		if (midiPitch == midiStickyPrevIndex) {
+			mVDAnimation->setBoolUniformValueByIndex(midiPitch + 80, !midiStickyPrevValue);
+		}
+	}*/
+		ss << " noteoff Chn: " << midiChannel << " Pitch: " << midiPitch;
 		CI_LOG_V("Midi: " + ss.str());
-		/*midiControlType = "/off";
-		midiPitch = msg.pitch;
+		midiControlType = "/off";
+		/*midiPitch = msg.pitch;
 		midiVelocity = msg.velocity;
 		midiNormalizedValue = lmap<float>(midiVelocity, 0.0, 127.0, 0.0, 1.0);*/
 		break;
+	case MIDI_PITCH_BEND:
+		midiControlType = "/pb";
+		midiControl = msg.control;
+		midiValue = msg.value;
+		midiNormalizedValue = lmap<float>(midiValue, 0.0, 127.0, 0.0, 1.0);
+		ss << " pb Chn: " << midiChannel << " CC: " << midiControl << " Val: " << midiValue << " NVal: " << midiNormalizedValue;
+		mVDAnimation->setFloatUniformValueByIndex(mVDSettings->IMOUSEX, midiValue);
+		break;
 	default:
+		ss << " unknown status: " << msg.status;
+		CI_LOG_V("Midi: " + ss.str());
 		break;
 	}
 	//ss << "MIDI Chn: " << midiChannel << " type: " << midiControlType << " CC: " << midiControl << " Pitch: " << midiPitch << " Vel: " << midiVelocity << " Val: " << midiValue << " NVal: " << midiNormalizedValue << std::endl;
 	//CI_LOG_V("Midi: " + ss.str());
 	ss << std::endl;
-	mVDSettings->mMidiMsg = ss.str();
+	mVDSettings->mMidiMsg = ss.str() + "\n" + mVDSettings->mMidiMsg.substr(0, mVDSettings->mMsgLength);
 }
 
 void VDRouter::updateParams(int iarg0, float farg1) {
@@ -708,18 +780,18 @@ void VDRouter::updateParams(int iarg0, float farg1) {
 	}
 	if (iarg0 > 0 && iarg0 < 9) {
 		// sliders 
-		mVDWebsocket->changeFloatValue(iarg0, farg1);
+		//! 20200526 mVDWebsocket->changeFloatValue(iarg0, farg1);
 	}
 	if (iarg0 > 10 && iarg0 < 19) {
 		// rotary 
-		mVDWebsocket->changeFloatValue(iarg0, farg1);
+		//! 20200526 mVDWebsocket->changeFloatValue(iarg0, farg1);
 		// audio multfactor
-		if (iarg0 == 13) mVDWebsocket->changeFloatValue(iarg0, (farg1 + 0.01) * 10);
+		//! 20200526 if (iarg0 == 13) mVDWebsocket->changeFloatValue(iarg0, (farg1 + 0.01) * 10);
 		// exposure
-		if (iarg0 == 14) mVDWebsocket->changeFloatValue(iarg0, (farg1 + 0.01) * mVDAnimation->getMaxUniformValueByIndex(14));
+		//! 20200526 if (iarg0 == 14) mVDWebsocket->changeFloatValue(iarg0, (farg1 + 0.01) * mVDAnimation->getMaxUniformValueByIndex(14));
 		// xfade
 		if (iarg0 == mVDSettings->IXFADE) {//18
-			mVDWebsocket->changeFloatValue(iarg0, farg1);
+			//! 20200526 mVDWebsocket->changeFloatValue(iarg0, farg1);
 			//mVDSettings->xFade = farg1;
 			//mVDSettings->xFadeChanged = true;
 		}
@@ -727,17 +799,17 @@ void VDRouter::updateParams(int iarg0, float farg1) {
 	// buttons
 	if (iarg0 > 20 && iarg0 < 29) {
 		// top row
-		mVDWebsocket->changeFloatValue(iarg0, farg1);
+		//! 20200526 mVDWebsocket->changeFloatValue(iarg0, farg1);
 	}
 	if (iarg0 > 30 && iarg0 < 39)
 	{
 		// middle row
-		mVDWebsocket->changeFloatValue(iarg0, farg1);
+		//! 20200526 mVDWebsocket->changeFloatValue(iarg0, farg1);
 		//mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOA, iarg0 - 31);
 	}
 	if (iarg0 > 40 && iarg0 < 49) {
 		// low row 
-		mVDWebsocket->changeFloatValue(iarg0, farg1);
+		//! 20200526 mVDWebsocket->changeFloatValue(iarg0, farg1);
 		//mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOB, iarg0 - 41);
 	}
 	//if (iarg0 > 0 && iarg0 < 49) {
@@ -758,6 +830,6 @@ void VDRouter::colorWrite()
 	int a = (int)(mVDAnimation->getFloatUniformValueByIndex(4) * 255);
 	//sprintf(col, "#%02X%02X%02X", r, g, b);
 	sprintf(col, "{\"type\":\"action\", \"parameters\":{\"name\":\"FC\",\"parameters\":{\"color\":\"#%02X%02X%02X%02X\",\"fading\":\"NONE\"}}}", a, r, g, b);
-	mVDWebsocket->wsWrite(col);
+	//! 20200526 mVDWebsocket->wsWrite(col);
 #endif
 }
