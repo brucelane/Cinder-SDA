@@ -231,8 +231,8 @@ namespace videodromm {
 								}
 							}
 							else {
-								createFloatUniform(name, mVDAnimation->getUniformIndexForName(name), getIntUniformValueByName(name), mVDAnimation->getMinUniformValueByName(name), mVDAnimation->getMaxUniformValueByName(name));
-								mShader->uniform(name, getFloatUniformValueByName(name));
+								//createFloatUniform(name, mVDAnimation->getUniformIndexForName(name), getIntUniformValueByName(name), mVDAnimation->getMinUniformValueByName(name), mVDAnimation->getMaxUniformValueByName(name));
+								mShader->uniform(name, mVDUniform->getFloatUniformValueByName(name));
 							}
 						}
 						break;
@@ -277,8 +277,8 @@ namespace videodromm {
 							mShader->uniform(name, mVDAnimation->getIntUniformValueByName(name));
 						}
 						else {
-							createIntUniform(name, mVDAnimation->getUniformIndexForName(name), getIntUniformValueByName(name)); // get same index as vdanimation
-							mShader->uniform(name, getIntUniformValueByName(name));
+							//createIntUniform(name, mVDAnimation->getUniformIndexForName(name), getIntUniformValueByName(name)); // get same index as vdanimation
+							mShader->uniform(name, mVDUniform->getIntUniformValueByName(name));
 						}
 
 						break;
@@ -287,8 +287,8 @@ namespace videodromm {
 							mShader->uniform(name, mVDAnimation->getBoolUniformValueByName(name));
 						}
 						else {
-							createBoolUniform(name, mVDAnimation->getUniformIndexForName(name), getBoolUniformValueByName(name)); // get same index as vdanimation
-							mShader->uniform(name, getBoolUniformValueByName(name));
+							//createBoolUniform(name, mVDAnimation->getUniformIndexForName(name), getBoolUniformValueByName(name)); // get same index as vdanimation
+							mShader->uniform(name, mVDUniform->getBoolUniformValueByName(name));
 						}
 
 						break;

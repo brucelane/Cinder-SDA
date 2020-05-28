@@ -44,12 +44,6 @@ VDAnimation::VDAnimation(VDSettingsRef aVDSettings) {
 	mTimer.start();
 	startTime = currentTime = mTimer.getSeconds();
 
-	// textures
-	for (size_t i = 0; i < 30; i++)
-	{
-		createSampler2DUniform("iChannel" + toString(i), 300 + i, i);// TODO verify doesn't mess up type (uint!)
-	}
-	createSampler2DUniform("inputImage", 399, 0);// TODO verify doesn't mess up type (uint!)
 
 	// iRHandX  
 	//createFloatUniform("iRHandX", mVDSettings->IRHANDX, 320.0f, 0.0f, 1280.0f);
@@ -75,35 +69,35 @@ JsonTree VDAnimation::uniformToJson(int i)
 
 	JsonTree u = JsonTree::makeArray("uniform");
 	// common
-	int uniformType = shaderUniforms[i].uniformType;
+	int uniformType = mVDUniform->getUniformType(i);//  shaderUniforms[i].uniformType;
 	u.addChild(ci::JsonTree("type", uniformType));
-	u.addChild(ci::JsonTree("name", shaderUniforms[i].name));
+	u.addChild(ci::JsonTree("name", mVDUniform->getUniformName(i)));
 	u.addChild(ci::JsonTree("index", i));
 	// type specific 
 	switch (uniformType) {
 	case 0:
 		//float
-		u.addChild(ci::JsonTree("value", shaderUniforms[i].defaultValue));
-		u.addChild(ci::JsonTree("min", shaderUniforms[i].minValue));
-		u.addChild(ci::JsonTree("max", shaderUniforms[i].maxValue));
+		u.addChild(ci::JsonTree("value", mVDUniform->getUniformDefaultValue(i)));
+		u.addChild(ci::JsonTree("min", mVDUniform->getUniformMinValue(i)));
+		u.addChild(ci::JsonTree("max", mVDUniform->getUniformMaxValue(i)));
 		break;
 	case 1:
 		// sampler2d
-		u.addChild(ci::JsonTree("textureindex", shaderUniforms[i].textureIndex));
+		u.addChild(ci::JsonTree("textureindex", mVDUniform->getUniformTextureIndex(i)));
 		break;
 	case 4:
 		// vec4
-		svec4 << toString(shaderUniforms[i].vec4Value.x) << "," << toString(shaderUniforms[i].vec4Value.y);
-		svec4 << "," << toString(shaderUniforms[i].vec4Value.z) << "," << toString(shaderUniforms[i].vec4Value.w);
-		u.addChild(ci::JsonTree("value", svec4.str()));
+		//svec4 << toString(shaderUniforms[i].vec4Value.x) << "," << toString(shaderUniforms[i].vec4Value.y);
+		//svec4 << "," << toString(shaderUniforms[i].vec4Value.z) << "," << toString(shaderUniforms[i].vec4Value.w);
+		u.addChild(ci::JsonTree("value", mVDUniform->getUniformDefaultValue(i)));
 		break;
 	case 5:
 		// int
-		u.addChild(ci::JsonTree("value", shaderUniforms[i].intValue));
+		u.addChild(ci::JsonTree("value", mVDUniform->getUniformDefaultValue(i)));
 		break;
 	case 6:
 		// boolean
-		u.addChild(ci::JsonTree("value", shaderUniforms[i].boolValue));
+		u.addChild(ci::JsonTree("value", mVDUniform->getUniformDefaultValue(i)));
 		break;
 	default:
 		break;
@@ -139,7 +133,7 @@ void VDAnimation::saveUniforms()
 	//CI_LOG_W("hasFloatChanged, getUniformNameForIndex(aIndex):" + toString(getUniformNameForIndex(aIndex)));
 	}
 	return (shaderUniforms[getUniformNameForIndex(aIndex)].floatValue != controlValues[aIndex]);
-	}*/
+	}
 bool VDAnimation::toggleValue(unsigned int aIndex) {
 	shaderUniforms[aIndex].boolValue = !shaderUniforms[aIndex].boolValue;
 	return shaderUniforms[aIndex].boolValue;
@@ -173,40 +167,10 @@ void VDAnimation::resetAutoAnimation(unsigned int aIndex) {
 	shaderUniforms[aIndex].floatValue = shaderUniforms[aIndex].defaultValue;
 }
 
-bool VDAnimation::setFloatUniformValueByIndex(unsigned int aIndex, float aValue) {
-	bool rtn = false;
-	// we can't change TIME at index 0
-	if (aIndex > 0) {
-		/*if (aIndex == 31) {
-			CI_LOG_V("old value " + toString(shaderUniforms[getUniformNameForIndex(aIndex)].floatValue) + " newvalue " + toString(aValue));
-		}*/
-		//string uniformName = getUniformNameForIndex(aIndex);
-		if (shaderUniforms[aIndex].floatValue != aValue) {
-			if ((aValue >= shaderUniforms[aIndex].minValue && aValue <= shaderUniforms[aIndex].maxValue) || shaderUniforms[aIndex].autobass || shaderUniforms[aIndex].automid || shaderUniforms[aIndex].autotreble) {
-				shaderUniforms[aIndex].floatValue = aValue;
-				rtn = true;
-			}
-		}
-		// not all controls are from 0.0 to 1.0
-		/* not working float lerpValue = lerp<float, float>(shaderUniforms[getUniformNameForIndex(aIndex)].minValue, shaderUniforms[getUniformNameForIndex(aIndex)].maxValue, aValue);
-		if (shaderUniforms[getUniformNameForIndex(aIndex)].floatValue != lerpValue) {
-			shaderUniforms[getUniformNameForIndex(aIndex)].floatValue = lerpValue;
-			rtn = true;
-		}*/
-	}
-	else {
-		// no max 
-		if (aIndex == 0) { shaderUniforms[aIndex].floatValue = aValue; }
-	}
-	return rtn;
-}
-/*
 bool VDAnimation::isExistingUniform(const string& aName) {
 	return shaderUniforms[stringToIndex(aName)].isValid;
-}*/
-int VDAnimation::getUniformType(const string& aName) {
-	return shaderUniforms[stringToIndex(aName)].uniformType;
 }
+*/
 void VDAnimation::load() {
 	// Create json file if it doesn't already exist.
 /*#if defined( CINDER_MSW )
@@ -466,7 +430,7 @@ void VDAnimation::update() {
 	else {
 		// duration = 0.2
 		//timeline().apply(&mVDSettings->iBadTv, 60.0f, 0.0f, 0.2f, EaseInCubic());
-		shaderUniforms[mVDSettings->IBADTV].floatValue = 5.0f;
+		mVDUniform->setFloatUniformValueByIndex(mVDSettings->IBADTV, 5.0f);
 	}
 
 	mVDSettings->iChannelTime[0] = getElapsedSeconds();
@@ -477,7 +441,8 @@ void VDAnimation::update() {
 	if (mUseTimeWithTempo)
 	{
 		// Ableton Link from openframeworks websockets
-		shaderUniforms[mVDSettings->ITIME].floatValue = shaderUniforms[mVDSettings->ITIME].floatValue * mVDSettings->iSpeedMultiplier * shaderUniforms[mVDSettings->ITIMEFACTOR].floatValue;
+		mVDUniform->setFloatUniformValueByIndex(mVDSettings->ITIME, 
+			mVDUniform->getFloatUniformValueByIndex(mVDSettings->ITIME) * mVDSettings->iSpeedMultiplier * mVDUniform->getFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR));
 		//shaderUniforms["iElapsed"].floatValue = shaderUniforms["iPhase"].floatValue * mVDSettings->iSpeedMultiplier * shaderUniforms["iTimeFactor"].floatValue;
 		// sos
 		// IBARBEAT = IBAR * 4 + IBEAT
@@ -493,18 +458,22 @@ void VDAnimation::update() {
 	}
 	else
 	{
-		shaderUniforms[mVDSettings->ITIME].floatValue = getElapsedSeconds() * mVDSettings->iSpeedMultiplier * shaderUniforms[mVDSettings->ITIMEFACTOR].floatValue;//mVDSettings->iTimeFactor;
+		mVDUniform->setFloatUniformValueByIndex(mVDSettings->ITIME,
+			getElapsedSeconds() * mVDSettings->iSpeedMultiplier * mVDUniform->getFloatUniformValueByIndex(mVDSettings->ITIMEFACTOR));
+
+		//shaderUniforms[mVDSettings->ITIME].floatValue = getElapsedSeconds() * mVDSettings->iSpeedMultiplier * shaderUniforms[mVDSettings->ITIMEFACTOR].floatValue;//mVDSettings->iTimeFactor;
 		//shaderUniforms["iElapsed"].floatValue = getElapsedSeconds() * mVDSettings->iSpeedMultiplier * shaderUniforms["iTimeFactor"].floatValue;//mVDSettings->iTimeFactor;
 	}
 	// iResolution
-	shaderUniforms[mVDSettings->IRESOLUTION].vec3Value = vec3(getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY), 1.0);
-	shaderUniforms[mVDSettings->RESOLUTION].vec2Value = vec2(getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY));
-	shaderUniforms[mVDSettings->RENDERSIZE].vec2Value = vec2(getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY));
-
+	mVDUniform->setVec3UniformValueByIndex(mVDSettings->IRESOLUTION, vec3(getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY), 1.0));
+	mVDUniform->setVec2UniformValueByIndex(mVDSettings->RESOLUTION, vec2(getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY)));
+	mVDUniform->setVec2UniformValueByIndex(mVDSettings->RENDERSIZE, vec2(getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONX), getFloatUniformValueByIndex(mVDSettings->IRESOLUTIONY)));	
+	
 	// iDate
 	time_t now = time(0);
 	tm *   t = gmtime(&now);
-	shaderUniforms[mVDSettings->IDATE].vec4Value = vec4(float(t->tm_year + 1900), float(t->tm_mon + 1), float(t->tm_mday), float(t->tm_hour * 3600 + t->tm_min * 60 + t->tm_sec));
+	mVDUniform->setVec4UniformValueByIndex(mVDSettings->IDATE,
+		vec4(float(t->tm_year + 1900), float(t->tm_mon + 1), float(t->tm_mday), float(t->tm_hour * 3600 + t->tm_min * 60 + t->tm_sec)));
 
 #pragma region animation
 
@@ -514,8 +483,9 @@ void VDAnimation::update() {
 
 	int time = (currentTime - startTime)*1000000.0;
 
-	int elapsed = shaderUniforms[mVDSettings->IDELTATIME].floatValue * 1000000.0;
-	int elapsedBeatPerBar = shaderUniforms[mVDSettings->IDELTATIME].floatValue / (shaderUniforms[mVDSettings->IBEATSPERBAR].intValue + 1)*1000000.0;
+	int elapsed = mVDUniform->getFloatUniformValueByIndex( mVDSettings->IDELTATIME) * 1000000.0;
+	int elapsedBeatPerBar = mVDUniform->getFloatUniformValueByIndex(mVDSettings->IDELTATIME) / 
+		(mVDUniform->getFloatUniformValueByIndex(mVDSettings->IBEATSPERBAR) + 1)*1000000.0;
 	/*if (elapsedBeatPerBar > 0)
 	{
 		double moduloBeatPerBar = (time % elapsedBeatPerBar) / 1000000.0;
@@ -530,7 +500,7 @@ void VDAnimation::update() {
 	if (elapsed > 0)
 	{
 		double modulo = (time % elapsed) / 1000000.0;
-		shaderUniforms[mVDSettings->ITEMPOTIME].floatValue = (float)abs(modulo);
+		mVDUniform->setFloatUniformValueByIndex(mVDSettings->ITEMPOTIME, (float)abs(modulo));
 
 		/* not used shaderUniforms["iDeltaTime"].floatValue = (float)abs(modulo);
 		if (shaderUniforms["iTempoTime"].floatValue < previousTime)
@@ -538,10 +508,10 @@ void VDAnimation::update() {
 			//iBar++;
 			//if (mAutoBeatAnimation) mVDSettings->iPhase++;
 		}*/
-		previousTime = shaderUniforms[mVDSettings->ITEMPOTIME].floatValue;
+		previousTime = mVDUniform->getFloatUniformValueByIndex(mVDSettings->ITEMPOTIME);
 
 		// TODO (modulo < 0.1) ? tempoMvg->setNameColor(ColorA::white()) : tempoMvg->setNameColor(UIController::DEFAULT_NAME_COLOR);
-		for (unsigned int anim = 1; anim < 29; anim++)
+		/*for (unsigned int anim = 1; anim < 29; anim++)
 		{
 			if (shaderUniforms[anim].autotime)
 			{
@@ -571,28 +541,31 @@ void VDAnimation::update() {
 					}
 				}
 			}
-		}
+		}*/
 
 		// foreground color vec3 update
-		shaderUniforms[mVDSettings->ICOLOR].vec3Value = vec3(shaderUniforms[mVDSettings->IFR].floatValue, shaderUniforms[mVDSettings->IFG].floatValue, shaderUniforms[mVDSettings->IFB].floatValue);
+		mVDUniform->setVec3UniformValueByIndex(mVDSettings->ICOLOR, vec3(getFloatUniformValueByIndex(mVDSettings->IFR), getFloatUniformValueByIndex(mVDSettings->IFG), getFloatUniformValueByIndex(mVDSettings->IFB)));
+
 		// background color vec3 update
-		shaderUniforms[mVDSettings->IBACKGROUNDCOLOR].vec3Value = vec3(shaderUniforms[mVDSettings->IBR].floatValue, shaderUniforms[mVDSettings->IBG].floatValue, shaderUniforms[mVDSettings->IBB].floatValue);
+		mVDUniform->setVec3UniformValueByIndex(mVDSettings->IBACKGROUNDCOLOR, vec3(getFloatUniformValueByIndex(mVDSettings->IBR), getFloatUniformValueByIndex(mVDSettings->IBG), getFloatUniformValueByIndex(mVDSettings->IBB)));
+
 		// mouse vec4 update
-		shaderUniforms[mVDSettings->IMOUSE].vec4Value = vec4(shaderUniforms[mVDSettings->IMOUSEX].floatValue, shaderUniforms[mVDSettings->IMOUSEY].floatValue, shaderUniforms[mVDSettings->IMOUSEZ].floatValue, 0.0f);
+		mVDUniform->setVec4UniformValueByIndex(mVDSettings->IMOUSE, vec4(getFloatUniformValueByIndex(mVDSettings->IMOUSEX), getFloatUniformValueByIndex(mVDSettings->IMOUSEY), getFloatUniformValueByIndex(mVDSettings->IMOUSEZ), 0.0f));
+
 		// TODO migrate:
 		if (mVDSettings->autoInvert)
 		{
 			setBoolUniformValueByIndex(mVDSettings->IINVERT, (modulo < 0.1) ? 1.0 : 0.0);
 		}
 
-		if (mVDSettings->tEyePointZ)
+		/*if (mVDSettings->tEyePointZ)
 		{
 			mVDSettings->mCamEyePointZ = (modulo < 0.1) ? mVDSettings->minEyePointZ : mVDSettings->maxEyePointZ;
 		}
 		else
 		{
 			mVDSettings->mCamEyePointZ = mVDSettings->autoEyePointZ ? lmap<float>(shaderUniforms[mVDSettings->ITEMPOTIME].floatValue, 0.00001, getFloatUniformValueByIndex(mVDSettings->IDELTATIME), mVDSettings->minEyePointZ, mVDSettings->maxEyePointZ) : mVDSettings->mCamEyePointZ;
-		}
+		}*/
 
 	}
 #pragma endregion animation

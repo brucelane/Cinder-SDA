@@ -317,69 +317,69 @@ bool VDShader::setFragmentString(const string& aFragmentShaderString, const stri
 				"			]\n"
 				"		}\n";
 			auto &uniforms = mShader->getActiveUniforms();
-			string uniformnName;
+			string uniformName;
 			for (const auto &uniform : uniforms) {
-				uniformnName = uniform.getName();
-				CI_LOG_V(mName + ", uniform name:" + uniformnName);
+				uniformName = uniform.getName();
+				CI_LOG_V(mName + ", uniform name:" + uniformName);
 				// if uniform is handled
-				if (mVDAnimation->isExistingUniform(uniformnName)) {
-					int uniformType = mVDAnimation->getUniformType(uniformnName);
+				if (mVDAnimation->isExistingUniform(uniformName)) {
+					int uniformType = mVDAnimation->getUniformType(uniformName);
 					switch (uniformType)
 					{
 					case 0:
 						// float
-						mShader->uniform(uniformnName, mVDAnimation->getFloatUniformValueByName(uniformnName));
-						mCurrentUniformsString += "uniform float " + uniformnName + "; // " + toString(mVDAnimation->getFloatUniformValueByName(uniformnName)) + "\n";
-						if (uniformnName != "TIME") {
+						mShader->uniform(uniformName, mVDAnimation->getFloatUniformValueByName(uniformName));
+						mCurrentUniformsString += "uniform float " + uniformName + "; // " + toString(mVDAnimation->getFloatUniformValueByName(uniformName)) + "\n";
+						if (uniformName != "TIME") {
 							mISFUniforms += ",\n"
 								"		{\n"
-								"			\"NAME\": \"" + uniformnName + "\", \n"
+								"			\"NAME\": \"" + uniformName + "\", \n"
 								"			\"TYPE\" : \"float\", \n"
-								"			\"MIN\" : " + toString(mVDAnimation->getMinUniformValueByName(uniformnName)) + ",\n"
-								"			\"MAX\" : " + toString(mVDAnimation->getMaxUniformValueByName(uniformnName)) + ",\n"
-								"			\"DEFAULT\" : " + toString(mVDAnimation->getFloatUniformValueByName(uniformnName)) + "\n"
+								"			\"MIN\" : " + toString(mVDAnimation->getMinUniformValueByName(uniformName)) + ",\n"
+								"			\"MAX\" : " + toString(mVDAnimation->getMaxUniformValueByName(uniformName)) + ",\n"
+								"			\"DEFAULT\" : " + toString(mVDAnimation->getFloatUniformValueByName(uniformName)) + "\n"
 								"		}\n";
 						}
 						break;
 					case 1:
 						// sampler2D
-						mShader->uniform(uniformnName, mVDAnimation->getSampler2DUniformValueByName(uniformnName));
-						mCurrentUniformsString += "uniform sampler2D " + uniformnName + "; // " + toString(mVDAnimation->getSampler2DUniformValueByName(uniformnName)) + "\n";
+						mShader->uniform(uniformName, mVDAnimation->getSampler2DUniformValueByName(uniformName));
+						mCurrentUniformsString += "uniform sampler2D " + uniformName + "; // " + toString(mVDAnimation->getSampler2DUniformValueByName(uniformName)) + "\n";
 						break;
 					case 2:
 						// vec2 IRESOLUTION IRESOLUTIONX IRESOLUTIONY
-						mShader->uniform(uniformnName, mVDAnimation->getVec2UniformValueByName(uniformnName));
-						//mShader->uniform(uniformnName + "x", mVDAnimation->getFloatUniformValueByName(uniformnName + "x"),
-						//	mVDAnimation->getFloatUniformValueByName(uniformnName + "y")));
-						mCurrentUniformsString += "uniform vec2 " + uniformnName + "; // " + toString(mVDAnimation->getVec2UniformValueByName(uniformnName)) + "\n";
+						mShader->uniform(uniformName, mVDAnimation->getVec2UniformValueByName(uniformName));
+						//mShader->uniform(uniformName + "x", mVDAnimation->getFloatUniformValueByName(uniformName + "x"),
+						//	mVDAnimation->getFloatUniformValueByName(uniformName + "y")));
+						mCurrentUniformsString += "uniform vec2 " + uniformName + "; // " + toString(mVDAnimation->getVec2UniformValueByName(uniformName)) + "\n";
 						break;
 					case 3:
 						// vec3
-						mShader->uniform(uniformnName, mVDAnimation->getVec3UniformValueByName(uniformnName));
-						mCurrentUniformsString += "uniform vec3 " + uniformnName + "; // " + toString(mVDAnimation->getVec3UniformValueByName(uniformnName)) + "\n";
+						mShader->uniform(uniformName, mVDAnimation->getVec3UniformValueByName(uniformName));
+						mCurrentUniformsString += "uniform vec3 " + uniformName + "; // " + toString(mVDAnimation->getVec3UniformValueByName(uniformName)) + "\n";
 						break;
 					case 4:
 						// vec4
-						mShader->uniform(uniformnName, mVDAnimation->getVec4UniformValueByName(uniformnName));
-						mCurrentUniformsString += "uniform vec4 " + uniformnName + "; // " + toString(mVDAnimation->getVec4UniformValueByName(uniformnName)) + "\n";
+						mShader->uniform(uniformName, mVDAnimation->getVec4UniformValueByName(uniformName));
+						mCurrentUniformsString += "uniform vec4 " + uniformName + "; // " + toString(mVDAnimation->getVec4UniformValueByName(uniformName)) + "\n";
 						break;
 					case 5:
 						// int
-						mShader->uniform(uniformnName, mVDAnimation->getIntUniformValueByName(uniformnName));
-						mCurrentUniformsString += "uniform int " + uniformnName + "; // " + toString(mVDAnimation->getIntUniformValueByName(uniformnName)) + "\n";
+						mShader->uniform(uniformName, mVDAnimation->getIntUniformValueByName(uniformName));
+						mCurrentUniformsString += "uniform int " + uniformName + "; // " + toString(mVDAnimation->getIntUniformValueByName(uniformName)) + "\n";
 						break;
 					case 6:
 						// bool
-						mShader->uniform(uniformnName, mVDAnimation->getBoolUniformValueByName(uniformnName));
-						mCurrentUniformsString += "uniform bool " + uniformnName + "; // " + toString(mVDAnimation->getBoolUniformValueByName(uniformnName)) + "\n";
+						mShader->uniform(uniformName, mVDAnimation->getBoolUniformValueByName(uniformName));
+						mCurrentUniformsString += "uniform bool " + uniformName + "; // " + toString(mVDAnimation->getBoolUniformValueByName(uniformName)) + "\n";
 						break;
 					default:
 						break;
 					}
 				}
 				else {
-					if (uniformnName != "ciModelViewProjection") {
-						mNotFoundUniformsString += "not found " + uniformnName + "\n";
+					if (uniformName != "ciModelViewProjection") {
+						mNotFoundUniformsString += "not found " + uniformName + "\n";
 					}
 				}
 			}

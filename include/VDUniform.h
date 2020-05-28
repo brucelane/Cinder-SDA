@@ -13,8 +13,6 @@ using namespace std;
 
 namespace videodromm
 {
-	// stores the pointer to the VDUniform instance
-	typedef std::shared_ptr<class VDUniform> VDUniformRef;
 
 	//enum class UniformTypes { FLOAT, SAMPLER2D, VEC2, VEC3, VEC4, INT, BOOL };
 	// cinder::gl::GlslProg::Uniform
@@ -43,6 +41,9 @@ namespace videodromm
 		//bool							isValid;
 	};
 
+	// stores the pointer to the VDUniform instance
+	typedef std::shared_ptr<class VDUniform> VDUniformRef;
+
 	class VDUniform {
 	public:
 		VDUniform(VDSettingsRef aVDSettings);
@@ -50,6 +51,52 @@ namespace videodromm
 		static VDUniformRef				create(VDSettingsRef aVDSettings)
 		{
 			return shared_ptr<VDUniform>(new VDUniform(aVDSettings));
+		}
+		int								getUniformType(unsigned int aIndex) {
+			return shaderUniforms[aIndex].uniformType;
+		}
+		string							getUniformName(unsigned int aIndex) {
+			return shaderUniforms[aIndex].name;
+		}
+		float							getUniformDefaultValue(unsigned int aIndex) {
+			return shaderUniforms[aIndex].defaultValue;
+		}
+		float							getUniformMinValue(unsigned int aIndex) {
+			return shaderUniforms[aIndex].minValue;
+		}
+		float							getUniformMaxValue(unsigned int aIndex) {
+			return shaderUniforms[aIndex].maxValue;
+		}
+		int								getUniformTextureIndex(unsigned int aIndex) {
+			return shaderUniforms[aIndex].textureIndex;
+		}
+
+		bool setFloatUniformValueByIndex(unsigned int aIndex, float aValue) {
+			bool rtn = false;
+			// we can't change TIME at index 0
+			if (aIndex > 0) {
+				/*if (aIndex == 31) {
+					CI_LOG_V("old value " + toString(shaderUniforms[getUniformNameForIndex(aIndex)].floatValue) + " newvalue " + toString(aValue));
+				}*/
+				//string uniformName = getUniformNameForIndex(aIndex);
+				if (shaderUniforms[aIndex].floatValue != aValue) {
+					if ((aValue >= shaderUniforms[aIndex].minValue && aValue <= shaderUniforms[aIndex].maxValue) || shaderUniforms[aIndex].autobass || shaderUniforms[aIndex].automid || shaderUniforms[aIndex].autotreble) {
+						shaderUniforms[aIndex].floatValue = aValue;
+						rtn = true;
+					}
+				}
+				// not all controls are from 0.0 to 1.0
+				/* not working float lerpValue = lerp<float, float>(shaderUniforms[getUniformNameForIndex(aIndex)].minValue, shaderUniforms[getUniformNameForIndex(aIndex)].maxValue, aValue);
+				if (shaderUniforms[getUniformNameForIndex(aIndex)].floatValue != lerpValue) {
+					shaderUniforms[getUniformNameForIndex(aIndex)].floatValue = lerpValue;
+					rtn = true;
+				}*/
+			}
+			else {
+				// no max 
+				shaderUniforms[aIndex].floatValue = aValue;
+			}
+			return rtn;
 		}
 		int								getUniformIndexForName(const string& aName) {
 			return shaderUniforms[stringToIndex(aName)].index;
@@ -221,7 +268,7 @@ namespace videodromm
 				//shaderUniforms[aCtrlIndex].isValid = true;
 			}
 		}
-		void createSampler2DUniform(const string& aName, int aCtrlIndex, int aTextureIndex) {
+		void createSampler2DUniform(const string& aName, int aCtrlIndex, int aTextureIndex = 0) {
 			shaderUniforms[aCtrlIndex].name = aName;
 			shaderUniforms[aCtrlIndex].textureIndex = aTextureIndex;
 			shaderUniforms[aCtrlIndex].index = aCtrlIndex;

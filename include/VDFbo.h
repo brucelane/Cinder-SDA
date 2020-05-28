@@ -23,6 +23,8 @@
 #include "VDShader.h"
 // textures
 #include "VDTexture.h"
+//!  Uniforms
+#include "VDUniform.h"
 // video
 //#include "ciWMFVideoPlayer.h"
 
@@ -91,80 +93,15 @@ namespace videodromm
 		void									toggleGlobal() {
 			mGlobal = !mGlobal;
 		};
-		string									getUniformNameForIndex(int aIndex) {
-			return controlIndexes[aIndex];
-		};
-		int										getUniformIndexForName(const string& aName) {
-			return shaderUniforms[aName].index;
-		};
-		// bool
-		bool									getBoolUniformValueByIndex(unsigned int aIndex) {
-			//131 mVDSettings->IFLIPH
-			//132 mVDSettings->IFLIPV
-			return shaderUniforms[getUniformNameForIndex(aIndex)].boolValue;
-		};
-		bool									getBoolUniformValueByName(const string& aName) {
-			return shaderUniforms[aName].boolValue;
-		}
-		bool									toggleValue(unsigned int aIndex) {
-			shaderUniforms[getUniformNameForIndex(aIndex)].boolValue = !shaderUniforms[getUniformNameForIndex(aIndex)].boolValue;
-			return shaderUniforms[getUniformNameForIndex(aIndex)].boolValue;
-		};
-		// int
-		int										getIntUniformValueByName(const string& aName) {
-			return shaderUniforms[aName].intValue;
-		};
-		int										getIntUniformValueByIndex(unsigned int aIndex) {
-			return shaderUniforms[getUniformNameForIndex(aIndex)].intValue;
-		};
-		float									getFloatUniformValueByName(const string& aName) {
-			if (aName.length() > 0) {
-				return shaderUniforms[aName].floatValue;
-			}
-			else {
-				CI_LOG_V("getFloatUniformValueByName name empty");
-				return 1.0f;
-			}
-		}
-		int										getFloatUniformValueByIndex(unsigned int aIndex) {
-			return shaderUniforms[getUniformNameForIndex(aIndex)].floatValue;
-		};
-		bool									setFloatUniformValueByIndex(unsigned int aIndex, float aValue) {
-			bool rtn = false;
-			// we can't change TIME at index 0
-			if (aIndex > 0) {
-				/*if (aIndex == 31) {
-					CI_LOG_V("old value " + toString(shaderUniforms[getUniformNameForIndex(aIndex)].floatValue) + " newvalue " + toString(aValue));
-				}*/
-				float f = shaderUniforms[getUniformNameForIndex(aIndex)].floatValue;
-				if (aIndex == 41 && aValue > 0.0F) {
-					CI_LOG_V(f);
-				}
-				string uniformName = getUniformNameForIndex(aIndex);
-				if (shaderUniforms[uniformName].floatValue != aValue) {
-					if ((aValue >= shaderUniforms[uniformName].minValue && aValue <= shaderUniforms[uniformName].maxValue) || shaderUniforms[uniformName].autobass || shaderUniforms[uniformName].automid || shaderUniforms[uniformName].autotreble) {
-						shaderUniforms[uniformName].floatValue = aValue;
-						rtn = true;
-					}
-				}
-				// not all controls are from 0.0 to 1.0
-				/* not working float lerpValue = lerp<float, float>(shaderUniforms[getUniformNameForIndex(aIndex)].minValue, shaderUniforms[getUniformNameForIndex(aIndex)].maxValue, aValue);
-				if (shaderUniforms[getUniformNameForIndex(aIndex)].floatValue != lerpValue) {
-					shaderUniforms[getUniformNameForIndex(aIndex)].floatValue = lerpValue;
-					rtn = true;
-				}*/
-			}
-			else {
-				// no max 
-				if (aIndex == 0) shaderUniforms[getUniformNameForIndex(aIndex)].floatValue = aValue;
-			}
-			return rtn;
-		}
+		
+		
 	private:
 		// Settings
 		VDSettingsRef					mVDSettings;
 		// Animation
 		VDAnimationRef					mVDAnimation;
+		// uniforms
+		VDUniformRef					mVDUniform;
 		//! Input textures
 		VDTextureList					mTextureList;
 		unsigned int					mInputTextureIndex;
@@ -209,37 +146,8 @@ namespace videodromm
 		bool							isReady;
 		ci::gl::Texture2dRef			mRenderedTexture;
 		ci::gl::Texture2dRef			getFboTexture();
-		// uniforms
-		//map<int, string>				controlIndexes;
-		//map<string, VDUniform>			shaderUniforms;
-		void							createBoolUniform(const string& aName, int aCtrlIndex, bool aValue = false) {
-			controlIndexes[aCtrlIndex] = aName;
-			shaderUniforms[aName].boolValue = aValue;
-			shaderUniforms[aName].index = aCtrlIndex;
-			shaderUniforms[aName].uniformType = GL_BOOL;
-		}
-		void							createIntUniform(const string& aName, int aCtrlIndex, int aValue = 1) {
-			controlIndexes[aCtrlIndex] = aName;
-			shaderUniforms[aName].index = aCtrlIndex;
-			shaderUniforms[aName].uniformType = 5;
-			//shaderUniforms[aName].isValid = true;
-			shaderUniforms[aName].intValue = aValue;
-		};
-		void							createFloatUniform(const string& aName, int aCtrlIndex, float aValue, float aMin, float aMax) {
-			controlIndexes[aCtrlIndex] = aName;
-			shaderUniforms[aName].minValue = aMin;
-			shaderUniforms[aName].maxValue = aMax;
-			shaderUniforms[aName].defaultValue = aValue;
-			shaderUniforms[aName].boolValue = false;
-			shaderUniforms[aName].autotime = false;
-			shaderUniforms[aName].automatic = false;
-			shaderUniforms[aName].autobass = false;
-			shaderUniforms[aName].automid = false;
-			shaderUniforms[aName].autotreble = false;
-			shaderUniforms[aName].index = aCtrlIndex;
-			shaderUniforms[aName].floatValue = aValue;
-			shaderUniforms[aName].uniformType = GL_FLOAT;
-			//shaderUniforms[aName].isValid = true;
-		}
+
+		
+		
 	};
 }

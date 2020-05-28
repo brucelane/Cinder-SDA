@@ -356,7 +356,7 @@ namespace videodromm {
 		};
 
 		// fbo 
-		bool							getFboBoolUniformValueByIndex(unsigned int aCtrl, unsigned int aFboIndex) {
+		/*bool							getFboBoolUniformValueByIndex(unsigned int aCtrl, unsigned int aFboIndex) {
 			return mVDMix->getFboBoolUniformValueByIndex(aCtrl, aFboIndex);
 		};
 
@@ -372,7 +372,7 @@ namespace videodromm {
 		};
 		bool							setFboFloatUniformValueByIndex(unsigned int aCtrl, unsigned int aFboIndex, float aValue) {
 			return mVDMix->setFboFloatUniformValueByIndex(aCtrl, aFboIndex, aValue);
-		};
+		};*/
 		bool									getGlobal(unsigned int aFboIndex) {
 			return mVDMix->getGlobal(aFboIndex);
 		};

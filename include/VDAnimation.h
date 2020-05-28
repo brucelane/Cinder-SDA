@@ -127,23 +127,28 @@ namespace videodromm
 
 		// shaders
 		//bool							isExistingUniform(const string& aName);
-		int								getUniformType(const string& aName);
-
-		/*string							getUniformNameForIndex(int aIndex) {
+		//int								getUniformType(const string& aName);
+		/*int VDAnimation::getUniformType(const string& aName) {
+			return shaderUniforms[stringToIndex(aName)].uniformType;
+			mVDUniform->
+		}
+		string							getUniformNameForIndex(int aIndex) {
 			return shaderUniforms[aIndex].name; //controlIndexes[aIndex];
 		};*/
 		int								getUniformIndexForName(const string& aName) {
 			return mVDUniform->getUniformIndexForName(aName);
 			//return shaderUniforms[stringToIndex(aName)].index;
 		};
-		bool							toggleAuto(unsigned int aIndex);
+		/*bool							toggleAuto(unsigned int aIndex);
 		bool							toggleValue(unsigned int aIndex);
 		bool							toggleTempo(unsigned int aIndex);
 		bool							toggleBass(unsigned int aIndex);
 		bool							toggleMid(unsigned int aIndex);
 		bool							toggleTreble(unsigned int aIndex);
-		void							resetAutoAnimation(unsigned int aIndex);
-		bool							setFloatUniformValueByIndex(unsigned int aIndex, float aValue);
+		void							resetAutoAnimation(unsigned int aIndex);*/
+		bool							setFloatUniformValueByIndex(unsigned int aIndex, float aValue) {
+			return mVDUniform->setFloatUniformValueByIndex(aIndex, aValue);
+		}
 
 		bool							setBoolUniformValueByIndex(unsigned int aIndex, bool aValue) {
 			return mVDUniform->setBoolUniformValueByIndex(aIndex, aValue);
@@ -247,8 +252,8 @@ namespace videodromm
 		void							setFreqIndex(unsigned int aFreqIndex, unsigned int aFreq) { freqIndexes[aFreqIndex] = aFreq; };
 		//float							getFreq(unsigned int aFreqIndex) { return iFreqs[freqIndexes[aFreqIndex]]; };
 		// public for hydra
-		void							createFloatUniform(const string& aName, int aCtrlIndex, float aValue = 0.01f, float aMin = 0.0f, float aMax = 1.0f);
-		void							createSampler2DUniform(const string& aName, int aCtrlIndex, int aTextureIndex = 0);
+		//void							createFloatUniform(const string& aName, int aCtrlIndex, float aValue = 0.01f, float aMin = 0.0f, float aMax = 1.0f);
+		//void							createSampler2DUniform(const string& aName, int aCtrlIndex, int aTextureIndex = 0);
 	private:
 		// Settings
 		VDSettingsRef					mVDSettings;
