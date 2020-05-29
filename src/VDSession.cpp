@@ -72,14 +72,10 @@ VDSession::VDSession(VDSettingsRef aVDSettings)
 	//! 20200526 mVDWebsocket = VDWebsocket::create(mVDSettings, mVDAnimation);
 	// Message router
 	//mVDRouter = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->addShader(0,6)->getInstance();
-	VDRouterBuilderRef builder = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->addShader(0, 6);
-	
+	VDRouterBuilderRef builder = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->setWarpBFboIndex(0, 1);	
 	//Attente d'une récupération de données via socket io
-
-	builder->setWarpAFboIndex(1, 1)->addShader(1,5);
-
+	builder->setWarpAFboIndex(1, 1)->setWarpBFboIndex(1,0);
 	//Attente d'une autre autre récupération de données via socket io
-
 	builder->setWarpAFboIndex(0, 0);
 
 	mVDRouter = builder->getInstance();
