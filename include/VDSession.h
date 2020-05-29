@@ -19,6 +19,8 @@
 #include "VDUtils.h"
 // Message router
 #include "VDRouter.h"
+// Builder
+#include "VDFactory.h"
 // Websocket
 //! 20200526 #include "VDWebsocket.h"
 // Animation

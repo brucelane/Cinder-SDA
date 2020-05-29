@@ -60,10 +60,10 @@ namespace videodromm
 	class VDRouter {
 	public:
 		VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
-		static VDRouterRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
+		/*static VDRouterRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 		{
 			return shared_ptr<VDRouter>(new VDRouter(aVDSettings, aVDAnimation));
-		}
+		}*/
 		//void						update();
 		void						shutdown();
 		// messages

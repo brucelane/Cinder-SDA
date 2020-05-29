@@ -161,11 +161,26 @@ namespace videodromm
 				int dotIndex = texFileOrPath.filename().string().find_last_of(".");
 				if (dotIndex != std::string::npos)  ext = texFileOrPath.filename().string().substr(dotIndex + 1);
 				if (ext == "jpg" || ext == "png") {
-					ci::gl::Texture2dRef mTexture = gl::Texture::create(loadImage(texFileOrPath), gl::Texture2d::Format().loadTopDown().mipmap(true).minFilter(GL_LINEAR_MIPMAP_LINEAR));
-					mFboList[rtn]->setImageInputTexture(mTexture, texFileOrPath.filename().string());
+					if (rtn == -1 || mFboList.size() < 1) {
+						// no fbos, create one
+						JsonTree		json;
+						JsonTree shader = ci::JsonTree::makeArray("shader");
+						shader.addChild(ci::JsonTree("shadername", "inputImage.fs"));
+						shader.pushBack(ci::JsonTree("shadertype", "fs"));						
+						json.addChild(shader);
+						JsonTree texture = ci::JsonTree::makeArray("texture");
+						texture.addChild(ci::JsonTree("texturename", texFileOrPath.filename().string()));
+						texture.pushBack(ci::JsonTree("texturetype", "image"));
+						json.addChild(texture);
+						
+						createFboShaderTexture(json);
+					}
+					else {
+						ci::gl::Texture2dRef mTexture = gl::Texture::create(loadImage(texFileOrPath), gl::Texture2d::Format().loadTopDown().mipmap(true).minFilter(GL_LINEAR_MIPMAP_LINEAR));
+						mFboList[rtn]->setImageInputTexture(mTexture, texFileOrPath.filename().string());
+					}					
 				}
-			}
-			
+			}			
 		}
 		unsigned int									createFboShaderTexture(const JsonTree &json, unsigned int aFboIndex = 0) {
 			unsigned int rtn = 0;

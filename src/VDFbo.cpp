@@ -7,6 +7,7 @@ namespace videodromm {
 		CI_LOG_V("VDFbo constructor");
 		mVDSettings = aVDSettings;
 		mVDAnimation = aVDAnimation;
+		mVDUniform = VDUniform::create(mVDSettings);
 		string shaderFileName = "inputImage.fs";
 		mShaderName = mShaderFileName;
 		string shaderType = "fs";
@@ -209,8 +210,8 @@ namespace videodromm {
 			}
 			string name;
 			string texName;
-			int texNameEndIndex;
-			int texIndex;
+			int texNameEndIndex = 0;
+			int texIndex = 0;
 			int channelIndex = 0;
 			mUniforms = mShader->getActiveUniforms();
 			for (const auto &uniform : mUniforms) {

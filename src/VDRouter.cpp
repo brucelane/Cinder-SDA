@@ -781,6 +781,8 @@ void VDRouter::updateParams(int iarg0, float farg1) {
 	if (iarg0 > 0 && iarg0 < 9) {
 		// sliders 
 		//! 20200526 mVDWebsocket->changeFloatValue(iarg0, farg1);
+		
+		mVDAnimation->setUniformValue(iarg0, farg1);
 	}
 	if (iarg0 > 10 && iarg0 < 19) {
 		// rotary 

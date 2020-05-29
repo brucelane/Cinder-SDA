@@ -57,7 +57,7 @@ namespace videodromm
 		}
 		int								getUniformTypeByName(const string& aName) {
 			return shaderUniforms[stringToIndex(aName)].uniformType;
-		}		
+		}
 		string							getUniformName(unsigned int aIndex) {
 			return shaderUniforms[aIndex].name;
 		}
@@ -145,8 +145,8 @@ namespace videodromm
 		}
 		void setVec2UniformValueByIndex(unsigned int aIndex, vec2 aValue) {
 			//shaderUniforms[aIndex].vec2Value = aValue; //IRES 120 IRESX 121 IRESY 122 TODO COLOR RENDERSIZE
-			shaderUniforms[aIndex+1].floatValue = aValue.x;
-			shaderUniforms[aIndex+2].floatValue = aValue.y;
+			shaderUniforms[aIndex + 1].floatValue = aValue.x;
+			shaderUniforms[aIndex + 2].floatValue = aValue.y;
 		}
 		void setVec3UniformValueByName(const string& aName, vec3 aValue) {
 			if (aName == "") {
@@ -287,16 +287,7 @@ namespace videodromm
 		//! read a uniforms json file 
 		void							loadUniforms(const ci::DataSourceRef& source);
 		int								mLastBeat = 0;
-		int stringToIndex(const string& key) {
-			int rtn = 0;
-			if (key == "iTime") {
-				rtn = mVDSettings->ITIME;
-			}
-			else if (key == "iTimeFactor") {
-				rtn = mVDSettings->ITIMEFACTOR;
-			} // TODO others
-			return rtn;
-		}
+
 		void							floatFromJson(const ci::JsonTree& json);
 		void							sampler2dFromJson(const ci::JsonTree& json);
 		void							vec2FromJson(const ci::JsonTree& json);
@@ -305,7 +296,7 @@ namespace videodromm
 		void							intFromJson(const ci::JsonTree& json);
 		void							boolFromJson(const ci::JsonTree& json);
 
-	
+
 		void createVec2Uniform(const string& aName, int aCtrlIndex, vec2 aValue = vec2(0.0)) {
 			shaderUniforms[aCtrlIndex].name = aName;
 			shaderUniforms[aCtrlIndex].index = aCtrlIndex;
@@ -354,6 +345,359 @@ namespace videodromm
 			shaderUniforms[aCtrlIndex].uniformType = 6;
 			//shaderUniforms[aCtrlIndex].isValid = true;
 		}
+		int stringToIndex(const string& key) {
+			int rtn = -1;
+			if (key == "iTime") {
+				rtn = mVDSettings->ITIME;
+			}
+			else if (key == "r") {
+				rtn = mVDSettings->IFR;
+			} // 1
+			// green
+			else if (key == "g") {
+				rtn = mVDSettings->IFG;
+			} // 2
+			// blue
+			else if (key == "b") {
+				rtn = mVDSettings->IFB;
+			} // 3
+			// Alpha 
+			else if (key == "iAlpha") {
+				rtn = mVDSettings->IFA;
+			} // 4
+			// red multiplier 
+			else if (key == "iRedMultiplier") {
+				rtn = mVDSettings->IFRX;
+			} // 5
+			// green multiplier 
+			else if (key == "iGreenMultiplier") {
+				rtn = mVDSettings->IFGX;
+			} // 6
+			// blue multiplier 
+			else if (key == "iBlueMultiplier") {
+				rtn = mVDSettings->IFBX;
+			} // 7
+			// gstnsmk
+			else if (key == "iSobel") {
+				rtn = mVDSettings->ISOBEL;
+			} // 8
+			// bad tv
+			else if (key == "iBadTv") {
+				rtn = mVDSettings->IBADTV;
+			} // 9
+			// Steps
+			else if (key == "iSteps") {
+				rtn = mVDSettings->ISTEPS;
+			} // 10
 
+			// rotary
+			// ratio
+			else if (key == "iRatio") {
+				rtn = mVDSettings->IRATIO;
+			} // 11
+			// zoom
+			else if (key == "iZoom") {
+				rtn = mVDSettings->IZOOM;
+			} // 12
+			// Audio multfactor 
+			else if (key == "iAudioMult") {
+				rtn = mVDSettings->IAUDIOX;
+			} // 13
+			// exposure
+			else if (key == "iExposure") {
+				rtn = mVDSettings->IEXPOSURE;
+			} // 14
+			// Pixelate
+			else if (key == "iPixelate") {
+				rtn = mVDSettings->IPIXELATE;
+			} // 15
+			// Trixels
+			else if (key == "iTrixels") {
+				rtn = mVDSettings->ITRIXELS;
+			} // 16
+			// iChromatic
+			else if (key == "iChromatic") {
+				rtn = mVDSettings->ICHROMATIC;
+			} // 17
+			// iCrossfade
+			else if (key == "iCrossfade") {
+				rtn = mVDSettings->IXFADE;
+			} // 18
+			// tempo time
+			else if (key == "iTempoTime") {
+				rtn = mVDSettings->ITEMPOTIME;
+			} // 19
+			// fps
+			else if (key == "iFps") {
+				rtn = mVDSettings->IFPS;
+			} // 20	
+			// iBpm 
+			else if (key == "iBpm") {
+				rtn = mVDSettings->IBPM;
+			} // 21
+			// Speed 
+			else if (key == "speed") {
+				rtn = mVDSettings->ISPEED;
+			} // 22
+			// slitscan / matrix (or other) Param1 
+			else if (key == "iPixelX") {
+				rtn = mVDSettings->IPIXELX;
+			} // 23
+			// slitscan / matrix(or other) Param2 
+			else if (key == "iPixelY") {
+				rtn = mVDSettings->IPIXELY;
+			} // 24
+			// delta time in seconds
+			else if (key == "iDeltaTime") {
+				rtn = mVDSettings->IDELTATIME;
+			} // 25
+
+			 // background red
+			else if (key == "iBR") {
+				rtn = mVDSettings->IBR;
+			} // 26
+			// background green
+			else if (key == "iBG") {
+				rtn = mVDSettings->IBG;
+			}// 27
+			// background blue
+			else if (key == "iBB") {
+				rtn = mVDSettings->IBB;
+			} // 28
+
+
+			// weight mix fbo texture 0
+			else if (key == "iWeight0") {
+				rtn = mVDSettings->IWEIGHT0;
+			} // 31
+			// weight texture 1
+			else if (key == "iWeight1") {
+				rtn = mVDSettings->IWEIGHT1;
+			} // 32
+			// weight texture 2
+			else if (key == "iWeight2") {
+				rtn = mVDSettings->IWEIGHT2;
+			} // 33
+			// weight texture 3
+			else if (key == "iWeight3") {
+				rtn = mVDSettings->IWEIGHT3;
+			} // 34
+			// weight texture 4
+			else if (key == "iWeight4") {
+				rtn = mVDSettings->IWEIGHT4;
+			} // 35
+			// weight texture 5
+			else if (key == "iWeight5") {
+				rtn = mVDSettings->IWEIGHT5;
+			} // 36
+			// weight texture 6
+			else if (key == "iWeight6") {
+				rtn = mVDSettings->IWEIGHT6;
+			} // 37
+			// weight texture 7
+			else if (key == "iWeight7") {
+				rtn = mVDSettings->IWEIGHT7;
+			} // 38
+			// weight texture 8 
+			else if (key == "iWeight8") {
+				rtn = mVDSettings->IWEIGHT8;
+			} // 39
+			// contour
+			else if (key == "iContour") {
+				rtn = mVDSettings->ICONTOUR;
+			} // 40
+			// RotationSpeed
+			else if (key == "iRotationSpeed") {
+				rtn = mVDSettings->IROTATIONSPEED;
+			} // 41
+
+			// iMouseX  
+			else if (key == "iMouseX") {
+				rtn = mVDSettings->IMOUSEX;
+			} // 42
+			// iMouseY  
+			else if (key == "iMouseY") {
+				rtn = mVDSettings->IMOUSEY;
+			} // 43
+			// iMouseZ  
+			else if (key == "iMouseZ") {
+				rtn = mVDSettings->IMOUSEZ;
+			} // 44
+			// vignette amount
+			else if (key == "iVAmount") {
+				rtn = mVDSettings->IVAMOUNT;
+			} // 45
+			// vignette falloff
+			else if (key == "iVFallOff") {
+				rtn = mVDSettings->IVFALLOFF;
+			} // 46
+
+			// iTimeFactor
+			else if (key == "iTimeFactor") {
+				rtn = mVDSettings->ITIMEFACTOR;// 49
+			}
+			// int
+			// blend mode 
+			else if (key == "iBlendmode") {
+				rtn = mVDSettings->IBLENDMODE;
+			} // 50
+			// beat 
+			else if (key == "iBeat") {
+				rtn = mVDSettings->IBEAT;
+			} // 51
+			// bar 
+			else if (key == "iBar") {
+				rtn = mVDSettings->IBAR;
+			} // 52
+			// bar 
+			else if (key == "iBarBeat") {
+				rtn = mVDSettings->IBARBEAT;
+			} // 53		
+			// fbo A
+			else if (key == "iFboA") {
+				rtn = mVDSettings->IFBOA;
+			} // 54
+			// fbo B
+			else if (key == "iFboB") {
+				rtn = mVDSettings->IFBOB;
+			} // 55
+			// iOutW
+			else if (key == "iOutW") {
+				rtn = mVDSettings->IOUTW;
+			} // 56
+			// iOutH  
+			else if (key == "iOutH") {
+				rtn = mVDSettings->IOUTH;
+			} // 57
+			// beats per bar 
+			else if (key == "iBeatsPerBar") {
+				rtn = mVDSettings->IBEATSPERBAR;
+			} // 59
+
+			// vec3
+			// iResolutionX (should be fbowidth?) 
+			else if (key == "iResolutionX") {
+				rtn = mVDSettings->IRESOLUTIONX;
+			} // 121
+			// iResolutionY (should be fboheight?)  
+			else if (key == "iResolutionY") {
+				rtn = mVDSettings->IRESOLUTIONY;
+			} // 122
+			else if (key == "iResolution") {
+				rtn = mVDSettings->IRESOLUTION;
+			} // 120
+
+
+			else if (key == "iColor") {
+				rtn = mVDSettings->ICOLOR;
+			} // 61
+			else if (key == "iBackgroundColor") {
+				rtn = mVDSettings->IBACKGROUNDCOLOR;
+			} // 62
+
+			// vec4
+			else if (key == "iMouse") {
+				rtn = mVDSettings->IMOUSE;
+			}//70
+			else if (key == "iDate") {
+				rtn = mVDSettings->IDATE;
+			}//71
+
+			// boolean
+			// invert
+			// glitch
+			else if (key == "iGlitch") {
+				rtn = mVDSettings->IGLITCH;
+			} // 81
+			// vignette
+			else if (key == "iVignette") {
+				rtn = mVDSettings->IVIGN;
+			} // 82 toggle
+			// toggle
+			else if (key == "iToggle") {
+				rtn = mVDSettings->ITOGGLE;
+			} // 83
+			// invert
+			else if (key == "iInvert") {
+				rtn = mVDSettings->IINVERT;
+			} // 86
+			// greyscale 
+			else if (key == "iGreyScale") {
+				rtn = mVDSettings->IGREYSCALE;
+			} //87
+
+			else if (key == "iClear") {
+				rtn = mVDSettings->ICLEAR;
+			} // 88
+			else if (key == "iDebug") {
+				rtn = mVDSettings->IDEBUG;
+			} // 129
+			else if (key == "iXorY") {
+				rtn = mVDSettings->IXORY;
+			} // 130
+			else if (key == "iFlipH") {
+				rtn = mVDSettings->IFLIPH;
+			} // 131
+			else if (key == "iFlipV") {
+				rtn = mVDSettings->IFLIPV;
+			} // 132
+			else if (key == "iFlipPostH") {
+				rtn = mVDSettings->IFLIPPOSTH;
+			} // 133
+			else if (key == "iFlipPostV") {
+				rtn = mVDSettings->IFLIPPOSTV;
+			} // 134
+
+			// 119 to 124 timefactor from midithor sos
+			// floats for warps
+			// srcArea 
+			else if (key == "srcXLeft") {
+				rtn = mVDSettings->SRCXLEFT;
+			} // 160
+			else if (key == "srcXRight") {
+				rtn = mVDSettings->SRCXRIGHT;
+			} // 161
+			else if (key == "srcYLeft") {
+				rtn = mVDSettings->SRCYLEFT;
+			} // 162
+			else if (key == "srcYRight") {
+				rtn = mVDSettings->SRCYRIGHT;
+			} // 163
+			// iFreq0  
+			else if (key == "iFreq0") {
+				rtn = mVDSettings->IFREQ0;
+			} // 140	
+			// iFreq1  
+			else if (key == "iFreq1") {
+				rtn = mVDSettings->IFREQ1;
+			} // 141
+			// iFreq2  
+			else if (key == "iFreq2") {
+				rtn = mVDSettings->IFREQ2;
+			} // 142
+			// iFreq3  
+			else if (key == "iFreq3") {
+				rtn = mVDSettings->IFREQ3;
+			} // 143
+
+			// vec2
+			else if (key == "resolution") {
+				rtn = mVDSettings->RESOLUTION;
+			} // hydra 150
+			else if (key == "RENDERSIZE") {
+				rtn = mVDSettings->RENDERSIZE;
+			} // isf 151
+			else if (key == "ciModelViewProjection") {
+				rtn = 498; // TODO
+			}
+			else if (key == "inputImage") {
+				rtn = 499; // TODO
+			}
+			if (rtn == -1) {
+				// not found
+				createFloatUniform(key, 500); // TODO
+			}
+			return rtn;
+		}
 	};
 };

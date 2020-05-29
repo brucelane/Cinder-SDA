@@ -71,7 +71,19 @@ VDSession::VDSession(VDSettingsRef aVDSettings)
 	// Websocket
 	//! 20200526 mVDWebsocket = VDWebsocket::create(mVDSettings, mVDAnimation);
 	// Message router
-	mVDRouter = VDRouter::create(mVDSettings, mVDAnimation);
+	//mVDRouter = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->addShader(0,6)->getInstance();
+	VDRouterBuilderRef builder = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->addShader(0, 6);
+	
+	//Attente d'une récupération de données via socket io
+
+	builder->setWarpAFboIndex(1, 1)->addShader(1,5);
+
+	//Attente d'une autre autre récupération de données via socket io
+
+	builder->setWarpAFboIndex(0, 0);
+
+	mVDRouter = builder->getInstance();
+
 	// reset no matter what, so we don't miss anything
 	cmd = -1;
 	mFreqWSSend = false;
@@ -423,7 +435,6 @@ void VDSession::fileDrop(FileDropEvent event) {
 		if (ext == "json") {
 			JsonTree json(loadFile(absolutePath));
 			fboFromJson(json);
-
 		}
 		else if (ext == "glsl" || ext == "frag" || ext == "fs") {
 			loadFragmentShader(absolutePath, index);

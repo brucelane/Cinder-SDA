@@ -34,7 +34,6 @@
 using namespace ci;
 using namespace ci::app;
 using namespace std;
-// useless? using namespace videodromm;
 
 namespace videodromm
 {
