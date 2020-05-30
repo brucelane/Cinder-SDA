@@ -19,27 +19,15 @@
 #include "VDAnimation.h"
 // Midi
 #include "MidiIn.h"
-// OSC
-//#include "cinder/osc/Osc.h"
+
 
 using namespace ci;
 using namespace ci::app;
-//using namespace ci::osc;
 using namespace std;
-//using namespace asio;
-//using namespace asio::ip; 
-using namespace videodromm;
-/*
-#define USE_UDP 1
 
-#if USE_UDP
-using Receiver = osc::ReceiverUdp;
-using protocol = asio::ip::udp;
-#else
-using Receiver = osc::ReceiverTcp;
-using protocol = asio::ip::tcp;
-#endif
-*/
+using namespace videodromm;
+
+
 namespace videodromm
 {
 	// stores the pointer to the VDRouter instance

@@ -4,7 +4,6 @@
 	<requires>com.sophiadigitalart.vd</requires>
 	<requires>com.sophiadigitalart.socketio</requires>
 	<requires>nl.cowlumbus.warping</requires>
-	<requires>org.libcinder.OSC</requires>
 	<platform os="msw">
 		<requires>fr.batchass.spout</requires>
 		<requires>mb.cinder.midi2</requires>

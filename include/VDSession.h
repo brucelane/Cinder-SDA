@@ -5,8 +5,6 @@
 */
 // TODO implement factory or builder?
 
-
-
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"

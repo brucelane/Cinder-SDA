@@ -2,14 +2,15 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
+// Spout
+#include "CiSpoutOut.h"
 // Settings
 #include "VDSettings.h"
 // Session
 #include "VDSession.h"
 // Log
 #include "VDLog.h"
-// Spout
-#include "CiSpoutOut.h"
+
 
 using namespace ci;
 using namespace ci::app;
