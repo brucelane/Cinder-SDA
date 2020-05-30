@@ -68,8 +68,8 @@ VDSession::VDSession(VDSettingsRef aVDSettings)
 	mModesList[8] = "Fbo7";
 	mModesList[9] = "Fbo8";
 	mMode = 0;
-	// Websocket
-	//! 20200526 mVDWebsocket = VDWebsocket::create(mVDSettings, mVDAnimation);
+	// Socketio
+	mVDSocketio = VDSocketio::create(mVDSettings, mVDAnimation);
 	// Message router
 	//mVDRouter = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->addShader(0,6)->getInstance();
 	VDRouterBuilderRef builder = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->setWarpBFboIndex(0, 1);	
@@ -127,8 +127,8 @@ VDSessionRef VDSession::create(VDSettingsRef aVDSettings)
 }
 
 void VDSession::update(unsigned int aClassIndex) {
-	/*if (mVDWebsocket->hasReceivedShader()) {
-		string receivedShader = mVDWebsocket->getReceivedShader();
+	/*if (mVDSocketio->hasReceivedShader()) {
+		string receivedShader = mVDSocketio->getReceivedShader();
 		// save file
 		string mShaderFileName = mVDSettings->mSocketIONickname + toString((int)getElapsedSeconds()) + ".fs";
 
@@ -167,11 +167,11 @@ void VDSession::update(unsigned int aClassIndex) {
 		setFboFragmentShaderIndex(1, mVDRouter->selectedFboB());
 	}
 	if (aClassIndex == 0) {
-		if (mVDWebsocket->hasReceivedStream()) { //&& (getElapsedFrames() % 100 == 0)) {
-			updateStream(mVDWebsocket->getBase64Image());
+		if (mVDSocketio->hasReceivedStream()) { //&& (getElapsedFrames() % 100 == 0)) {
+			updateStream(mVDSocketio->getBase64Image());
 		}
-		if (mVDWebsocket->hasReceivedShader()) {
-			string receivedShader = mVDWebsocket->getReceivedShader();
+		if (mVDSocketio->hasReceivedShader()) {
+			string receivedShader = mVDSocketio->getReceivedShader();
 			if (mVDAnimation->getUniformValue(mVDSettings->IXFADE) < 0.5) {
 				setFragmentShaderString(2, receivedShader);
 				mShaderLeft = receivedShader;
@@ -184,15 +184,15 @@ void VDSession::update(unsigned int aClassIndex) {
 			setHydraFragmentShaderString(receivedShader);
 			// TODO timeline().apply(&mWarps[aWarpIndex]->ABCrossfade, 0.0f, 2.0f); };
 		}
-		if (mVDWebsocket->hasReceivedUniforms()) {
-			mHydraUniformsValuesString = mVDWebsocket->getReceivedUniforms();
+		if (mVDSocketio->hasReceivedUniforms()) {
+			mHydraUniformsValuesString = mVDSocketio->getReceivedUniforms();
 		}
 		// TODO: CHECK index if (mVDSettings->iGreyScale)
 		//{
-		//	mVDWebsocket->changeFloatValue(1, mVDAnimation->getUniformValue(3));
-		//	mVDWebsocket->changeFloatValue(2, mVDAnimation->getUniformValue(3));
-		//	mVDWebsocket->changeFloatValue(5, mVDAnimation->getUniformValue(7));
-		//	mVDWebsocket->changeFloatValue(6, mVDAnimation->getUniformValue(7));
+		//	mVDSocketio->changeFloatValue(1, mVDAnimation->getUniformValue(3));
+		//	mVDSocketio->changeFloatValue(2, mVDAnimation->getUniformValue(3));
+		//	mVDSocketio->changeFloatValue(5, mVDAnimation->getUniformValue(7));
+		//	mVDSocketio->changeFloatValue(6, mVDAnimation->getUniformValue(7));
 		//}
 		*/
 		// fps calculated in main app
@@ -205,12 +205,12 @@ void VDSession::update(unsigned int aClassIndex) {
 		updateAudio();
 	}*/
 	// all cases
-	//! 20200526 mVDWebsocket->update();
+	//! 20200526 mVDSocketio->update();
 	/*if (mFreqWSSend) {
-		mVDWebsocket->changeFloatValue(mVDSettings->IFREQ0, getFreq(0), true);
-		mVDWebsocket->changeFloatValue(mVDSettings->IFREQ1, getFreq(1), true);
-		mVDWebsocket->changeFloatValue(mVDSettings->IFREQ2, getFreq(2), true);
-		mVDWebsocket->changeFloatValue(mVDSettings->IFREQ3, getFreq(3), true);
+		mVDSocketio->changeFloatValue(mVDSettings->IFREQ0, getFreq(0), true);
+		mVDSocketio->changeFloatValue(mVDSettings->IFREQ1, getFreq(1), true);
+		mVDSocketio->changeFloatValue(mVDSettings->IFREQ2, getFreq(2), true);
+		mVDSocketio->changeFloatValue(mVDSettings->IFREQ3, getFreq(3), true);
 	}*/
 	// check if xFade changed
 	/*if (mVDSettings->xFadeChanged) {
@@ -537,7 +537,7 @@ bool VDSession::handleKeyDown(KeyEvent &event)
 			case KeyEvent::KEY_w:
 				CI_LOG_V("wsConnect");
 				if (isModDown) {
-					wsConnect();
+					sioConnect();
 				}
 				else {
 					// handled in main app
@@ -588,79 +588,79 @@ bool VDSession::handleKeyDown(KeyEvent &event)
 				//break;
 			case KeyEvent::KEY_x:
 				// trixels
-				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->ITRIXELS, mVDAnimation->getUniformValue(mVDSettings->ITRIXELS) + 0.05f);
+				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->ITRIXELS, mVDAnimation->getUniformValue(mVDSettings->ITRIXELS) + 0.05f);
 				break;
 			case KeyEvent::KEY_r:
 				if (isAltDown) {
-					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IBR, mVDAnimation->getUniformValue(mVDSettings->IBR), false, true, isShiftDown, isModDown);
+					//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IBR, mVDAnimation->getUniformValue(mVDSettings->IBR), false, true, isShiftDown, isModDown);
 				}
 				else {
-					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IFR, mVDAnimation->getUniformValue(mVDSettings->IFR), false, true, isShiftDown, isModDown);
+					//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IFR, mVDAnimation->getUniformValue(mVDSettings->IFR), false, true, isShiftDown, isModDown);
 				}
 				break;
 			case KeyEvent::KEY_g:
 				if (isAltDown) {
-					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IBG, mVDAnimation->getUniformValue(mVDSettings->IBG), false, true, isShiftDown, isModDown);
+					//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IBG, mVDAnimation->getUniformValue(mVDSettings->IBG), false, true, isShiftDown, isModDown);
 				}
 				else {
-					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IFG, mVDAnimation->getUniformValue(mVDSettings->IFG), false, true, isShiftDown, isModDown);
+					//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IFG, mVDAnimation->getUniformValue(mVDSettings->IFG), false, true, isShiftDown, isModDown);
 				}
 				break;
 			case KeyEvent::KEY_b:
 				if (isAltDown) {
-					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IBB, mVDAnimation->getUniformValue(mVDSettings->IBB), false, true, isShiftDown, isModDown);
+					//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IBB, mVDAnimation->getUniformValue(mVDSettings->IBB), false, true, isShiftDown, isModDown);
 				}
 				else {
-					//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IFB, mVDAnimation->getUniformValue(mVDSettings->IFB), false, true, isShiftDown, isModDown);
+					//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IFB, mVDAnimation->getUniformValue(mVDSettings->IFB), false, true, isShiftDown, isModDown);
 				}
 				break;
 			case KeyEvent::KEY_a:
-				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IFA, mVDAnimation->getUniformValue(mVDSettings->IFA), false, true, isShiftDown, isModDown);
+				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IFA, mVDAnimation->getUniformValue(mVDSettings->IFA), false, true, isShiftDown, isModDown);
 				break;
 			case KeyEvent::KEY_u:
 				// chromatic
 				// TODO find why can't put value >0.9 or 0.85!
 				newValue = mVDAnimation->getUniformValue(mVDSettings->ICHROMATIC) + 0.05f;
 				if (newValue > 1.0f) newValue = 0.0f;
-				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->ICHROMATIC, newValue);
+				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->ICHROMATIC, newValue);
 				break;
 			case KeyEvent::KEY_p:
 				// pixelate
-				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IPIXELATE, mVDAnimation->getUniformValue(mVDSettings->IPIXELATE) + 0.05f);
+				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IPIXELATE, mVDAnimation->getUniformValue(mVDSettings->IPIXELATE) + 0.05f);
 				break;
 			case KeyEvent::KEY_y:
 				// glitch
-				//! 20200526 mVDWebsocket->changeBoolValue(mVDSettings->IGLITCH, true);
+				//! 20200526 mVDSocketio->changeBoolValue(mVDSettings->IGLITCH, true);
 				break;
 			case KeyEvent::KEY_i:
 				// invert
-				//! 20200526 mVDWebsocket->changeBoolValue(mVDSettings->IINVERT, true);
+				//! 20200526 mVDSocketio->changeBoolValue(mVDSettings->IINVERT, true);
 				break;
 			case KeyEvent::KEY_o:
 				// toggle
-				//! 20200526 mVDWebsocket->changeBoolValue(mVDSettings->ITOGGLE, true);
+				//! 20200526 mVDSocketio->changeBoolValue(mVDSettings->ITOGGLE, true);
 				break;
 			case KeyEvent::KEY_z:
 				// zoom
-				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IZOOM, mVDAnimation->getUniformValue(mVDSettings->IZOOM) - 0.05f);
+				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IZOOM, mVDAnimation->getUniformValue(mVDSettings->IZOOM) - 0.05f);
 				break;
 				/* removed temp for Sky Project case KeyEvent::KEY_LEFT:
 					//mVDTextures->rewindMovie();
-					if (mVDAnimation->getUniformValue(21) > 0.1f) mVDWebsocket->changeFloatValue(21, mVDAnimation->getUniformValue(21) - 0.1f);
+					if (mVDAnimation->getUniformValue(21) > 0.1f) mVDSocketio->changeFloatValue(21, mVDAnimation->getUniformValue(21) - 0.1f);
 					break;
 				case KeyEvent::KEY_RIGHT:
 					//mVDTextures->fastforwardMovie();
-					if (mVDAnimation->getUniformValue(21) < 1.0f) mVDWebsocket->changeFloatValue(21, mVDAnimation->getUniformValue(21) + 0.1f);
+					if (mVDAnimation->getUniformValue(21) < 1.0f) mVDSocketio->changeFloatValue(21, mVDAnimation->getUniformValue(21) + 0.1f);
 					break;*/
 			case KeyEvent::KEY_PAGEDOWN:
 			case KeyEvent::KEY_RIGHT:
 				// crossfade right
-				//! 20200526 if (mVDAnimation->getUniformValue(mVDSettings->IXFADE) < 1.0f) mVDWebsocket->changeFloatValue(mVDSettings->IXFADE, mVDAnimation->getUniformValue(mVDSettings->IXFADE) + 0.1f);
+				//! 20200526 if (mVDAnimation->getUniformValue(mVDSettings->IXFADE) < 1.0f) mVDSocketio->changeFloatValue(mVDSettings->IXFADE, mVDAnimation->getUniformValue(mVDSettings->IXFADE) + 0.1f);
 				break;
 			case KeyEvent::KEY_PAGEUP:
 			case KeyEvent::KEY_LEFT:
 				// crossfade left
-				//! 20200526 if (mVDAnimation->getUniformValue(mVDSettings->IXFADE) > 0.0f) mVDWebsocket->changeFloatValue(mVDSettings->IXFADE, mVDAnimation->getUniformValue(mVDSettings->IXFADE) - 0.1f);
+				//! 20200526 if (mVDAnimation->getUniformValue(mVDSettings->IXFADE) > 0.0f) mVDSocketio->changeFloatValue(mVDSettings->IXFADE, mVDAnimation->getUniformValue(mVDSettings->IXFADE) - 0.1f);
 				break;
 			case KeyEvent::KEY_UP:
 				// imgseq next
@@ -712,31 +712,31 @@ bool VDSession::handleKeyUp(KeyEvent &event) {
 			switch (event.getCode()) {
 			case KeyEvent::KEY_y:
 				// glitch
-				//! 20200526 mVDWebsocket->changeBoolValue(mVDSettings->IGLITCH, false);
+				//! 20200526 mVDSocketio->changeBoolValue(mVDSettings->IGLITCH, false);
 				break;
 			case KeyEvent::KEY_t:
 				// trixels
-				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->ITRIXELS, 0.0f);
+				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->ITRIXELS, 0.0f);
 				break;
 			case KeyEvent::KEY_i:
 				// invert
-				//! 20200526 mVDWebsocket->changeBoolValue(mVDSettings->IINVERT, false);
+				//! 20200526 mVDSocketio->changeBoolValue(mVDSettings->IINVERT, false);
 				break;
 			case KeyEvent::KEY_u:
 				// chromatic
-				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->ICHROMATIC, 0.0f);
+				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->ICHROMATIC, 0.0f);
 				break;
 			case KeyEvent::KEY_p:
 				// pixelate
-				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IPIXELATE, 1.0f);
+				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IPIXELATE, 1.0f);
 				break;
 			case KeyEvent::KEY_o:
 				// toggle
-				//! 20200526 mVDWebsocket->changeBoolValue(mVDSettings->ITOGGLE, false);
+				//! 20200526 mVDSocketio->changeBoolValue(mVDSettings->ITOGGLE, false);
 				break;
 			case KeyEvent::KEY_z:
 				// zoom
-				//! 20200526 mVDWebsocket->changeFloatValue(mVDSettings->IZOOM, 1.0f);
+				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IZOOM, 1.0f);
 				break;
 			default:
 				CI_LOG_V("session keyup: " + toString(event.getCode()));
@@ -783,7 +783,7 @@ bool VDSession::handleKeyUp(KeyEvent &event) {
 
 
 void VDSession::sendFragmentShader(unsigned int aShaderIndex) {
-	mVDWebsocket->changeFragmentShader(getFragmentString(aShaderIndex));
+	mVDSocketio->changeFragmentShader(getFragmentString(aShaderIndex));
 }
 
 void VDSession::setFboAIndex(unsigned int aIndex, unsigned int aFboIndex) {
@@ -795,7 +795,7 @@ void VDSession::setFboAIndex(unsigned int aIndex, unsigned int aFboIndex) {
 	}*/
 	/*mVDMix->setWarpAFboIndex(aIndex, aFboIndex);
 	mVDRouter->setWarpAFboIndex(aIndex, aFboIndex);
-	mVDWebsocket->changeWarpFboIndex(aIndex, aFboIndex, 0);
+	mVDSocketio->changeWarpFboIndex(aIndex, aFboIndex, 0);
 }*/
 /*
 void VDSession::setFboBIndex(unsigned int aIndex, unsigned int aFboIndex) {
@@ -807,7 +807,7 @@ void VDSession::setFboBIndex(unsigned int aIndex, unsigned int aFboIndex) {
 	}*/
 	/*mVDMix->setWarpBFboIndex(aIndex, aFboIndex);
 	mVDRouter->setWarpBFboIndex(aIndex, aFboIndex);
-	mVDWebsocket->changeWarpFboIndex(aIndex, aFboIndex, 1);
+	mVDSocketio->changeWarpFboIndex(aIndex, aFboIndex, 1);
 }*/
 #pragma endregion fbos
 // shaders
@@ -840,15 +840,15 @@ void VDSession::setFboBIndex(unsigned int aIndex, unsigned int aFboIndex) {
 // SocketIO
 #pragma region SocketIO
 
-void VDSession::wsConnect() {
-	//! 20200526 mVDWebsocket->wsConnect();
+void VDSession::sioConnect() {
+	mVDSocketio->sioConnect();
 }
-void VDSession::wsPing() {
-	//! 20200526 mVDWebsocket->wsPing();
-}
-void VDSession::wsWrite(string msg)
+/*void VDSession::sioPing() {
+	mVDSocketio->();
+}*/
+void VDSession::sioWrite(string msg)
 {
-	//! 20200526 mVDWebsocket->wsWrite(msg);
+	mVDSocketio->sioWrite(msg);
 }
 #pragma endregion SocketIO
 
@@ -869,7 +869,7 @@ void VDSession::setFboFragmentShaderIndex(unsigned int aFboIndex, unsigned int a
 		setFboBIndex(1, aFboShaderIndex); // TODO 20200216 check 1 useless for now
 	}
 	// route message
-	// LOOP! mVDWebsocket->changeFragmentShader(mShaderList[aFboShaderIndex]->getFragmentString());
+	// LOOP! mVDSocketio->changeFragmentShader(mShaderList[aFboShaderIndex]->getFragmentString());
 }
 
 unsigned int VDSession::getFboFragmentShaderIndex(unsigned int aFboIndex) {

@@ -228,7 +228,7 @@ VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 					mVDAnimation->setBpm(d0);
 					double d1 = msg[1].dbl();
 					int d2 = msg[2].int32();
-					//! 20200526 mVDWebsocket->changeIntValue(mVDSettings->IBEAT, d2);
+					//! 20200526 mVDSocketio->changeIntValue(mVDSettings->IBEAT, d2);
 				}
 			}
 			if (!found)
@@ -651,7 +651,7 @@ void VDRouter::midiListener(midi::Message msg) {
 			}
 			*/
 			//if (midiControl > 30 && midiControl < 39) {
-			//! 20200526 mVDWebsocket->changeFloatValue(midiControl, midiNormalizedValue);
+			//! 20200526 mVDSocketio->changeFloatValue(midiControl, midiNormalizedValue);
 			//mSelectedFboA = midiControl - 31;
 			//mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOA, mSelectedFboA);
 		//}
@@ -780,20 +780,20 @@ void VDRouter::updateParams(int iarg0, float farg1) {
 	}
 	if (iarg0 > 0 && iarg0 < 9) {
 		// sliders 
-		//! 20200526 mVDWebsocket->changeFloatValue(iarg0, farg1);
+		//! 20200526 mVDSocketio->changeFloatValue(iarg0, farg1);
 		
 		mVDAnimation->setUniformValue(iarg0, farg1);
 	}
 	if (iarg0 > 10 && iarg0 < 19) {
 		// rotary 
-		//! 20200526 mVDWebsocket->changeFloatValue(iarg0, farg1);
+		//! 20200526 mVDSocketio->changeFloatValue(iarg0, farg1);
 		// audio multfactor
-		//! 20200526 if (iarg0 == 13) mVDWebsocket->changeFloatValue(iarg0, (farg1 + 0.01) * 10);
+		//! 20200526 if (iarg0 == 13) mVDSocketio->changeFloatValue(iarg0, (farg1 + 0.01) * 10);
 		// exposure
-		//! 20200526 if (iarg0 == 14) mVDWebsocket->changeFloatValue(iarg0, (farg1 + 0.01) * mVDAnimation->getMaxUniformValueByIndex(14));
+		//! 20200526 if (iarg0 == 14) mVDSocketio->changeFloatValue(iarg0, (farg1 + 0.01) * mVDAnimation->getMaxUniformValueByIndex(14));
 		// xfade
 		if (iarg0 == mVDSettings->IXFADE) {//18
-			//! 20200526 mVDWebsocket->changeFloatValue(iarg0, farg1);
+			//! 20200526 mVDSocketio->changeFloatValue(iarg0, farg1);
 			//mVDSettings->xFade = farg1;
 			//mVDSettings->xFadeChanged = true;
 		}
@@ -801,22 +801,22 @@ void VDRouter::updateParams(int iarg0, float farg1) {
 	// buttons
 	if (iarg0 > 20 && iarg0 < 29) {
 		// top row
-		//! 20200526 mVDWebsocket->changeFloatValue(iarg0, farg1);
+		//! 20200526 mVDSocketio->changeFloatValue(iarg0, farg1);
 	}
 	if (iarg0 > 30 && iarg0 < 39)
 	{
 		// middle row
-		//! 20200526 mVDWebsocket->changeFloatValue(iarg0, farg1);
+		//! 20200526 mVDSocketio->changeFloatValue(iarg0, farg1);
 		//mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOA, iarg0 - 31);
 	}
 	if (iarg0 > 40 && iarg0 < 49) {
 		// low row 
-		//! 20200526 mVDWebsocket->changeFloatValue(iarg0, farg1);
+		//! 20200526 mVDSocketio->changeFloatValue(iarg0, farg1);
 		//mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOB, iarg0 - 41);
 	}
 	//if (iarg0 > 0 && iarg0 < 49) {
 		// float values 
-		//mVDWebsocket->wsWrite("{\"params\" :[{ \"name\":" + toString(iarg0) + ",\"value\":" + toString(mVDAnimation->getUniformValue(iarg0)) + "}]}");
+		//mVDSocketio->wsWrite("{\"params\" :[{ \"name\":" + toString(iarg0) + ",\"value\":" + toString(mVDAnimation->getUniformValue(iarg0)) + "}]}");
 	//}
 }
 
@@ -832,6 +832,6 @@ void VDRouter::colorWrite()
 	int a = (int)(mVDAnimation->getUniformValue(4) * 255);
 	//sprintf(col, "#%02X%02X%02X", r, g, b);
 	sprintf(col, "{\"type\":\"action\", \"parameters\":{\"name\":\"FC\",\"parameters\":{\"color\":\"#%02X%02X%02X%02X\",\"fading\":\"NONE\"}}}", a, r, g, b);
-	//! 20200526 mVDWebsocket->wsWrite(col);
+	//! 20200526 mVDSocketio->wsWrite(col);
 #endif
 }

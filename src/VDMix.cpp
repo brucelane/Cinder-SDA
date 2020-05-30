@@ -772,7 +772,7 @@ namespace videodromm {
 			CI_LOG_V("setFboFragmentShaderIndex, after, fboIndex: " + toString(aFboIndex) + " shaderIndex " + toString(aFboShaderIndex));
 			mFboList[aFboIndex]->setFragmentShader(aFboShaderIndex, mShaderList[aFboShaderIndex]->getFragmentString(), mShaderList[aFboShaderIndex]->getName());
 			// route message
-			// LOOP! mVDWebsocket->changeFragmentShader(mShaderList[aFboShaderIndex]->getFragmentString());
+			// LOOP! mVDSocketio->changeFragmentShader(mShaderList[aFboShaderIndex]->getFragmentString());
 		}
 		unsigned int VDMix::getFboFragmentShaderIndex(unsigned int aFboIndex) {
 			unsigned int rtn = mFboList[aFboIndex]->getShaderIndex();

@@ -21,8 +21,8 @@
 #include "VDRouter.h"
 // Builder
 #include "VDFactory.h"
-// Websocket
-//! 20200526 #include "VDWebsocket.h"
+// Socketio
+#include "VDSocketio.h"
 // Animation
 #include "VDAnimation.h"
 // Fbos
@@ -184,16 +184,16 @@ namespace videodromm {
 
 		// control values
 		void							toggleValue(unsigned int aCtrl) {
-			//! 20200526 mVDWebsocket->toggleValue(aCtrl);
+			//! 20200526 mVDSocketio->toggleValue(aCtrl);
 		};
 		void							toggleAuto(unsigned int aCtrl) {
-			//! 20200526 mVDWebsocket->toggleAuto(aCtrl);
+			//! 20200526 mVDSocketio->toggleAuto(aCtrl);
 		};
 		void							toggleTempo(unsigned int aCtrl) {
-			//! 20200526 mVDWebsocket->toggleTempo(aCtrl);
+			//! 20200526 mVDSocketio->toggleTempo(aCtrl);
 		};
 		void							resetAutoAnimation(unsigned int aIndex) {
-			//! 20200526 mVDWebsocket->resetAutoAnimation(aIndex);
+			//! 20200526 mVDSocketio->resetAutoAnimation(aIndex);
 		};
 		float							getMinUniformValueByIndex(unsigned int aIndex) {
 			return mVDAnimation->getMinUniformValueByIndex(aIndex);
@@ -243,14 +243,17 @@ namespace videodromm {
 		};
 		void							setUniformValue(unsigned int aCtrl, float aValue) {
 			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
-			//! 20200526 mVDWebsocket->changeFloatValue(aCtrl, aValue);
+			//! 20200526 
+			mVDSocketio->changeFloatValue(aCtrl, aValue);
 		};
 		void							setIntUniformValueByIndex(unsigned int aCtrl, int aValue) {
-			//! 20200526 mVDWebsocket->changeIntValue(aCtrl, aValue);
+			//! 20200526 
+			mVDSocketio->changeIntValue(aCtrl, aValue);
 		};
 		void							setBoolUniformValueByIndex(unsigned int aCtrl, float aValue) {
 			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
-			//! 20200526 mVDWebsocket->changeBoolValue(aCtrl, aValue);
+			//! 20200526 
+			mVDSocketio->changeBoolValue(aCtrl, aValue);
 		};
 		// tempo
 		float							getMaxVolume() { return mVDAnimation->maxVolume; };
@@ -530,9 +533,9 @@ namespace videodromm {
 			return mTextureList[math<int>::min(aTextureIndex, mTextureList.size() - 1)]->getMaxFrame();
 		};*/
 		// SocketIO
-		void							wsConnect();
-		void							wsPing();
-		void							wsWrite(std::string msg);
+		void							sioConnect();
+		///void							sioPing();
+		void							sioWrite(std::string msg);
 		/*void							sendFragmentShader(unsigned int aShaderIndex);*/
 		// midi
 		void							midiSetup() { mVDRouter->midiSetup(); };
@@ -582,8 +585,8 @@ namespace videodromm {
 		VDUtilsRef						mVDUtils;
 		// Message router
 		VDRouterRef						mVDRouter;
-		// VDWebsocket
-		//! 20200526 VDWebsocketRef					mVDWebsocket;
+		// VDSocketio
+		VDSocketioRef					mVDSocketio;
 		// Animation
 		VDAnimationRef					mVDAnimation;
 		// Log

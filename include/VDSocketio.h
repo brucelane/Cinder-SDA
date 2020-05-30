@@ -70,7 +70,6 @@ namespace videodromm
 		void						parseMessage(string msg);
 		// socketio client
 		bool						clientConnected;
-		void						sioClientConnect();
 		int							receivedType;
 		int							receivedWarpIndex;
 		int							receivedFboIndex;

@@ -350,9 +350,6 @@ string VDSocketio::getReceivedUniforms() {
 
 void VDSocketio::sioConnect() {
 	clientConnected = true;
-}
-void VDSocketio::sioClientConnect()
-{
 	stringstream s;
 	if (mVDSettings->mSocketIOPort == 80) {
 		s << mVDSettings->mSocketIOProtocol << mVDSettings->mSocketIOHost;
