@@ -37,11 +37,10 @@ namespace videodromm
         // messages
 		void						sendJSON(string params);
 		void						updateParams(int iarg0, float farg1);
-		// WebSockets
+		// SocketIO
 		//void						sioWriteBinary(const void *data, int size);
 		void						sioWrite(std::string msg);
 		void						sioConnect();
-		void						sioPing();
 		//bool						isWsClientConnected() { return clientConnected; };
 		// change a control value and update network clients
 		void						changeFloatValue(unsigned int aControl, float aValue, bool forceSend = false, bool toggle = false, bool increase = false, bool decrease = false);
@@ -68,33 +67,17 @@ namespace videodromm
 		// Animation
 		VDAnimationRef				mVDAnimation;
 
-		// lights4events
-		void						colorWrite();
-		// WebSockets
 		void						parseMessage(string msg);
-		// Web socket client
+		// socketio client
 		bool						clientConnected;
 		void						sioClientConnect();
-		//void						sioL4EClientConnect();
-		void						sioClientDisconnect();
 		int							receivedType;
 		int							receivedWarpIndex;
 		int							receivedFboIndex;
 		int							receivedShaderIndex;
 		int							receivedSlot;
 
-		WebSocketClient				mClient;
-		//WebSocketClient				mL4EClient;
-		/*void						onWsConnect();
-		void						onWsDisconnect();
-		void						onWsError(std::string err);
-		void						onWsInterrupt();
-		void						onWsPing(std::string msg);
-		void						onWsRead(std::string msg);*/
-		// Web socket  server
-		WebSocketServer				mServer;
-		/*void						serverConnect();
-		void						serverDisconnect();*/
+		sio::client					mClient;
 		double						mPingTime;
 
 		// received shaders

@@ -1,7 +1,7 @@
 /*
 	VDShader
 	Handles shaders loading and sanitizing
-	Input from different sources: filesystem, hydra, bonzorezo, glsleditor, websockets
+	Input from different sources: filesystem, hydra, bonzorezo, glsleditor, SocketIO
 	Output ISF format (Interactive Shader Format)
 */
 // TODO store in database though api

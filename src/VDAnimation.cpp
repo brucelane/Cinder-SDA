@@ -440,7 +440,7 @@ void VDAnimation::update() {
 	// TIME
 	if (mUseTimeWithTempo)
 	{
-		// Ableton Link from openframeworks websockets
+		// Ableton Link from openframeworks SocketIO
 		mVDUniform->setUniformValue(mVDSettings->ITIME, 
 			mVDUniform->getUniformValue(mVDSettings->ITIME) * mVDSettings->iSpeedMultiplier * mVDUniform->getUniformValue(mVDSettings->ITIMEFACTOR));
 		//shaderUniforms["iElapsed"].floatValue = shaderUniforms["iPhase"].floatValue * mVDSettings->iSpeedMultiplier * shaderUniforms["iTimeFactor"].floatValue;

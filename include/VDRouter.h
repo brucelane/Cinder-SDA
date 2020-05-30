@@ -1,12 +1,12 @@
 /*
 	VDRouter
 	Handles routing of messages from the network and midi.
-	Input: websockets, osc, midi
-	Output: websockets
+	Input: SocketIO, osc, midi
+	Output: SocketIO
 */
-// TODO separate websockets, osc, midi into different classes
-// TODO implement lazy loading for websockets, osc, midi
-// TODO choose output : OSC or websockets?
+// TODO separate SocketIO, osc, midi into different classes
+// TODO implement lazy loading for SocketIO, osc, midi
+// TODO choose output : OSC or SocketIO?
 // TODO socketio https://github.com/kusharami/socket.io-client-cpp
 #pragma once
 #include "cinder/Cinder.h"

@@ -154,37 +154,37 @@ bool VDSettings::save()
 	IsOSCSender.setAttribute("value", toString(mIsOSCSender));
 	settings.push_back(IsOSCSender);
 
-	XmlTree AreWebSocketsEnabledAtStartup("AreWebSocketsEnabledAtStartup", "");
-	AreWebSocketsEnabledAtStartup.setAttribute("value", toString(mAreWebSocketsEnabledAtStartup));
-	settings.push_back(AreWebSocketsEnabledAtStartup);
+	XmlTree AreSocketIOEnabledAtStartup("AreSocketIOEnabledAtStartup", "");
+	AreSocketIOEnabledAtStartup.setAttribute("value", toString(mAreSocketIOEnabledAtStartup));
+	settings.push_back(AreSocketIOEnabledAtStartup);
 
 	XmlTree IsRouter("IsRouter", "");
 	IsRouter.setAttribute("value", toString(mIsRouter));
 	settings.push_back(IsRouter);
 
-	XmlTree IsWebSocketsServer("IsWebSocketsServer", "");
-	IsWebSocketsServer.setAttribute("value", toString(mIsWebSocketsServer));
-	settings.push_back(IsWebSocketsServer);
+	XmlTree IsSocketIOServer("IsSocketIOServer", "");
+	IsSocketIOServer.setAttribute("value", toString(mIsSocketIOServer));
+	settings.push_back(IsSocketIOServer);
 
-	XmlTree WebSocketsProtocol("WebSocketsProtocol", "");
-	WebSocketsProtocol.setAttribute("value", mWebSocketsProtocol);
-	settings.push_back(WebSocketsProtocol);
+	XmlTree SocketIOProtocol("SocketIOProtocol", "");
+	SocketIOProtocol.setAttribute("value", mSocketIOProtocol);
+	settings.push_back(SocketIOProtocol);
 
-	XmlTree WebSocketsHost("WebSocketsHost", "");
-	WebSocketsHost.setAttribute("value", mWebSocketsHost);
-	settings.push_back(WebSocketsHost);
+	XmlTree SocketIOHost("SocketIOHost", "");
+	SocketIOHost.setAttribute("value", mSocketIOHost);
+	settings.push_back(SocketIOHost);
 
-	XmlTree WebSocketsPort("WebSocketsPort", "");
-	WebSocketsPort.setAttribute("value", toString(mWebSocketsPort));
-	settings.push_back(WebSocketsPort);
+	XmlTree SocketIOPort("SocketIOPort", "");
+	SocketIOPort.setAttribute("value", toString(mSocketIOPort));
+	settings.push_back(SocketIOPort);
 
-	XmlTree WebSocketsRoom("WebSocketsRoom", "");
-	WebSocketsRoom.setAttribute("value", mWebSocketsRoom);
-	settings.push_back(WebSocketsRoom);
+	XmlTree SocketIORoom("SocketIORoom", "");
+	SocketIORoom.setAttribute("value", mSocketIORoom);
+	settings.push_back(SocketIORoom);
 
-	XmlTree WebSocketsNickname("WebSocketsNickname", "");
-	WebSocketsNickname.setAttribute("value", mWebSocketsNickname);
-	settings.push_back(WebSocketsNickname);
+	XmlTree SocketIONickname("SocketIONickname", "");
+	SocketIONickname.setAttribute("value", mSocketIONickname);
+	settings.push_back(SocketIONickname);
 
 	XmlTree Info("Info", "");
 	Info.setAttribute("value", toString(mInfo));
@@ -294,37 +294,37 @@ bool VDSettings::restore()
 				XmlTree CursorVisible = settings.getChild("CursorVisible");
 				mCursorVisible = CursorVisible.getAttributeValue<bool>("value");
 			}
-			if (settings.hasChild("AreWebSocketsEnabledAtStartup")) {
-				XmlTree AreWebSocketsEnabledAtStartup = settings.getChild("AreWebSocketsEnabledAtStartup");
-				mAreWebSocketsEnabledAtStartup = AreWebSocketsEnabledAtStartup.getAttributeValue<bool>("value");
+			if (settings.hasChild("AreSocketIOEnabledAtStartup")) {
+				XmlTree AreSocketIOEnabledAtStartup = settings.getChild("AreSocketIOEnabledAtStartup");
+				mAreSocketIOEnabledAtStartup = AreSocketIOEnabledAtStartup.getAttributeValue<bool>("value");
 			}
 			if (settings.hasChild("IsRouter")) {
 				XmlTree IsRouter = settings.getChild("IsRouter");
 				mIsRouter = IsRouter.getAttributeValue<bool>("value");
 			}
-			if (settings.hasChild("IsWebSocketsServer")) {
-				XmlTree IsWebSocketsServer = settings.getChild("IsWebSocketsServer");
-				mIsWebSocketsServer = IsWebSocketsServer.getAttributeValue<bool>("value");
+			if (settings.hasChild("IsSocketIOServer")) {
+				XmlTree IsSocketIOServer = settings.getChild("IsSocketIOServer");
+				mIsSocketIOServer = IsSocketIOServer.getAttributeValue<bool>("value");
 			}
-			if (settings.hasChild("WebSocketsProtocol")) {
-				XmlTree WebSocketsProtocol = settings.getChild("WebSocketsProtocol");
-				mWebSocketsProtocol = WebSocketsProtocol.getAttributeValue<string>("value");
+			if (settings.hasChild("SocketIOProtocol")) {
+				XmlTree SocketIOProtocol = settings.getChild("SocketIOProtocol");
+				mSocketIOProtocol = SocketIOProtocol.getAttributeValue<string>("value");
 			}
-			if (settings.hasChild("WebSocketsHost")) {
-				XmlTree WebSocketsHost = settings.getChild("WebSocketsHost");
-				mWebSocketsHost = WebSocketsHost.getAttributeValue<string>("value");
+			if (settings.hasChild("SocketIOHost")) {
+				XmlTree SocketIOHost = settings.getChild("SocketIOHost");
+				mSocketIOHost = SocketIOHost.getAttributeValue<string>("value");
 			}
-			if (settings.hasChild("WebSocketsPort")) {
-				XmlTree WebSocketsPort = settings.getChild("WebSocketsPort");
-				mWebSocketsPort = WebSocketsPort.getAttributeValue<int>("value");
+			if (settings.hasChild("SocketIOPort")) {
+				XmlTree SocketIOPort = settings.getChild("SocketIOPort");
+				mSocketIOPort = SocketIOPort.getAttributeValue<int>("value");
 			}
-			if (settings.hasChild("WebSocketsRoom")) {
-				XmlTree WebSocketsRoom = settings.getChild("WebSocketsRoom");
-				mWebSocketsRoom = WebSocketsRoom.getAttributeValue<string>("value");
+			if (settings.hasChild("SocketIORoom")) {
+				XmlTree SocketIORoom = settings.getChild("SocketIORoom");
+				mSocketIORoom = SocketIORoom.getAttributeValue<string>("value");
 			}
-			if (settings.hasChild("WebSocketsNickname")) {
-				XmlTree WebSocketsNickname = settings.getChild("WebSocketsNickname");
-				mWebSocketsNickname = WebSocketsNickname.getAttributeValue<string>("value");
+			if (settings.hasChild("SocketIONickname")) {
+				XmlTree SocketIONickname = settings.getChild("SocketIONickname");
+				mSocketIONickname = SocketIONickname.getAttributeValue<string>("value");
 			}
 
 			if (settings.hasChild("Info")) {
@@ -556,7 +556,7 @@ void VDSettings::reset()
 	mOSCMsg = "";
 	mMsg = "";
 	mErrorMsg = "";
-	mWebSocketsMsg = "";
+	mSocketIOMsg = "";
 	mMidiMsg = "";
 	mShaderMsg = "";
 	mFboMsg = "";
@@ -565,13 +565,13 @@ void VDSettings::reset()
 	xFadeChanged = false;*/
 	// web sockets
 	mIsRouter = false;
-	mAreWebSocketsEnabledAtStartup = true;
-	mIsWebSocketsServer = false;
-	mWebSocketsProtocol = "ws://";
-	mWebSocketsHost = "127.0.0.1";
-	mWebSocketsPort = 8088;
-	mWebSocketsRoom = "roomtest"; 
-	mWebSocketsNickname = "bruce";
+	mAreSocketIOEnabledAtStartup = true;
+	mIsSocketIOServer = false;
+	mSocketIOProtocol = "http://";
+	mSocketIOHost = "127.0.0.1";
+	mSocketIOPort = 8088;
+	mSocketIORoom = "roomtest"; 
+	mSocketIONickname = "bruce";
 	// Blendmode 
 	iBlendmode = 0;
 	

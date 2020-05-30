@@ -660,7 +660,7 @@ void VDRouter::midiListener(midi::Message msg) {
 		else {
 			updateParams(midiControl, midiNormalizedValue);
 		}
-		//mWebSockets->write("{\"params\" :[{" + controlType);
+		//mSocketIO->write("{\"params\" :[{" + controlType);
 		break;
 	case MIDI_NOTE_ON:
 		/*

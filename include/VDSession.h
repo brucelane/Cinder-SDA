@@ -529,7 +529,7 @@ namespace videodromm {
 		int								getMaxFrame(unsigned int aTextureIndex) {
 			return mTextureList[math<int>::min(aTextureIndex, mTextureList.size() - 1)]->getMaxFrame();
 		};*/
-		// websockets
+		// SocketIO
 		void							wsConnect();
 		void							wsPing();
 		void							wsWrite(std::string msg);

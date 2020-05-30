@@ -300,14 +300,14 @@ namespace videodromm {
 		float						mCamEyePointZ;
 		// web sockets
 		bool						mIsRouter;
-		bool						mAreWebSocketsEnabledAtStartup;
-		bool						mIsWebSocketsServer;
-		string						mWebSocketsProtocol;
-		string						mWebSocketsHost;
-		string						mWebSocketsRoom;
-		string						mWebSocketsNickname;
-		uint16_t					mWebSocketsPort;
-		std::string					mWebSocketsMsg;
+		bool						mAreSocketIOEnabledAtStartup;
+		bool						mIsSocketIOServer;
+		string						mSocketIOProtocol;
+		string						mSocketIOHost;
+		string						mSocketIORoom;
+		string						mSocketIONickname;
+		uint16_t					mSocketIOPort;
+		std::string					mSocketIOMsg;
 		// midi
 		std::string					mMidiMsg;
 

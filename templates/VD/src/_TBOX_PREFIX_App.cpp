@@ -181,7 +181,7 @@ void _TBOX_PREFIX_App::draw()
 
 void prepareSettings(App::Settings *settings)
 {
-	settings->setWindowSize(640, 480);
+	settings->setWindowSize(1280, 720);
 }
 
 CINDER_APP(_TBOX_PREFIX_App, RendererGl, prepareSettings)

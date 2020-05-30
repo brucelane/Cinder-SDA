@@ -7,15 +7,10 @@ VDSocketio::VDSocketio(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 	mVDAnimation = aVDAnimation;
 
 	CI_LOG_V("VDSocketio constructor");
-	shaderReceived = false;
-	receivedFragString = "";
-	shaderUniforms = false;
-	receivedUniformsString = "";
-	streamReceived = false;
-	// WebSockets
+	// SocketIO
 	clientConnected = false;
 	
-	if (mVDSettings->mAreWebSocketsEnabledAtStartup) sioConnect();
+	if (mVDSettings->mAreSocketIOEnabledAtStartup) sioConnect();
 	mPingTime = getElapsedSeconds();
 
 }
@@ -36,17 +31,17 @@ void VDSocketio::updateParams(int iarg0, float farg1) {
 	}
 	if (iarg0 > 0 && iarg0 < 9) {
 		// sliders 
-		mVDAnimation->setFloatUniformValueByIndex(iarg0, farg1);
+		mVDAnimation->setUniformValue(iarg0, farg1);
 	}
 	if (iarg0 > 10 && iarg0 < 19) {
 		// rotary 
-		mVDAnimation->setFloatUniformValueByIndex(iarg0, farg1);
+		mVDAnimation->setUniformValue(iarg0, farg1);
 		// audio multfactor
-		if (iarg0 == mVDSettings->IAUDIOX) mVDAnimation->setFloatUniformValueByIndex(iarg0, (farg1 + 0.01) * 10);
+		if (iarg0 == mVDSettings->IAUDIOX) mVDAnimation->setUniformValue(iarg0, (farg1 + 0.01) * 10);
 		// exposure
-		if (iarg0 == mVDSettings->IEXPOSURE) mVDAnimation->setFloatUniformValueByIndex(iarg0, (farg1 + 0.01) * mVDAnimation->getMaxUniformValueByIndex(iarg0));
+		if (iarg0 == mVDSettings->IEXPOSURE) mVDAnimation->setUniformValue(iarg0, (farg1 + 0.01) * mVDAnimation->getMaxUniformValueByIndex(iarg0));
 
-		sioWrite("{\"params\" :[{\"name\":" + toString(iarg0) + ",\"value\":" + toString(mVDAnimation->getFloatUniformValueByIndex(iarg0)) + "}]}");
+		sioWrite("{\"params\" :[{\"name\":" + toString(iarg0) + ",\"value\":" + toString(mVDAnimation->getUniformValue(iarg0)) + "}]}");
 
 	}
 	// buttons
@@ -63,29 +58,20 @@ void VDSocketio::updateParams(int iarg0, float farg1) {
 	}*/
 	if (iarg0 > 40 && iarg0 < 49) {
 		// low row 
-		mVDAnimation->setFloatUniformValueByIndex(iarg0, farg1);
+		mVDAnimation->setUniformValue(iarg0, farg1);
 	}
 }
 
-void VDSocketio::sioPing() {
-#if defined( CINDER_MSW )
-	if (clientConnected) {
-		if (!mVDSettings->mIsWebSocketsServer) {
-			mClient.ping();
-		}
-	}
-#endif
-}
 string * VDSocketio::getBase64Image() { 
 	streamReceived = false; 
 	return &mBase64String; 
 }
 //dreads(1, 0, 0.8).out(o0)
 void VDSocketio::parseMessage(string msg) {
-	mVDSettings->mWebSocketsMsg = "\nWS onRead";
-	// mVDSettings->mWebSocketsNewMsg = true;
+	mVDSettings->mSocketIOMsg = "\nWS onRead";
+	// mVDSettings->mSocketIONewMsg = true;
 	if (!msg.empty()) {
-		mVDSettings->mWebSocketsMsg += ": " + msg.substr(0, mVDSettings->mMsgLength);
+		mVDSettings->mSocketIOMsg += ": " + msg.substr(0, mVDSettings->mMsgLength);
 		//CI_LOG_V("sio msg: " + msg);
 		string first = msg.substr(0, 1);
 		if (first == "{") {
@@ -100,9 +86,9 @@ void VDSocketio::parseMessage(string msg) {
 						int name = jsonElement->getChild("name").getValue<int>();
 						float value = jsonElement->getChild("value").getValue<float>();
 						// basic name value 
-						mVDAnimation->setFloatUniformValueByIndex(name, value);
+						mVDAnimation->setUniformValue(name, value);
 						// dispatch to clients
-						if (mVDSettings->mIsWebSocketsServer) {
+						if (mVDSettings->mIsSocketIOServer) {
 							sioWrite(msg);
 						}
 					}
@@ -138,7 +124,7 @@ void VDSocketio::parseMessage(string msg) {
 								float value = jsonElement->getChild("value").getValue<float>();
 								CI_LOG_V("VDSocketio jsonParams.mValue:" + toString(name));
 								// basic name value 
-								mVDAnimation->setFloatUniformValueByIndex(name, value);
+								mVDAnimation->setUniformValue(name, value);
 							}
 						}
 						else if (val == "hydra") {
@@ -211,14 +197,14 @@ void VDSocketio::parseMessage(string msg) {
 							break;
 						case 3:
 							// change beat
-							mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIME, jsonElement->getChild("beat").getValue<float>());
-							CI_LOG_I("time:" + toString(mVDSettings->ITIME) + " " + toString(mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ITIME)));
+							mVDAnimation->setUniformValue(mVDSettings->ITIME, jsonElement->getChild("beat").getValue<float>());
+							CI_LOG_I("time:" + toString(mVDSettings->ITIME) + " " + toString(mVDAnimation->getUniformValue(mVDSettings->ITIME)));
 							break;
 						/*case 4:
 							// change phase
-							mVDAnimation->setFloatUniformValueByIndex(mVDSettings->IPHASE, jsonElement->getChild("phase").getValue<float>());
+							mVDAnimation->setUniformValue(mVDSettings->IPHASE, jsonElement->getChild("phase").getValue<float>());
 							mVDAnimation->setIntUniformValueByIndex(mVDSettings->IBEAT, (int)jsonElement->getChild("phase").getValue<float>());
-							CI_LOG_I("phase:" + toString(mVDSettings->IPHASE) + " " + toString(mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IPHASE))
+							CI_LOG_I("phase:" + toString(mVDSettings->IPHASE) + " " + toString(mVDAnimation->getUniformValue(mVDSettings->IPHASE))
 								+ "beat:" + toString(mVDSettings->IBEAT) + " " + toString(mVDAnimation->getIntUniformValueByIndex(mVDSettings->IBEAT))
 							);
 							break;*/
@@ -231,9 +217,9 @@ void VDSocketio::parseMessage(string msg) {
 				}
 			}
 			catch (cinder::JsonTree::Exception exception) {
-				mVDSettings->mWebSocketsMsg += "\n error jsonparser exception: ";
-				mVDSettings->mWebSocketsMsg += exception.what();
-				mVDSettings->mWebSocketsMsg += "  ";
+				mVDSettings->mSocketIOMsg += "\n error jsonparser exception: ";
+				mVDSettings->mSocketIOMsg += exception.what();
+				mVDSettings->mSocketIOMsg += "  ";
 			}
 		}
 		else if (msg.substr(0, 2) == "/*") {
@@ -280,7 +266,7 @@ void VDSocketio::parseMessage(string msg) {
 					processedContent += shader;
 
 					//mShaders->loadLiveShader(processedContent); // need uniforms declared
-					// route it to websockets clients
+					// route it to SocketIO clients
 					if (mVDSettings->mIsRouter) {
 						sioWrite(msg);
 					}
@@ -294,9 +280,9 @@ void VDSocketio::parseMessage(string msg) {
 					// USELESS? mVDSettings->mShaderToLoad = processedFile.string();
 				}
 				catch (cinder::JsonTree::Exception exception) {
-					mVDSettings->mWebSocketsMsg += "\nerror jsonparser exception: ";
-					mVDSettings->mWebSocketsMsg += exception.what();
-					mVDSettings->mWebSocketsMsg += "  ";
+					mVDSettings->mSocketIOMsg += "\nerror jsonparser exception: ";
+					mVDSettings->mSocketIOMsg += exception.what();
+					mVDSettings->mSocketIOMsg += "  ";
 				}
 			}
 		}
@@ -304,7 +290,7 @@ void VDSocketio::parseMessage(string msg) {
 		else if (msg.substr(0, 7) == "uniform") {
 			// fragment shader from live coding
 			mVDSettings->mShaderToLoad = msg;
-			// route it to websockets clients
+			// route it to SocketIO clients
 			if (mVDSettings->mIsRouter) {
 				sioWrite(msg);
 			}
@@ -312,7 +298,7 @@ void VDSocketio::parseMessage(string msg) {
 		else if (msg.substr(0, 7) == "#version") {
 			// fragment shader from live coding
 			//mShaders->loadLiveShader(msg);
-			// route it to websockets clients
+			// route it to SocketIO clients
 			if (mVDSettings->mIsRouter) {
 				sioWrite(msg);
 			}
@@ -363,187 +349,33 @@ string VDSocketio::getReceivedUniforms() {
 }
 
 void VDSocketio::sioConnect() {
-
-	// either a client or a server
-	if (mVDSettings->mIsWebSocketsServer) {
-		mServer.connectOpenEventHandler([&]() {
-			clientConnected = true;
-			mVDSettings->mWebSocketsMsg += "\nconnected to server";
-			
-		});
-		mServer.connectCloseEventHandler([&]() {
-			clientConnected = false;
-			mVDSettings->mWebSocketsMsg += "\nDisconnected";
-			
-		});
-		mServer.connectFailEventHandler([&](string err) {
-			/*mVDSettings->mWebSocketsMsg = "\nWS Error";
-			
-			if (!err.empty()) {
-				mVDSettings->mWebSocketsMsg += ": " + err;
-			}*/
-			mVDSettings->mErrorMsg = "\nWS Error";
-			
-			if (!err.empty()) {
-				mVDSettings->mWebSocketsMsg += ": " + err;
-			}
-		});
-		mServer.connectInterruptEventHandler([&]() {
-			mVDSettings->mWebSocketsMsg += "\nWS Interrupted";
-			
-		});
-		mServer.connectPingEventHandler([&](string msg) {
-			mVDSettings->mWebSocketsMsg += "\nWS Pinged";
-			
-			if (!msg.empty())
-			{
-				mVDSettings->mWebSocketsMsg += ": " + msg;
-			}
-		});
-		mServer.connectMessageEventHandler([&](string msg) {
-			parseMessage(msg);
-		});
-		mServer.connectSocketInitEventHandler([&]()
-		{
-			// This routine reads the address of the incoming connection
-			mVDSettings->mWebSocketsMsg += "\nWS Server new connection";
-			
-			asio::ip::tcp::socket* socket = mServer.getSocket();
-			if (socket != nullptr) {
-				asio::ip::address address = socket->remote_endpoint().address();
-				string host = "";
-				if (address.is_v4()) {
-					host += address.to_v4().to_string();
-				}
-				else if (address.is_v6()) {
-					host += address.to_v6().to_string();
-				}
-				else {
-					host += address.to_string();
-				}
-				host += ":" + toString(socket->remote_endpoint().port());
-				CI_LOG_V(host);
-				mVDSettings->mWebSocketsMsg += "\n: " + host;
-			}
-		});
-		mServer.listen(mVDSettings->mWebSocketsPort);
-	}
-	else
-	{
-		mClient.connectOpenEventHandler([&]() {
-			clientConnected = true;
-			mVDSettings->mWebSocketsMsg += "\nConnected";
-		});
-		mClient.connectCloseEventHandler([&]() {
-			clientConnected = false;
-			mVDSettings->mWebSocketsMsg += "\nDisconnected";
-		});
-		mClient.connectFailEventHandler([&](string err) {
-			/*mVDSettings->mWebSocketsMsg = "\nWS Error";			
-			if (!err.empty()) {
-				mVDSettings->mWebSocketsMsg += ": " + err;
-			}*/
-			mVDSettings->mErrorMsg = "\nWS Error";
-			if (!err.empty()) {
-				mVDSettings->mErrorMsg += ": " + err;
-			}		});
-		mClient.connectInterruptEventHandler([&]() {
-			mVDSettings->mWebSocketsMsg += "\nWS Interrupted";
-		});
-		mClient.connectPingEventHandler([&](string msg) {
-			mVDSettings->mWebSocketsMsg += "\nWS Ponged";
-			if (!msg.empty())
-			{
-				mVDSettings->mWebSocketsMsg += ": " + msg;
-			}
-		});
-		mClient.connectMessageEventHandler([&](string msg) {
-			parseMessage(msg);
-		});
-		sioClientConnect();
-	}
-	mVDSettings->mAreWebSocketsEnabledAtStartup = true;
 	clientConnected = true;
-	// light4vents
-	/*mL4EClient.connectOpenEventHandler([&]() {
-		mVDSettings->mOSCMsg = "Connected";
-		mVDSettings->mOSCNewMsg = true;
-	});
-	mL4EClient.connectCloseEventHandler([&]() {
-		clientConnected = false;
-		mVDSettings->mOSCMsg = "Disconnected";
-		mVDSettings->mOSCNewMsg = true;
-	});
-	mL4EClient.connectFailEventHandler([&](string err) {
-		
-		if (!err.empty()) {
-			mVDSettings->mOSCMsg += ": " + err;
-		}
-	});
-	mL4EClient.connectInterruptEventHandler([&]() {
-		mVDSettings->mOSCMsg = "WS Interrupted";
-		mVDSettings->mOSCNewMsg = true;
-	});
-	mL4EClient.connectPingEventHandler([&](string msg) {
-		mVDSettings->mOSCMsg = "WS Ponged";
-		mVDSettings->mOSCNewMsg = true;
-		if (!msg.empty())
-		{
-			mVDSettings->mOSCMsg += ": " + msg;
-		}
-	});
-	mL4EClient.connectMessageEventHandler([&](string msg) {
-		// parseMessage(msg);
-	});
-	sioL4EClientConnect();
-}
-void VDSocketio::sioL4EClientConnect()
-{
-	stringstream s;
-	s << mVDSettings->mWebSocketsProtocol << "light4eventssio.herokuapp.com/bruce";
-	mL4EClient.connect(s.str());*/
 }
 void VDSocketio::sioClientConnect()
 {
-
 	stringstream s;
-	if (mVDSettings->mWebSocketsPort == 80) {
-		s << mVDSettings->mWebSocketsProtocol << mVDSettings->mWebSocketsHost;
+	if (mVDSettings->mSocketIOPort == 80) {
+		s << mVDSettings->mSocketIOProtocol << mVDSettings->mSocketIOHost;
 	}
 	else {
-		if (mVDSettings->mWebSocketsPort == 9000) {
-			s << mVDSettings->mWebSocketsProtocol << mVDSettings->mWebSocketsHost << ":" << mVDSettings->mWebSocketsPort << "/" << mVDSettings->mWebSocketsRoom << "/" << mVDSettings->mWebSocketsNickname;
+		if (mVDSettings->mSocketIOPort == 9000) {
+			s << mVDSettings->mSocketIOProtocol << mVDSettings->mSocketIOHost << ":" << mVDSettings->mSocketIOPort << "/" << mVDSettings->mSocketIORoom << "/" << mVDSettings->mSocketIONickname;
 		}
 		else {
-			s << mVDSettings->mWebSocketsProtocol << mVDSettings->mWebSocketsHost << ":" << mVDSettings->mWebSocketsPort;
+			s << mVDSettings->mSocketIOProtocol << mVDSettings->mSocketIOHost << ":" << mVDSettings->mSocketIOPort;
 		}
 	}
-	// BL TEMP s << "https://" << mVDSettings->mWebSocketsHost << ":" << mVDSettings->mWebSocketsPort;
+	// BL TEMP s << "https://" << mVDSettings->mSocketIOHost << ":" << mVDSettings->mSocketIOPort;
 	mClient.connect(s.str());
-
 }
-void VDSocketio::sioClientDisconnect()
-{
 
-	if (clientConnected)
-	{
-		mClient.disconnect();
-	}
-
-}
 void VDSocketio::sioWrite(string msg)
 {
-	if (mVDSettings->mAreWebSocketsEnabledAtStartup)
+	if (mVDSettings->mAreSocketIOEnabledAtStartup)
 	{
 		CI_LOG_V("sioWrite send: " + msg);
-		if (mVDSettings->mIsWebSocketsServer)
-		{
-			mServer.write(msg);
-		}
-		else
-		{
-			if (clientConnected) mClient.write(msg);
-		}
+		if (clientConnected) mClient.socket()->emit("test_text", sio::string_message::create(msg));
+		
 	}
 }
 
@@ -554,17 +386,17 @@ void VDSocketio::sendJSON(string params) {
 }
 void VDSocketio::toggleAuto(unsigned int aIndex) {
 	// toggle
-	mVDAnimation->toggleAuto(aIndex);
+	//mVDAnimation->toggleAuto(aIndex);
 	// TODO send json	
 }
 void VDSocketio::toggleTempo(unsigned int aIndex) {
 	// toggle
-	mVDAnimation->toggleTempo(aIndex);
+	//mVDAnimation->toggleTempo(aIndex);
 	// TODO send json	
 }
 void VDSocketio::toggleValue(unsigned int aIndex) {
 	// toggle
-	mVDAnimation->toggleValue(aIndex);
+	//mVDAnimation->toggleValue(aIndex);
 	stringstream sParams;
 	// TODO check boolean value:
 	sParams << "{\"params\" :[{\"name\" : " << aIndex << ",\"value\" : " << (int)mVDAnimation->getBoolUniformValueByIndex(aIndex) << "}]}";
@@ -573,7 +405,7 @@ void VDSocketio::toggleValue(unsigned int aIndex) {
 }
 void VDSocketio::resetAutoAnimation(unsigned int aIndex) {
 	// reset
-	mVDAnimation->resetAutoAnimation(aIndex);
+	//mVDAnimation->resetAutoAnimation(aIndex);
 	// TODO: send json	
 }
 
@@ -591,71 +423,60 @@ void VDSocketio::changeIntValue(unsigned int aControl, int aValue) {
 }
 void VDSocketio::changeFloatValue(unsigned int aControl, float aValue, bool forceSend, bool toggle, bool increase, bool decrease) {
 	/*if (aControl == 31) {
-		CI_LOG_V("old value " + toString(mVDAnimation->getFloatUniformValueByIndex(aControl)) + " newvalue " + toString(aValue));
+		CI_LOG_V("old value " + toString(mVDAnimation->getUniformValue(aControl)) + " newvalue " + toString(aValue));
 	}*/
 	float newValue;
 	if (increase) {
 		// increase
-		newValue = mVDAnimation->getFloatUniformValueByIndex(aControl) + 0.1f;
+		newValue = mVDAnimation->getUniformValue(aControl) + 0.1f;
 		if (newValue > 1.0f) newValue = 1.0f;
 		aValue = newValue;
 	}
 	else {
 		// decrease
 		if (decrease) {
-			newValue = mVDAnimation->getFloatUniformValueByIndex(aControl) - 0.1f;
+			newValue = mVDAnimation->getUniformValue(aControl) - 0.1f;
 			if (newValue < 0.0f) newValue = 0.0f;
 			aValue = newValue;
 		}
 		else { 
 			// toggle
 			if (toggle) {
-				newValue = mVDAnimation->getFloatUniformValueByIndex(aControl);
+				newValue = mVDAnimation->getUniformValue(aControl);
 				if (newValue > 0.0f) { newValue = 0.0f; }
 				else { newValue = 1.0f; } // Check for max instead?
 				aValue = newValue;
 			}
 		}
 	}
-	/*
-		createVec3Uniform("iResolution", mVDSettings->IRESOLUTION, vec3(getFloatUniformValueByName("iResolutionX"), getFloatUniformValueByName("iResolutionY"), 1.0));
-		createVec3Uniform("iColor", mVDSettings->ICOLOR, vec3(0.56, 0.0, 1.0));
-		createVec3Uniform("iBackgroundColor", mVDSettings->IBACKGROUNDCOLOR);
-		//createVec3Uniform("iChannelResolution[0]", 63, vec3(mVDSettings->mFboWidth, mVDSettings->mFboHeight, 1.0));
-		static const int			IMOUSEX = 42;
-		static const int			IMOUSEY = 43;
-		static const int			IMOUSEZ = 44;
-
-		// vec4
-		createVec4Uniform("iMouse", 70, vec4(320.0f, 240.0f, 0.0f, 0.0f));
-	*/
+	
 	// check if changed
-	if ( (mVDAnimation->setFloatUniformValueByIndex(aControl, aValue) && aControl != mVDSettings->IFPS) || forceSend) {
+	if ( (mVDAnimation->setUniformValue(aControl, aValue) && aControl != mVDSettings->IFPS) || forceSend) {
 		stringstream sParams;
 		// update color vec3
 		if (aControl > 0 && aControl < 4) {
 			mVDAnimation->setVec3UniformValueByIndex(mVDSettings->ICOLOR, vec3(
-				mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFR),
-				mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFG),
-				mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFB)
+				mVDAnimation->getUniformValue(mVDSettings->IFR),
+				mVDAnimation->getUniformValue(mVDSettings->IFG),
+				mVDAnimation->getUniformValue(mVDSettings->IFB)
 			));
-			colorWrite(); //lights4events
+			
 		}
 		// update mouse vec4
 		if (aControl > 41 && aControl < 45) {
 			mVDAnimation->setVec4UniformValueByIndex(mVDSettings->IMOUSE, vec4(
-				mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEX), 
-				mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEY), 
-				mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEZ),
+				mVDAnimation->getUniformValue(mVDSettings->IMOUSEX), 
+				mVDAnimation->getUniformValue(mVDSettings->IMOUSEY), 
+				mVDAnimation->getUniformValue(mVDSettings->IMOUSEZ),
 				1.0));
 			 
 		}
 
 		// update iResolution vec3
 		if (aControl == 29 || aControl ==30) {
-			mVDAnimation->setVec3UniformValueByIndex(mVDSettings->IRESOLUTION, vec3(mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESX), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESY), 1.0));
+			mVDAnimation->setVec3UniformValueByIndex(mVDSettings->IRESOLUTION, vec3(mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONX), mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONY), 1.0));
 		}
-		sParams << "{\"params\" :[{\"name\" : " << aControl << ",\"value\" : " << mVDAnimation->getFloatUniformValueByIndex(aControl) << "}]}";
+		sParams << "{\"params\" :[{\"name\" : " << aControl << ",\"value\" : " << mVDAnimation->getUniformValue(aControl) << "}]}";
 		string strParams = sParams.str();
 		
 		sendJSON(strParams);
@@ -682,213 +503,6 @@ void VDSocketio::changeFragmentShader(const string& aFragmentShaderText) {
 	string strParams = sParams.str();
 	sendJSON(strParams);
 }
-void VDSocketio::colorWrite()
-{
-	/* remove apache untick proxy mode in nginx
-	location /sio {
-	proxy_pass http://domain;
-	proxy_http_version 1.1;
-	proxy_set_header Upgrade $http_upgrade;
-	proxy_set_header Connection "Upgrade";
-	}
-	*/
-	// lights4events
-	char col[97];
-	int r = (int)(mVDAnimation->getFloatUniformValueByIndex(1) * 255);
-	int g = (int)(mVDAnimation->getFloatUniformValueByIndex(2) * 255);
-	int b = (int)(mVDAnimation->getFloatUniformValueByIndex(3) * 255);
-	int a = (int)(mVDAnimation->getFloatUniformValueByIndex(4) * 255);
-	//sprintf(col, "#%02X%02X%02X", r, g, b);
-	sprintf(col, "{\"type\":\"action\", \"parameters\":{\"name\":\"FC\",\"parameters\":{\"color\":\"#%02X%02X%02X%02X\",\"fading\":\"NONE\"}}}", a, r, g, b);
-	sioWrite(col);
-	//mL4EClient.write(col);
-}
 
 void VDSocketio::update() {
-
-	// websockets
-
-	if (mVDSettings->mAreWebSocketsEnabledAtStartup)
-	{
-		if (mVDSettings->mIsWebSocketsServer)
-		{
-			mServer.poll();
-		}
-		else
-		{
-			if (clientConnected)
-			{
-				mClient.poll();
-			}
-		}
-	}
-
-	/* OLD KINECT AND TOUCHOSC
-	// check for mouse moved message
-	if(m.getAddress() == "/mouse/position"){
-	// both the arguments are int32's
-	Vec2i pos = Vec2i( m.getArgAsInt32(0), m.getArgAsInt32(1));
-	Vec2f mouseNorm = Vec2f( pos ) / getWindowSize();
-	Vec2f mouseVel = Vec2f( pos - pMouse ) / getWindowSize();
-	addToFluid( mouseNorm, mouseVel, true, true );
-	pMouse = pos;
-	if ( m.getArgAsInt32(2) == 1 )
-	{
-	mMouseDown = true;
-	}
-	else
-	{
-	mMouseDown = false;
-	}
-	if ( mMouseDown )
-	{
-	mArcball.mouseDown( pos );
-	mCurrentMouseDown = mInitialMouseDown = pos;
-	}
-	}
-	// check for mouse button message
-	else if(m.getAddress() == "/mouse/button"){
-	// the single argument is a string
-	Vec2i pos = Vec2i( m.getArgAsInt32(0), m.getArgAsInt32(1));
-	mArcball.mouseDown( pos );
-	mCurrentMouseDown = mInitialMouseDown = pos;
-	if ( m.getArgAsInt32(2) == 1 )
-	{
-	mMouseDown = true;
-	}
-	else
-	{
-	mMouseDown = false;
-	}
-	}
-	else if(m.getAddress() == "/fluid/drawfluid"){
-	drawFluid = !drawFluid;
-	}
-	else if(m.getAddress() == "/fluid/drawfluidtex"){
-	drawFluidTex = !drawFluidTex;
-	}
-	else if(m.getAddress() == "/fluid/drawparticles"){
-	drawParticles = ! drawParticles;
-	}
-	else if(m.getAddress() == "/fluid/randomizecolor"){
-	fluidSolver.randomizeColor();
-	}
-	else if(m.getAddress() == "/window/position"){
-	// window position
-	setWindowPos(m.getArgAsInt32(0), m.getArgAsInt32(1));
-	}
-	else if(m.getAddress() == "/window/setfullscreen"){
-	// fullscreen
-	//setFullScreen( ! isFullScreen() );
-	}
-	else if(m.getAddress() == "/quit"){
-	quitProgram();
-	}
-	else{
-	// unrecognized message
-	//cout << "not recognized:" << m.getAddress() << endl;
-
-	}
-
-	}
-	// osc
-	while (mOSCReceiver.hasWaitingMessages())
-	{
-	osc::Message message;
-	bool routeMessage = false;
-	mOSCReceiver.getNextMessage(&message);
-	for (int a = 0; a < MAX; a++)
-	{
-	iargs[a] = 0;
-	fargs[a] = 0.0;
-	sargs[a] = "";
-	}
-	string oscAddress = message.getAddress();
-
-	int numArgs = message.getNumArgs();
-	// get arguments
-	for (int i = 0; i < message.getNumArgs(); i++)
-	{
-	if (i < MAX)
-	{
-	if (message.getArgType(i) == osc::TYPE_INT32) {
-	try
-	{
-	iargs[i] = message.getArgAsInt32(i);
-	sargs[i] = toString(iargs[i]);
-	}
-	catch (...) {
-	cout << "Exception reading argument as int32" << std::endl;
-	}
-	}
-	if (message.getArgType(i) == osc::TYPE_FLOAT) {
-	try
-	{
-	fargs[i] = message.getArgAsFloat(i);
-	sargs[i] = toString(fargs[i]);
-	}
-	catch (...) {
-	cout << "Exception reading argument as float" << std::endl;
-	}
-	}
-	if (message.getArgType(i) == osc::TYPE_STRING) {
-	try
-	{
-	sargs[i] = message.getArgAsString(i);
-	}
-	catch (...) {
-	cout << "Exception reading argument as string" << std::endl;
-	}
-	}
-	}
-	}
-
-
-
-	{
-	console() << "OSC message received: " << oscAddress << std::endl;
-	// is it a layer msg?
-	int layer = 0;
-	unsigned layerFound = oscAddress.find("layer");
-	if (layerFound == 1)
-	{
-	unsigned clipFound = oscAddress.find("/clip");
-	if (clipFound == 7) // layer must be < 10
-	{
-	cout << "clipFound " << clipFound;
-	layer = atoi(oscAddress.substr(6, 1).c_str());
-	int clip = atoi(oscAddress.substr(12, 1).c_str());
-	string fileName = toString((layer * 10) + clip) + ".fragjson";
-	fs::path fragFile = getAssetPath("") / "shaders" / "fragjson" / fileName;
-	if (fs::exists(fragFile))
-	{
-	//mShaders->loadFragJson(fragFile.string());
-	}
-	}
-	else
-	{
-	if (clipFound == 8)
-	{
-	layer = atoi(oscAddress.substr(6, 2).c_str());
-	}
-	}
-	// connect or preview
-	unsigned connectFound = oscAddress.find("connect");
-	if (connectFound != string::npos) cout << "connectFound " << connectFound;
-	}
-	//if ( layerFound != string::npos ) cout << "layerFound " << layerFound;
-
-	unsigned found = oscAddress.find_last_of("/");
-	int name = atoi(oscAddress.substr(found + 1).c_str());
-	}
-	stringstream ss;
-	ss << message.getRemoteIp() << " adr:" << oscAddress << " ";
-	for (int a = 0; a < MAX; a++)
-	{
-	ss << a << ":" << sargs[a] << " ";
-	}
-	ss << std::endl;
-	mVDSettings->mWebSocketsNewMsg = true;
-	mVDSettings->mWebSocketsMsg = ss.str();
-	*/
 }

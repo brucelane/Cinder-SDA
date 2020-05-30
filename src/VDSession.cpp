@@ -130,7 +130,7 @@ void VDSession::update(unsigned int aClassIndex) {
 	/*if (mVDWebsocket->hasReceivedShader()) {
 		string receivedShader = mVDWebsocket->getReceivedShader();
 		// save file
-		string mShaderFileName = mVDSettings->mWebSocketsNickname + toString((int)getElapsedSeconds()) + ".fs";
+		string mShaderFileName = mVDSettings->mSocketIONickname + toString((int)getElapsedSeconds()) + ".fs";
 
 		fs::path fsFile = getAssetPath("") / mVDSettings->mAssetsPath / mShaderFileName;
 		ofstream mFS(fsFile.string(), std::ofstream::binary);
@@ -837,8 +837,8 @@ void VDSession::setFboBIndex(unsigned int aIndex, unsigned int aFboIndex) {
 */
 #pragma endregion shaders
 
-// websockets
-#pragma region websockets
+// SocketIO
+#pragma region SocketIO
 
 void VDSession::wsConnect() {
 	//! 20200526 mVDWebsocket->wsConnect();
@@ -850,7 +850,7 @@ void VDSession::wsWrite(string msg)
 {
 	//! 20200526 mVDWebsocket->wsWrite(msg);
 }
-#pragma endregion websockets
+#pragma endregion SocketIO
 
 // mix
 #pragma region mix
