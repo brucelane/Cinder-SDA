@@ -7,6 +7,7 @@
 // TODO separate websockets, osc, midi into different classes
 // TODO implement lazy loading for websockets, osc, midi
 // TODO choose output : OSC or websockets?
+// TODO socketio https://github.com/kusharami/socket.io-client-cpp
 #pragma once
 #include "cinder/Cinder.h"
 #include "cinder/app/App.h"

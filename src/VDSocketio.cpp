@@ -1,0 +1,894 @@
+#include "VDSocketio.h"
+
+using namespace videodromm;
+
+VDSocketio::VDSocketio(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
+	mVDSettings = aVDSettings;
+	mVDAnimation = aVDAnimation;
+
+	CI_LOG_V("VDSocketio constructor");
+	shaderReceived = false;
+	receivedFragString = "";
+	shaderUniforms = false;
+	receivedUniformsString = "";
+	streamReceived = false;
+	// WebSockets
+	clientConnected = false;
+	
+	if (mVDSettings->mAreWebSocketsEnabledAtStartup) sioConnect();
+	mPingTime = getElapsedSeconds();
+
+}
+
+void VDSocketio::updateParams(int iarg0, float farg1) {
+	if (farg1 > 0.1) {
+		//avoid to send twice
+		if (iarg0 == 61) {
+			// right arrow
+			mVDSettings->iBlendmode--;
+			if (mVDSettings->iBlendmode < 0) mVDSettings->iBlendmode = mVDAnimation->getBlendModesCount() - 1;
+		}
+		if (iarg0 == 62) {
+			// left arrow
+			mVDSettings->iBlendmode++;
+			if (mVDSettings->iBlendmode > mVDAnimation->getBlendModesCount() - 1) mVDSettings->iBlendmode = 0;
+		}
+	}
+	if (iarg0 > 0 && iarg0 < 9) {
+		// sliders 
+		mVDAnimation->setFloatUniformValueByIndex(iarg0, farg1);
+	}
+	if (iarg0 > 10 && iarg0 < 19) {
+		// rotary 
+		mVDAnimation->setFloatUniformValueByIndex(iarg0, farg1);
+		// audio multfactor
+		if (iarg0 == mVDSettings->IAUDIOX) mVDAnimation->setFloatUniformValueByIndex(iarg0, (farg1 + 0.01) * 10);
+		// exposure
+		if (iarg0 == mVDSettings->IEXPOSURE) mVDAnimation->setFloatUniformValueByIndex(iarg0, (farg1 + 0.01) * mVDAnimation->getMaxUniformValueByIndex(iarg0));
+
+		sioWrite("{\"params\" :[{\"name\":" + toString(iarg0) + ",\"value\":" + toString(mVDAnimation->getFloatUniformValueByIndex(iarg0)) + "}]}");
+
+	}
+	// buttons
+	if (iarg0 > 20 && iarg0 < 29) {
+		// select index
+		mVDSettings->selectedWarp = iarg0 - 21;
+	}
+	/*if (iarg0 > 30 && iarg0 < 39)
+	{
+	// select input
+	mVDSettings->mWarpFbos[mVDSettings->selectedWarp].textureIndex = iarg0 - 31;
+	// activate
+	mVDSettings->mWarpFbos[mVDSettings->selectedWarp].active = !mVDSettings->mWarpFbos[mVDSettings->selectedWarp].active;
+	}*/
+	if (iarg0 > 40 && iarg0 < 49) {
+		// low row 
+		mVDAnimation->setFloatUniformValueByIndex(iarg0, farg1);
+	}
+}
+
+void VDSocketio::sioPing() {
+#if defined( CINDER_MSW )
+	if (clientConnected) {
+		if (!mVDSettings->mIsWebSocketsServer) {
+			mClient.ping();
+		}
+	}
+#endif
+}
+string * VDSocketio::getBase64Image() { 
+	streamReceived = false; 
+	return &mBase64String; 
+}
+//dreads(1, 0, 0.8).out(o0)
+void VDSocketio::parseMessage(string msg) {
+	mVDSettings->mWebSocketsMsg = "\nWS onRead";
+	// mVDSettings->mWebSocketsNewMsg = true;
+	if (!msg.empty()) {
+		mVDSettings->mWebSocketsMsg += ": " + msg.substr(0, mVDSettings->mMsgLength);
+		//CI_LOG_V("sio msg: " + msg);
+		string first = msg.substr(0, 1);
+		if (first == "{") {
+			// json
+			JsonTree json;
+			try {
+				json = JsonTree(msg);
+				// web controller
+				if (json.hasChild("params")) {
+					JsonTree jsonParams = json.getChild("params");
+					for (JsonTree::ConstIter jsonElement = jsonParams.begin(); jsonElement != jsonParams.end(); ++jsonElement) {
+						int name = jsonElement->getChild("name").getValue<int>();
+						float value = jsonElement->getChild("value").getValue<float>();
+						// basic name value 
+						mVDAnimation->setFloatUniformValueByIndex(name, value);
+						// dispatch to clients
+						if (mVDSettings->mIsWebSocketsServer) {
+							sioWrite(msg);
+						}
+					}
+				}
+
+				if (json.hasChild("k2")) {
+					JsonTree jsonParams = json.getChild("k2");
+					for (JsonTree::ConstIter jsonElement = jsonParams.begin(); jsonElement != jsonParams.end(); ++jsonElement) {
+						int name = jsonElement->getChild("name").getValue<int>();
+						string value = jsonElement->getChild("value").getValue();
+						vector<string> vs = split(value, ",");
+						vec4 v = vec4(strtof((vs[0]).c_str(), 0), strtof((vs[1]).c_str(), 0), strtof((vs[2]).c_str(), 0), strtof((vs[3]).c_str(), 0));
+						// basic name value 
+						mVDAnimation->setVec4UniformValueByIndex(name, v);
+					}
+				}
+
+				if (json.hasChild("event")) {
+					JsonTree jsonEvent = json.getChild("event");
+					string val = jsonEvent.getValue();
+					// check if message exists
+					if (json.hasChild("message")) {
+						if (val == "canvas") {
+							// we received a jpeg base64
+							mBase64String = json.getChild("message").getValue<string>();
+							streamReceived = true;
+						}
+						else if (val == "params") {
+							//{"event":"params","message":"{\"params\" :[{\"name\" : 12,\"value\" :0.132}]}"}
+							JsonTree jsonParams = json.getChild("message");
+							for (JsonTree::ConstIter jsonElement = jsonParams.begin(); jsonElement != jsonParams.end(); ++jsonElement) {
+								int name = jsonElement->getChild("name").getValue<int>();
+								float value = jsonElement->getChild("value").getValue<float>();
+								CI_LOG_V("VDSocketio jsonParams.mValue:" + toString(name));
+								// basic name value 
+								mVDAnimation->setFloatUniformValueByIndex(name, value);
+							}
+						}
+						else if (val == "hydra") {
+							receivedUniformsString = json.getChild("message").getValue<string>();
+							shaderUniforms = true;
+							// force to display
+							mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOA, 0);
+							mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOB, 1);
+						}
+						else if (val == "frag") {
+							// we received a fragment shader string
+							receivedFragString = json.getChild("message").getValue<string>();
+							shaderReceived = true;
+							// force to display
+							mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOA, 0);
+							mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOB, 1);
+						}
+						else {
+							// we received a fragment shader string
+							CI_LOG_V("VDSocketio unknown event: " + val);
+						}
+						//string evt = json.getChild("event").getValue<string>();
+					}
+				}
+				if (json.hasChild("Data")) {
+					JsonTree jsonData = json.getChild("Data");
+					if (jsonData.hasChild("Code")) {
+						JsonTree jsonCode = jsonData.getChild("Code");
+						receivedFragString = jsonCode.getValue<string>();
+						shaderReceived = true;
+					}
+				}
+				if (json.hasChild("cmd")) {
+					JsonTree jsonCmd = json.getChild("cmd");
+					for (JsonTree::ConstIter jsonElement = jsonCmd.begin(); jsonElement != jsonCmd.end(); ++jsonElement) {
+						receivedType = jsonElement->getChild("type").getValue<int>();
+						switch (receivedType)
+						{
+						case 0:
+							// change fbo
+							// react-nexusui
+							// from changeWarpFboIndex
+							receivedWarpIndex = jsonElement->getChild("warp").getValue<float>(); // TODO int, useless for now
+							receivedFboIndex = jsonElement->getChild("fbo").getValue<float>(); // TODO int
+							receivedSlot = jsonElement->getChild("slot").getValue<float>(); // TODO int
+							if (receivedSlot == 0) {
+								mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOA, receivedFboIndex);
+							}
+							else {
+								mVDAnimation->setIntUniformValueByIndex(mVDSettings->IFBOB, receivedFboIndex);
+							}
+							break;
+						case 1:
+							// from changeWarpShaderIndex
+							//receivedWarpIndex = jsonElement->getChild("warp").getValue<float>(); // TODO int
+							//receivedShaderIndex = jsonElement->getChild("shader").getValue<float>(); // TODO int
+							//receivedSlot = jsonElement->getChild("slot").getValue<float>(); // TODO int
+							//if (receivedSlot == 0) {
+							//	mVDMix->setWarpAShaderIndex(receivedWarpIndex, receivedShaderIndex);
+							//}
+							//else {
+							//	mVDMix->setWarpBShaderIndex(receivedWarpIndex, receivedShaderIndex);
+							//}
+							//break;
+						case 2:
+							// change tempo
+							mVDAnimation->useTimeWithTempo();
+							mVDAnimation->setBpm(jsonElement->getChild("tempo").getValue<float>());
+							CI_LOG_I("tempo:" + toString(mVDAnimation->getBpm()));
+							break;
+						case 3:
+							// change beat
+							mVDAnimation->setFloatUniformValueByIndex(mVDSettings->ITIME, jsonElement->getChild("beat").getValue<float>());
+							CI_LOG_I("time:" + toString(mVDSettings->ITIME) + " " + toString(mVDAnimation->getFloatUniformValueByIndex(mVDSettings->ITIME)));
+							break;
+						/*case 4:
+							// change phase
+							mVDAnimation->setFloatUniformValueByIndex(mVDSettings->IPHASE, jsonElement->getChild("phase").getValue<float>());
+							mVDAnimation->setIntUniformValueByIndex(mVDSettings->IBEAT, (int)jsonElement->getChild("phase").getValue<float>());
+							CI_LOG_I("phase:" + toString(mVDSettings->IPHASE) + " " + toString(mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IPHASE))
+								+ "beat:" + toString(mVDSettings->IBEAT) + " " + toString(mVDAnimation->getIntUniformValueByIndex(mVDSettings->IBEAT))
+							);
+							break;*/
+						default:
+							break;
+						}
+
+					}
+
+				}
+			}
+			catch (cinder::JsonTree::Exception exception) {
+				mVDSettings->mWebSocketsMsg += "\n error jsonparser exception: ";
+				mVDSettings->mWebSocketsMsg += exception.what();
+				mVDSettings->mWebSocketsMsg += "  ";
+			}
+		}
+		else if (msg.substr(0, 2) == "/*") {
+			// shader with json info				
+			unsigned closingCommentPosition = msg.find("*/");
+			if (closingCommentPosition > 0) {
+				JsonTree json;
+				try {
+					// create folders if they don't exist
+					fs::path pathsToCheck = getAssetPath("") / "glsl";
+					if (!fs::exists(pathsToCheck)) fs::create_directory(pathsToCheck);
+					pathsToCheck = getAssetPath("") / "glsl" / "received";
+					if (!fs::exists(pathsToCheck)) fs::create_directory(pathsToCheck);
+					pathsToCheck = getAssetPath("") / "glsl" / "processed";
+					if (!fs::exists(pathsToCheck)) fs::create_directory(pathsToCheck);
+					// find commented header
+					string jsonHeader = msg.substr(2, closingCommentPosition - 2);
+					ci::JsonTree::ParseOptions parseOptions;
+					parseOptions.ignoreErrors(false);
+					json = JsonTree(jsonHeader, parseOptions);
+					string title = json.getChild("title").getValue<string>();
+					string fragFileName = title + ".frag"; // with uniforms
+					string glslFileName = title + ".glsl"; // without uniforms, need to include shadertoy.inc
+					string shader = msg.substr(closingCommentPosition + 2);
+
+					string processedContent = "/*" + jsonHeader + "*/";
+					// check uniforms presence
+					std::size_t foundUniform = msg.find("uniform");
+
+					if (foundUniform != std::string::npos) {
+						// found uniforms
+					}
+					else {
+						// save glsl file without uniforms as it was received
+						fs::path currentFile = getAssetPath("") / "glsl" / "received" / glslFileName;
+						ofstream mFrag(currentFile.string(), std::ofstream::binary);
+						mFrag << msg;
+						mFrag.close();
+						CI_LOG_V("received file saved:" + currentFile.string());
+						//mVDSettings->mShaderToLoad = currentFile.string(); 
+						// uniforms not found, add include
+						processedContent += "#include shadertoy.inc";
+					}
+					processedContent += shader;
+
+					//mShaders->loadLiveShader(processedContent); // need uniforms declared
+					// route it to websockets clients
+					if (mVDSettings->mIsRouter) {
+						sioWrite(msg);
+					}
+
+					// save processed file
+					fs::path processedFile = getAssetPath("") / "glsl" / "processed" / fragFileName;
+					ofstream mFragProcessed(processedFile.string(), std::ofstream::binary);
+					mFragProcessed << processedContent;
+					mFragProcessed.close();
+					CI_LOG_V("processed file saved:" + processedFile.string());
+					// USELESS? mVDSettings->mShaderToLoad = processedFile.string();
+				}
+				catch (cinder::JsonTree::Exception exception) {
+					mVDSettings->mWebSocketsMsg += "\nerror jsonparser exception: ";
+					mVDSettings->mWebSocketsMsg += exception.what();
+					mVDSettings->mWebSocketsMsg += "  ";
+				}
+			}
+		}
+		/* OBSOLETE
+		else if (msg.substr(0, 7) == "uniform") {
+			// fragment shader from live coding
+			mVDSettings->mShaderToLoad = msg;
+			// route it to websockets clients
+			if (mVDSettings->mIsRouter) {
+				sioWrite(msg);
+			}
+		}*/
+		else if (msg.substr(0, 7) == "#version") {
+			// fragment shader from live coding
+			//mShaders->loadLiveShader(msg);
+			// route it to websockets clients
+			if (mVDSettings->mIsRouter) {
+				sioWrite(msg);
+			}
+		}
+		else if (first == "/")
+		{
+			// osc from videodromm-nodejs-router
+			/*int f = msg.size();
+			const char c = msg[9];
+			int s = msg[12];
+			int t = msg[13];
+			int u = msg[14];*/
+			CI_LOG_V(msg);
+		}
+		else if (first == "I") {
+
+			if (msg == "ImInit") {
+				// send ImInit OK
+				/*if (!remoteClientActive) { remoteClientActive = true; ForceKeyFrame = true;
+				// Send confirmation mServer.write("ImInit"); // Send font texture unsigned char* pixels; int width, height;
+				ImGui::GetIO().Fonts->GetTexDataAsAlpha8(&pixels, &width, &height); PreparePacketTexFont(pixels, width, height);SendPacket();
+				}*/
+			}
+			else if (msg.substr(0, 11) == "ImMouseMove") {
+				/*string trail = msg.substr(12);
+				unsigned commaPosition = trail.find(",");
+				if (commaPosition > 0) { mouseX = atoi(trail.substr(0, commaPosition).c_str());
+				mouseY = atoi(trail.substr(commaPosition + 1).c_str()); ImGuiIO& io = ImGui::GetIO();
+				io.MousePos = toPixels(vec2(mouseX, mouseY)); }*/
+			}
+			else if (msg.substr(0, 12) == "ImMousePress") {
+				/*ImGuiIO& io = ImGui::GetIO(); // 1,0 left click 1,1 right click
+				io.MouseDown[0] = false; io.MouseDown[1] = false; int rightClick = atoi(msg.substr(15).c_str());
+				if (rightClick == 1) { io.MouseDown[0] = false; io.MouseDown[1] = true; }
+				else { io.MouseDown[0] = true; io.MouseDown[1] = false;
+				}*/
+			}
+		}
+	}
+}
+string VDSocketio::getReceivedShader() {
+	shaderReceived = false;
+	return receivedFragString;
+}
+string VDSocketio::getReceivedUniforms() {
+	shaderUniforms = false;
+	return receivedUniformsString;
+}
+
+void VDSocketio::sioConnect() {
+
+	// either a client or a server
+	if (mVDSettings->mIsWebSocketsServer) {
+		mServer.connectOpenEventHandler([&]() {
+			clientConnected = true;
+			mVDSettings->mWebSocketsMsg += "\nconnected to server";
+			
+		});
+		mServer.connectCloseEventHandler([&]() {
+			clientConnected = false;
+			mVDSettings->mWebSocketsMsg += "\nDisconnected";
+			
+		});
+		mServer.connectFailEventHandler([&](string err) {
+			/*mVDSettings->mWebSocketsMsg = "\nWS Error";
+			
+			if (!err.empty()) {
+				mVDSettings->mWebSocketsMsg += ": " + err;
+			}*/
+			mVDSettings->mErrorMsg = "\nWS Error";
+			
+			if (!err.empty()) {
+				mVDSettings->mWebSocketsMsg += ": " + err;
+			}
+		});
+		mServer.connectInterruptEventHandler([&]() {
+			mVDSettings->mWebSocketsMsg += "\nWS Interrupted";
+			
+		});
+		mServer.connectPingEventHandler([&](string msg) {
+			mVDSettings->mWebSocketsMsg += "\nWS Pinged";
+			
+			if (!msg.empty())
+			{
+				mVDSettings->mWebSocketsMsg += ": " + msg;
+			}
+		});
+		mServer.connectMessageEventHandler([&](string msg) {
+			parseMessage(msg);
+		});
+		mServer.connectSocketInitEventHandler([&]()
+		{
+			// This routine reads the address of the incoming connection
+			mVDSettings->mWebSocketsMsg += "\nWS Server new connection";
+			
+			asio::ip::tcp::socket* socket = mServer.getSocket();
+			if (socket != nullptr) {
+				asio::ip::address address = socket->remote_endpoint().address();
+				string host = "";
+				if (address.is_v4()) {
+					host += address.to_v4().to_string();
+				}
+				else if (address.is_v6()) {
+					host += address.to_v6().to_string();
+				}
+				else {
+					host += address.to_string();
+				}
+				host += ":" + toString(socket->remote_endpoint().port());
+				CI_LOG_V(host);
+				mVDSettings->mWebSocketsMsg += "\n: " + host;
+			}
+		});
+		mServer.listen(mVDSettings->mWebSocketsPort);
+	}
+	else
+	{
+		mClient.connectOpenEventHandler([&]() {
+			clientConnected = true;
+			mVDSettings->mWebSocketsMsg += "\nConnected";
+		});
+		mClient.connectCloseEventHandler([&]() {
+			clientConnected = false;
+			mVDSettings->mWebSocketsMsg += "\nDisconnected";
+		});
+		mClient.connectFailEventHandler([&](string err) {
+			/*mVDSettings->mWebSocketsMsg = "\nWS Error";			
+			if (!err.empty()) {
+				mVDSettings->mWebSocketsMsg += ": " + err;
+			}*/
+			mVDSettings->mErrorMsg = "\nWS Error";
+			if (!err.empty()) {
+				mVDSettings->mErrorMsg += ": " + err;
+			}		});
+		mClient.connectInterruptEventHandler([&]() {
+			mVDSettings->mWebSocketsMsg += "\nWS Interrupted";
+		});
+		mClient.connectPingEventHandler([&](string msg) {
+			mVDSettings->mWebSocketsMsg += "\nWS Ponged";
+			if (!msg.empty())
+			{
+				mVDSettings->mWebSocketsMsg += ": " + msg;
+			}
+		});
+		mClient.connectMessageEventHandler([&](string msg) {
+			parseMessage(msg);
+		});
+		sioClientConnect();
+	}
+	mVDSettings->mAreWebSocketsEnabledAtStartup = true;
+	clientConnected = true;
+	// light4vents
+	/*mL4EClient.connectOpenEventHandler([&]() {
+		mVDSettings->mOSCMsg = "Connected";
+		mVDSettings->mOSCNewMsg = true;
+	});
+	mL4EClient.connectCloseEventHandler([&]() {
+		clientConnected = false;
+		mVDSettings->mOSCMsg = "Disconnected";
+		mVDSettings->mOSCNewMsg = true;
+	});
+	mL4EClient.connectFailEventHandler([&](string err) {
+		
+		if (!err.empty()) {
+			mVDSettings->mOSCMsg += ": " + err;
+		}
+	});
+	mL4EClient.connectInterruptEventHandler([&]() {
+		mVDSettings->mOSCMsg = "WS Interrupted";
+		mVDSettings->mOSCNewMsg = true;
+	});
+	mL4EClient.connectPingEventHandler([&](string msg) {
+		mVDSettings->mOSCMsg = "WS Ponged";
+		mVDSettings->mOSCNewMsg = true;
+		if (!msg.empty())
+		{
+			mVDSettings->mOSCMsg += ": " + msg;
+		}
+	});
+	mL4EClient.connectMessageEventHandler([&](string msg) {
+		// parseMessage(msg);
+	});
+	sioL4EClientConnect();
+}
+void VDSocketio::sioL4EClientConnect()
+{
+	stringstream s;
+	s << mVDSettings->mWebSocketsProtocol << "light4eventssio.herokuapp.com/bruce";
+	mL4EClient.connect(s.str());*/
+}
+void VDSocketio::sioClientConnect()
+{
+
+	stringstream s;
+	if (mVDSettings->mWebSocketsPort == 80) {
+		s << mVDSettings->mWebSocketsProtocol << mVDSettings->mWebSocketsHost;
+	}
+	else {
+		if (mVDSettings->mWebSocketsPort == 9000) {
+			s << mVDSettings->mWebSocketsProtocol << mVDSettings->mWebSocketsHost << ":" << mVDSettings->mWebSocketsPort << "/" << mVDSettings->mWebSocketsRoom << "/" << mVDSettings->mWebSocketsNickname;
+		}
+		else {
+			s << mVDSettings->mWebSocketsProtocol << mVDSettings->mWebSocketsHost << ":" << mVDSettings->mWebSocketsPort;
+		}
+	}
+	// BL TEMP s << "https://" << mVDSettings->mWebSocketsHost << ":" << mVDSettings->mWebSocketsPort;
+	mClient.connect(s.str());
+
+}
+void VDSocketio::sioClientDisconnect()
+{
+
+	if (clientConnected)
+	{
+		mClient.disconnect();
+	}
+
+}
+void VDSocketio::sioWrite(string msg)
+{
+	if (mVDSettings->mAreWebSocketsEnabledAtStartup)
+	{
+		CI_LOG_V("sioWrite send: " + msg);
+		if (mVDSettings->mIsWebSocketsServer)
+		{
+			mServer.write(msg);
+		}
+		else
+		{
+			if (clientConnected) mClient.write(msg);
+		}
+	}
+}
+
+void VDSocketio::sendJSON(string params) {
+
+	sioWrite(params);
+
+}
+void VDSocketio::toggleAuto(unsigned int aIndex) {
+	// toggle
+	mVDAnimation->toggleAuto(aIndex);
+	// TODO send json	
+}
+void VDSocketio::toggleTempo(unsigned int aIndex) {
+	// toggle
+	mVDAnimation->toggleTempo(aIndex);
+	// TODO send json	
+}
+void VDSocketio::toggleValue(unsigned int aIndex) {
+	// toggle
+	mVDAnimation->toggleValue(aIndex);
+	stringstream sParams;
+	// TODO check boolean value:
+	sParams << "{\"params\" :[{\"name\" : " << aIndex << ",\"value\" : " << (int)mVDAnimation->getBoolUniformValueByIndex(aIndex) << "}]}";
+	string strParams = sParams.str();
+	sendJSON(strParams);
+}
+void VDSocketio::resetAutoAnimation(unsigned int aIndex) {
+	// reset
+	mVDAnimation->resetAutoAnimation(aIndex);
+	// TODO: send json	
+}
+
+void VDSocketio::changeBoolValue(unsigned int aControl, bool aValue) {
+	// check if changed
+	mVDAnimation->setBoolUniformValueByIndex(aControl, aValue);
+	stringstream sParams;
+	// TODO: check boolean value:
+	sParams << "{\"params\" :[{\"name\" : " << aControl << ",\"value\" : " << (int)aValue << "}]}";
+	string strParams = sParams.str();
+	sendJSON(strParams);
+}
+void VDSocketio::changeIntValue(unsigned int aControl, int aValue) {
+	mVDAnimation->setIntUniformValueByIndex(aControl, aValue);
+}
+void VDSocketio::changeFloatValue(unsigned int aControl, float aValue, bool forceSend, bool toggle, bool increase, bool decrease) {
+	/*if (aControl == 31) {
+		CI_LOG_V("old value " + toString(mVDAnimation->getFloatUniformValueByIndex(aControl)) + " newvalue " + toString(aValue));
+	}*/
+	float newValue;
+	if (increase) {
+		// increase
+		newValue = mVDAnimation->getFloatUniformValueByIndex(aControl) + 0.1f;
+		if (newValue > 1.0f) newValue = 1.0f;
+		aValue = newValue;
+	}
+	else {
+		// decrease
+		if (decrease) {
+			newValue = mVDAnimation->getFloatUniformValueByIndex(aControl) - 0.1f;
+			if (newValue < 0.0f) newValue = 0.0f;
+			aValue = newValue;
+		}
+		else { 
+			// toggle
+			if (toggle) {
+				newValue = mVDAnimation->getFloatUniformValueByIndex(aControl);
+				if (newValue > 0.0f) { newValue = 0.0f; }
+				else { newValue = 1.0f; } // Check for max instead?
+				aValue = newValue;
+			}
+		}
+	}
+	/*
+		createVec3Uniform("iResolution", mVDSettings->IRESOLUTION, vec3(getFloatUniformValueByName("iResolutionX"), getFloatUniformValueByName("iResolutionY"), 1.0));
+		createVec3Uniform("iColor", mVDSettings->ICOLOR, vec3(0.56, 0.0, 1.0));
+		createVec3Uniform("iBackgroundColor", mVDSettings->IBACKGROUNDCOLOR);
+		//createVec3Uniform("iChannelResolution[0]", 63, vec3(mVDSettings->mFboWidth, mVDSettings->mFboHeight, 1.0));
+		static const int			IMOUSEX = 42;
+		static const int			IMOUSEY = 43;
+		static const int			IMOUSEZ = 44;
+
+		// vec4
+		createVec4Uniform("iMouse", 70, vec4(320.0f, 240.0f, 0.0f, 0.0f));
+	*/
+	// check if changed
+	if ( (mVDAnimation->setFloatUniformValueByIndex(aControl, aValue) && aControl != mVDSettings->IFPS) || forceSend) {
+		stringstream sParams;
+		// update color vec3
+		if (aControl > 0 && aControl < 4) {
+			mVDAnimation->setVec3UniformValueByIndex(mVDSettings->ICOLOR, vec3(
+				mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFR),
+				mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFG),
+				mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IFB)
+			));
+			colorWrite(); //lights4events
+		}
+		// update mouse vec4
+		if (aControl > 41 && aControl < 45) {
+			mVDAnimation->setVec4UniformValueByIndex(mVDSettings->IMOUSE, vec4(
+				mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEX), 
+				mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEY), 
+				mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IMOUSEZ),
+				1.0));
+			 
+		}
+
+		// update iResolution vec3
+		if (aControl == 29 || aControl ==30) {
+			mVDAnimation->setVec3UniformValueByIndex(mVDSettings->IRESOLUTION, vec3(mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESX), mVDAnimation->getFloatUniformValueByIndex(mVDSettings->IRESY), 1.0));
+		}
+		sParams << "{\"params\" :[{\"name\" : " << aControl << ",\"value\" : " << mVDAnimation->getFloatUniformValueByIndex(aControl) << "}]}";
+		string strParams = sParams.str();
+		
+		sendJSON(strParams);
+	}
+}
+void VDSocketio::changeShaderIndex(unsigned int aWarpIndex, unsigned int aWarpShaderIndex, unsigned int aSlot) {
+	//aSlot 0 = A, 1 = B,...
+	stringstream sParams;
+	sParams << "{\"cmd\" :[{\"type\" : 1,\"warp\" : " << aWarpIndex << ",\"shader\" : " << aWarpShaderIndex << ",\"slot\" : " << aSlot << "}]}";
+	string strParams = sParams.str();
+	sendJSON(strParams);
+}
+void VDSocketio::changeWarpFboIndex(unsigned int aWarpIndex, unsigned int aWarpFboIndex, unsigned int aSlot) {
+	//aSlot 0 = A, 1 = B,...
+	stringstream sParams;
+	sParams << "{\"cmd\" :[{\"type\" : 0,\"warp\" : " << aWarpIndex << ",\"fbo\" : " << aWarpFboIndex << ",\"slot\" : " << aSlot << "}]}";
+	string strParams = sParams.str();
+	sendJSON(strParams);
+}
+void VDSocketio::changeFragmentShader(const string& aFragmentShaderText) {
+
+	stringstream sParams;
+	sParams << "{\"event\" : \"frag\",\"message\" : \"" << aFragmentShaderText << "\"}";
+	string strParams = sParams.str();
+	sendJSON(strParams);
+}
+void VDSocketio::colorWrite()
+{
+	/* remove apache untick proxy mode in nginx
+	location /sio {
+	proxy_pass http://domain;
+	proxy_http_version 1.1;
+	proxy_set_header Upgrade $http_upgrade;
+	proxy_set_header Connection "Upgrade";
+	}
+	*/
+	// lights4events
+	char col[97];
+	int r = (int)(mVDAnimation->getFloatUniformValueByIndex(1) * 255);
+	int g = (int)(mVDAnimation->getFloatUniformValueByIndex(2) * 255);
+	int b = (int)(mVDAnimation->getFloatUniformValueByIndex(3) * 255);
+	int a = (int)(mVDAnimation->getFloatUniformValueByIndex(4) * 255);
+	//sprintf(col, "#%02X%02X%02X", r, g, b);
+	sprintf(col, "{\"type\":\"action\", \"parameters\":{\"name\":\"FC\",\"parameters\":{\"color\":\"#%02X%02X%02X%02X\",\"fading\":\"NONE\"}}}", a, r, g, b);
+	sioWrite(col);
+	//mL4EClient.write(col);
+}
+
+void VDSocketio::update() {
+
+	// websockets
+
+	if (mVDSettings->mAreWebSocketsEnabledAtStartup)
+	{
+		if (mVDSettings->mIsWebSocketsServer)
+		{
+			mServer.poll();
+		}
+		else
+		{
+			if (clientConnected)
+			{
+				mClient.poll();
+			}
+		}
+	}
+
+	/* OLD KINECT AND TOUCHOSC
+	// check for mouse moved message
+	if(m.getAddress() == "/mouse/position"){
+	// both the arguments are int32's
+	Vec2i pos = Vec2i( m.getArgAsInt32(0), m.getArgAsInt32(1));
+	Vec2f mouseNorm = Vec2f( pos ) / getWindowSize();
+	Vec2f mouseVel = Vec2f( pos - pMouse ) / getWindowSize();
+	addToFluid( mouseNorm, mouseVel, true, true );
+	pMouse = pos;
+	if ( m.getArgAsInt32(2) == 1 )
+	{
+	mMouseDown = true;
+	}
+	else
+	{
+	mMouseDown = false;
+	}
+	if ( mMouseDown )
+	{
+	mArcball.mouseDown( pos );
+	mCurrentMouseDown = mInitialMouseDown = pos;
+	}
+	}
+	// check for mouse button message
+	else if(m.getAddress() == "/mouse/button"){
+	// the single argument is a string
+	Vec2i pos = Vec2i( m.getArgAsInt32(0), m.getArgAsInt32(1));
+	mArcball.mouseDown( pos );
+	mCurrentMouseDown = mInitialMouseDown = pos;
+	if ( m.getArgAsInt32(2) == 1 )
+	{
+	mMouseDown = true;
+	}
+	else
+	{
+	mMouseDown = false;
+	}
+	}
+	else if(m.getAddress() == "/fluid/drawfluid"){
+	drawFluid = !drawFluid;
+	}
+	else if(m.getAddress() == "/fluid/drawfluidtex"){
+	drawFluidTex = !drawFluidTex;
+	}
+	else if(m.getAddress() == "/fluid/drawparticles"){
+	drawParticles = ! drawParticles;
+	}
+	else if(m.getAddress() == "/fluid/randomizecolor"){
+	fluidSolver.randomizeColor();
+	}
+	else if(m.getAddress() == "/window/position"){
+	// window position
+	setWindowPos(m.getArgAsInt32(0), m.getArgAsInt32(1));
+	}
+	else if(m.getAddress() == "/window/setfullscreen"){
+	// fullscreen
+	//setFullScreen( ! isFullScreen() );
+	}
+	else if(m.getAddress() == "/quit"){
+	quitProgram();
+	}
+	else{
+	// unrecognized message
+	//cout << "not recognized:" << m.getAddress() << endl;
+
+	}
+
+	}
+	// osc
+	while (mOSCReceiver.hasWaitingMessages())
+	{
+	osc::Message message;
+	bool routeMessage = false;
+	mOSCReceiver.getNextMessage(&message);
+	for (int a = 0; a < MAX; a++)
+	{
+	iargs[a] = 0;
+	fargs[a] = 0.0;
+	sargs[a] = "";
+	}
+	string oscAddress = message.getAddress();
+
+	int numArgs = message.getNumArgs();
+	// get arguments
+	for (int i = 0; i < message.getNumArgs(); i++)
+	{
+	if (i < MAX)
+	{
+	if (message.getArgType(i) == osc::TYPE_INT32) {
+	try
+	{
+	iargs[i] = message.getArgAsInt32(i);
+	sargs[i] = toString(iargs[i]);
+	}
+	catch (...) {
+	cout << "Exception reading argument as int32" << std::endl;
+	}
+	}
+	if (message.getArgType(i) == osc::TYPE_FLOAT) {
+	try
+	{
+	fargs[i] = message.getArgAsFloat(i);
+	sargs[i] = toString(fargs[i]);
+	}
+	catch (...) {
+	cout << "Exception reading argument as float" << std::endl;
+	}
+	}
+	if (message.getArgType(i) == osc::TYPE_STRING) {
+	try
+	{
+	sargs[i] = message.getArgAsString(i);
+	}
+	catch (...) {
+	cout << "Exception reading argument as string" << std::endl;
+	}
+	}
+	}
+	}
+
+
+
+	{
+	console() << "OSC message received: " << oscAddress << std::endl;
+	// is it a layer msg?
+	int layer = 0;
+	unsigned layerFound = oscAddress.find("layer");
+	if (layerFound == 1)
+	{
+	unsigned clipFound = oscAddress.find("/clip");
+	if (clipFound == 7) // layer must be < 10
+	{
+	cout << "clipFound " << clipFound;
+	layer = atoi(oscAddress.substr(6, 1).c_str());
+	int clip = atoi(oscAddress.substr(12, 1).c_str());
+	string fileName = toString((layer * 10) + clip) + ".fragjson";
+	fs::path fragFile = getAssetPath("") / "shaders" / "fragjson" / fileName;
+	if (fs::exists(fragFile))
+	{
+	//mShaders->loadFragJson(fragFile.string());
+	}
+	}
+	else
+	{
+	if (clipFound == 8)
+	{
+	layer = atoi(oscAddress.substr(6, 2).c_str());
+	}
+	}
+	// connect or preview
+	unsigned connectFound = oscAddress.find("connect");
+	if (connectFound != string::npos) cout << "connectFound " << connectFound;
+	}
+	//if ( layerFound != string::npos ) cout << "layerFound " << layerFound;
+
+	unsigned found = oscAddress.find_last_of("/");
+	int name = atoi(oscAddress.substr(found + 1).c_str());
+	}
+	stringstream ss;
+	ss << message.getRemoteIp() << " adr:" << oscAddress << " ";
+	for (int a = 0; a < MAX; a++)
+	{
+	ss << a << ":" << sargs[a] << " ";
+	}
+	ss << std::endl;
+	mVDSettings->mWebSocketsNewMsg = true;
+	mVDSettings->mWebSocketsMsg = ss.str();
+	*/
+}

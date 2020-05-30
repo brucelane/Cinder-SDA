@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cinder>
 <block
-	name="Cinder-"
+	name="Cinder-VD"
 	id="com.sophiadigitalart.vd"
 	author="Bruce Lane"
 	license="MIT"
@@ -17,6 +17,7 @@
 	<sourcePattern>src/*.c</sourcePattern>
 	<requires>nl.cowlumbus.warping</requires>
 	<requires>org.libcinder.OSC</requires>
+	<requires>com.sophiadigitalart.socketio</requires>
 	<platform os="msw">
 		<libraryPath>lib</libraryPath>
 		<requires>fr.batchass.spout</requires>
