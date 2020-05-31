@@ -1,7 +1,7 @@
 
 /*
 	VDFactory
-	
+
 */
 // TODO 
 
@@ -25,7 +25,7 @@
 
 using namespace ci;
 using namespace ci::app;
-using namespace std;
+//using namespace std;
 
 namespace videodromm
 {
@@ -53,19 +53,30 @@ namespace videodromm
 			return VDRouterBuilderRef(new VDRouterBuilder(VDRouterRef(new VDRouter(aVDSettings, aVDAnimation))));
 		}
 
+		VDRouterBuilderRef changeFloatValue(unsigned int aControl, float aValue, bool forceSend = false, bool toggle = false, bool increase = false, bool decrease = false) {
+			mVDRouter->changeFloatValue(aControl, aValue, forceSend, toggle, increase, decrease);
+			return shared_from_this();
+		}
+		VDRouterBuilderRef changeBoolValue(unsigned int aControl, bool aValue) {
+			mVDRouter->changeBoolValue(aControl, aValue);
+			return shared_from_this();
+		}
+		VDRouterBuilderRef changeIntValue(unsigned int aControl, int aValue) {
+			mVDRouter->changeIntValue(aControl, aValue);
+			return shared_from_this();
+		}
+
+		VDRouterBuilderRef setWarpAFboIndex(float v1, float v2) {
+			mVDRouter->setWarpAFboIndex(1, 1);
+			//return VDRouterBuilderRef(this); //BAD !!
+			return shared_from_this();
+		}
 		VDRouterBuilderRef setWarpBFboIndex(float v1, float v2) {
 			int a = mVDRouter.use_count();
 			mVDRouter->setWarpBFboIndex(1, 1);
 			//return VDRouterBuilderRef(this); //BAD !!!
 			return shared_from_this();
 		}
-		VDRouterBuilderRef setWarpAFboIndex(float v1, float v2) {
-			int a = mVDRouter.use_count();
-			mVDRouter->setWarpAFboIndex(1, 1);
-			//return VDRouterBuilderRef(this); //BAD !!
-			return shared_from_this();
-		}
-
 		VDRouterRef getInstance() const {
 			return mVDRouter;
 		}

@@ -32,7 +32,7 @@
 
 using namespace ci;
 using namespace ci::app;
-using namespace std;
+//using namespace std;
 
 namespace videodromm
 {
@@ -46,12 +46,12 @@ namespace videodromm
 
 		static VDAnimationRef			create(VDSettingsRef aVDSettings)
 		{
-			return shared_ptr<VDAnimation>(new VDAnimation(aVDSettings));
+			return std::shared_ptr<VDAnimation>(new VDAnimation(aVDSettings));
 		}
 		void							update();
 		void							load();
 		void							save();
-		string							getAssetsPath() {
+		std::string							getAssetsPath() {
 			return mVDSettings->mAssetsPath;
 		}
 		/*Color							getBackgroundColor() { return mBackgroundColor; };
@@ -89,7 +89,7 @@ namespace videodromm
 		bool							handleKeyUp(KeyEvent& event);
 		// audio
 		ci::gl::TextureRef				getAudioTexture();
-		string							getAudioTextureName() { return mAudioName; };
+		std::string							getAudioTextureName() { return mAudioName; };
 		float							maxVolume;
 		bool							mLineInInitialized;
 		bool							mWaveInitialized;
@@ -101,13 +101,13 @@ namespace videodromm
 		audio::MonitorSpectralNodeRef	mScopeLineInFmt;
 		audio::BufferPlayerNodeRef		mBufferPlayerNode;
 
-		vector<float>					mMagSpectrum;
+		std::vector<float>					mMagSpectrum;
 
 		// number of frequency bands of our spectrum
 		static const int				mFFTWindowSize = 32; // fft window size 20200222 was 128;
 		float							iFreqs[mFFTWindowSize];
 		int								mPosition;
-		string							mAudioName;
+		std::string							mAudioName;
 		void							preventLineInCrash(); // at next launch
 		void							saveLineIn();
 		bool							getUseAudio() {
@@ -126,16 +126,16 @@ namespace videodromm
 		void							toggleAudioBuffered() { mAudioBuffered = !mAudioBuffered; };
 
 		// shaders
-		int								getUniformTypeByName(const string& aName) {
+		int								getUniformTypeByName(const std::string& aName) {
 			return mVDUniform->getUniformTypeByName(aName);
 		}
-		bool							isExistingUniform(const string& aName) { return true; }; // TODO
+		bool							isExistingUniform(const std::string& aName) { return true; }; // TODO
 		
 		/*
 		string							getUniformNameForIndex(int aIndex) {
 			return shaderUniforms[aIndex].name; //controlIndexes[aIndex];
 		};*/
-		int								getUniformIndexForName(const string& aName) {
+		int								getUniformIndexForName(const std::string& aName) {
 			return mVDUniform->getUniformIndexForName(aName);
 			//return shaderUniforms[stringToIndex(aName)].index;
 		};
@@ -153,28 +153,28 @@ namespace videodromm
 		bool							setBoolUniformValueByIndex(unsigned int aIndex, bool aValue) {
 			return mVDUniform->setBoolUniformValueByIndex(aIndex, aValue);
 		}
-		void							setIntUniformValueByName(const string& aName, int aValue) {
+		void							setIntUniformValueByName(const std::string& aName, int aValue) {
 			mVDUniform->setIntUniformValueByName(aName, aValue);
 		};
 		void							setIntUniformValueByIndex(unsigned int aIndex, int aValue) {
 			mVDUniform->setIntUniformValueByIndex(aIndex, aValue);
 		}
-		void							setFloatUniformValueByName(const string& aName, float aValue) {
+		void							setFloatUniformValueByName(const std::string& aName, float aValue) {
 			mVDUniform->setFloatUniformValueByName(aName, aValue);
 		}
-		void setVec2UniformValueByName(const string& aName, vec2 aValue) {
+		void setVec2UniformValueByName(const std::string& aName, vec2 aValue) {
 			mVDUniform->setVec2UniformValueByName(aName, aValue);
 		}
 		void setVec2UniformValueByIndex(unsigned int aIndex, vec2 aValue) {
 			mVDUniform->setVec2UniformValueByIndex(aIndex, aValue);
 		}
-		void setVec3UniformValueByName(const string& aName, vec3 aValue) {
+		void setVec3UniformValueByName(const std::string& aName, vec3 aValue) {
 			mVDUniform->setVec3UniformValueByName(aName, aValue);
 		}
 		void setVec3UniformValueByIndex(unsigned int aIndex, vec3 aValue) {
 			mVDUniform->setVec3UniformValueByIndex(aIndex, aValue);
 		}
-		void setVec4UniformValueByName(const string& aName, vec4 aValue) {
+		void setVec4UniformValueByName(const std::string& aName, vec4 aValue) {
 			mVDUniform->setVec4UniformValueByName(aName, aValue);
 		}
 		void setVec4UniformValueByIndex(unsigned int aIndex, vec4 aValue) {
@@ -189,13 +189,13 @@ namespace videodromm
 		float							getMaxUniformValueByIndex(unsigned int aIndex) {
 			return mVDUniform->getMaxUniformValueByIndex(aIndex);
 		}
-		float							getMinUniformValueByName(const string& aName) {
+		float							getMinUniformValueByName(const std::string& aName) {
 			return mVDUniform->getMinUniformValueByName(aName);
 		}
-		float							getMaxUniformValueByName(const string& aName) {
+		float							getMaxUniformValueByName(const std::string& aName) {
 			return mVDUniform->getMaxUniformValueByName(aName);
 		}
-		bool							getBoolUniformValueByName(const string& aName) {
+		bool							getBoolUniformValueByName(const std::string& aName) {
 			return mVDUniform->getBoolUniformValueByName(aName);
 		}
 		/*vec2							getVec2UniformValueByIndex(unsigned int aIndex) {
@@ -216,23 +216,23 @@ namespace videodromm
 		int								getIntUniformValueByIndex(unsigned int aIndex) {
 			return mVDUniform->getIntUniformValueByIndex(aIndex);
 		}
-		int								getSampler2DUniformValueByName(const string& aName) {
+		int								getSampler2DUniformValueByName(const std::string& aName) {
 			return mVDUniform->getSampler2DUniformValueByName(aName);
 		}
-		float							getUniformValueByName(const string& aName) {		
+		float							getUniformValueByName(const std::string& aName) {
 				return mVDUniform->getUniformValueByName(aName);		
 		}
 		
-		vec2							getVec2UniformValueByName(const string& aName) {
+		vec2							getVec2UniformValueByName(const std::string& aName) {
 			return mVDUniform->getVec2UniformValueByName(aName);
 		}
-		vec3							getVec3UniformValueByName(const string& aName) {
+		vec3							getVec3UniformValueByName(const std::string& aName) {
 			return mVDUniform->getVec3UniformValueByName(aName);
 		}
-		vec4							getVec4UniformValueByName(const string& aName) {
+		vec4							getVec4UniformValueByName(const std::string& aName) {
 			return mVDUniform->getVec4UniformValueByName(aName);
 		}
-		int								getIntUniformValueByName(const string& aName) {
+		int								getIntUniformValueByName(const std::string& aName) {
 			return mVDUniform->getIntUniformValueByName(aName);
 		};
 
@@ -258,7 +258,7 @@ namespace videodromm
 		// Settings
 		VDSettingsRef					mVDSettings;
 		VDUniformRef					mVDUniform;
-		map<int, int>					freqIndexes;
+		std::map<int, int>					freqIndexes;
 		bool							mAudioBuffered;
 		ci::gl::TextureRef				mAudioTexture;
 		gl::Texture2d::Format			mAudioFormat;

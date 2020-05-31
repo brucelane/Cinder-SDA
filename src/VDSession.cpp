@@ -68,17 +68,16 @@ VDSession::VDSession(VDSettingsRef aVDSettings)
 	mModesList[8] = "Fbo7";
 	mModesList[9] = "Fbo8";
 	mMode = 0;
-	// Socketio
-	mVDSocketio = VDSocketio::create(mVDSettings, mVDAnimation);
+	
 	// Message router
 	//mVDRouter = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->addShader(0,6)->getInstance();
-	VDRouterBuilderRef builder = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->setWarpBFboIndex(0, 1);	
+	mVDBuilder = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->setWarpBFboIndex(0, 1);	
 	//Attente d'une récupération de données via socket io
-	builder->setWarpAFboIndex(1, 1)->setWarpBFboIndex(1,0);
+	mVDBuilder->setWarpAFboIndex(1, 1)->setWarpBFboIndex(1,0);
 	//Attente d'une autre autre récupération de données via socket io
-	builder->setWarpAFboIndex(0, 0);
+	mVDBuilder->setWarpAFboIndex(0, 0);
 
-	mVDRouter = builder->getInstance();
+	//mVDRouter = builder->getInstance();
 
 	// reset no matter what, so we don't miss anything
 	cmd = -1;
@@ -104,10 +103,10 @@ void VDSession::loadFbos() {
 
 	int f = 0;
 	bool found = true;
-	string shaderFileName;
-	string textureFileName;
+	std::string shaderFileName;
+	std::string textureFileName;
 	while (found) {
-		string jsonFileName = "fbo" + toString(f) + ".json";
+		std::string jsonFileName = "fbo" + toString(f) + ".json";
 		fs::path jsonFile = getAssetPath("") / mVDSettings->mAssetsPath / jsonFileName;
 		if (fs::exists(jsonFile)) {
 			JsonTree json(loadFile(jsonFile));
@@ -123,7 +122,7 @@ void VDSession::loadFbos() {
 
 VDSessionRef VDSession::create(VDSettingsRef aVDSettings)
 {
-	return shared_ptr<VDSession>(new VDSession(aVDSettings));
+	return std::shared_ptr<VDSession>(new VDSession(aVDSettings));
 }
 
 void VDSession::update(unsigned int aClassIndex) {
@@ -413,14 +412,14 @@ void VDSession::blendRenderEnable(bool render) {
 }
 
 void VDSession::fileDrop(FileDropEvent event) {
-	string ext = "";
+	std::string ext = "";
 	//string fileName = "";
 
 	unsigned int index = (int)(event.getX() / (mVDSettings->uiLargePreviewW + mVDSettings->uiMargin));
 	int y = (int)(event.getY());
 	//if (index < 2 || y < mVDSettings->uiYPosRow3 || y > mVDSettings->uiYPosRow3 + mVDSettings->uiPreviewH) index = 0;
 	ci::fs::path mPath = event.getFile(event.getNumFiles() - 1);
-	string absolutePath = mPath.string();
+	std::string absolutePath = mPath.string();
 	// use the last of the dropped files
 	int dotIndex = absolutePath.find_last_of(".");
 	int slashIndex = absolutePath.find_last_of("\\");
@@ -535,9 +534,9 @@ bool VDSession::handleKeyDown(KeyEvent &event)
 		if (!mVDAnimation->handleKeyDown(event)) {
 			switch (event.getCode()) {
 			case KeyEvent::KEY_w:
-				CI_LOG_V("wsConnect");
+				CI_LOG_V("oscConnect");
 				if (isModDown) {
-					sioConnect();
+					//oscConnect();
 				}
 				else {
 					// handled in main app
@@ -836,21 +835,6 @@ void VDSession::setFboBIndex(unsigned int aIndex, unsigned int aFboIndex) {
 }
 */
 #pragma endregion shaders
-
-// SocketIO
-#pragma region SocketIO
-
-void VDSession::sioConnect() {
-	mVDSocketio->sioConnect();
-}
-/*void VDSession::sioPing() {
-	mVDSocketio->();
-}*/
-void VDSession::sioWrite(string msg)
-{
-	mVDSocketio->sioWrite(msg);
-}
-#pragma endregion SocketIO
 
 // mix
 #pragma region mix

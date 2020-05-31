@@ -16,11 +16,9 @@
 	<sourcePattern>src/*.cpp</sourcePattern>
 	<sourcePattern>src/*.c</sourcePattern>
 	<requires>nl.cowlumbus.warping</requires>
-	<requires>com.sophiadigitalart.socketio</requires>
+	<requires>org.libcinder.OSC</requires>
 	<platform os="msw">
-		<libraryPath>lib</libraryPath>
 		<requires>fr.batchass.spout</requires>
-		<requires>mb.cinder.midi2</requires>
 	</platform>
 </block>
 <template>templates/VD/template.xml</template>

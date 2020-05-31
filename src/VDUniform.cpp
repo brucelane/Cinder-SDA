@@ -282,12 +282,12 @@ void VDUniform::loadUniforms(const ci::DataSourceRef& source) {
 }
 
 void VDUniform::floatFromJson(const ci::JsonTree& json) {
-	string jName;
+	std::string jName;
 	int jCtrlIndex;
 	float jValue, jMin, jMax;
 	if (json.hasChild("uniform")) {
 		JsonTree u(json.getChild("uniform"));
-		jName = (u.hasChild("name")) ? u.getValueForKey<string>("name") : "unknown";
+		jName = (u.hasChild("name")) ? u.getValueForKey<std::string>("name") : "unknown";
 		jCtrlIndex = (u.hasChild("index")) ? u.getValueForKey<int>("index") : 249;
 		jValue = (u.hasChild("value")) ? u.getValueForKey<float>("value") : 0.01f;
 		jMin = (u.hasChild("min")) ? u.getValueForKey<float>("min") : 0.0f;
@@ -296,53 +296,53 @@ void VDUniform::floatFromJson(const ci::JsonTree& json) {
 	}
 }
 void VDUniform::sampler2dFromJson(const ci::JsonTree& json) {
-	string jName;
+	std::string jName;
 	int jCtrlIndex;
 	int jTextureIndex;
 	if (json.hasChild("uniform")) {
 		JsonTree u(json.getChild("uniform"));
-		jName = (u.hasChild("name")) ? u.getValueForKey<string>("name") : "unknown";
+		jName = (u.hasChild("name")) ? u.getValueForKey<std::string>("name") : "unknown";
 		jCtrlIndex = (u.hasChild("index")) ? u.getValueForKey<int>("index") : 250;
 		jTextureIndex = (u.hasChild("textureindex")) ? u.getValueForKey<int>("textureindex") : 0;;
 		createSampler2DUniform(jName, jTextureIndex);
 	}
 }
 void VDUniform::vec2FromJson(const ci::JsonTree& json) {
-	string jName;
+	std::string jName;
 	int jCtrlIndex;
 	if (json.hasChild("uniform")) {
 		JsonTree u(json.getChild("uniform"));
-		jName = (u.hasChild("name")) ? u.getValueForKey<string>("name") : "unknown";
+		jName = (u.hasChild("name")) ? u.getValueForKey<std::string>("name") : "unknown";
 		jCtrlIndex = (u.hasChild("index")) ? u.getValueForKey<int>("index") : 251;
 		createVec2Uniform(jName, jCtrlIndex);
 	}
 }
 void VDUniform::vec3FromJson(const ci::JsonTree& json) {
-	string jName;
+	std::string jName;
 	int jCtrlIndex;
 	if (json.hasChild("uniform")) {
 		JsonTree u(json.getChild("uniform"));
-		jName = (u.hasChild("name")) ? u.getValueForKey<string>("name") : "unknown";
+		jName = (u.hasChild("name")) ? u.getValueForKey<std::string>("name") : "unknown";
 		jCtrlIndex = (u.hasChild("index")) ? u.getValueForKey<int>("index") : 252;
 		createVec3Uniform(jName, jCtrlIndex);
 	}
 }
 void VDUniform::vec4FromJson(const ci::JsonTree& json) {
-	string jName;
+	std::string jName;
 	int jCtrlIndex;
 	if (json.hasChild("uniform")) {
 		JsonTree u(json.getChild("uniform"));
-		jName = (u.hasChild("name")) ? u.getValueForKey<string>("name") : "unknown";
+		jName = (u.hasChild("name")) ? u.getValueForKey<std::string>("name") : "unknown";
 		jCtrlIndex = (u.hasChild("index")) ? u.getValueForKey<int>("index") : 253;
 		createVec4Uniform(jName, jCtrlIndex);
 	}
 }
 void VDUniform::intFromJson(const ci::JsonTree& json) {
-	string jName;
+	std::string jName;
 	int jCtrlIndex, jValue;
 	if (json.hasChild("uniform")) {
 		JsonTree u(json.getChild("uniform"));
-		jName = (u.hasChild("name")) ? u.getValueForKey<string>("name") : "unknown";
+		jName = (u.hasChild("name")) ? u.getValueForKey<std::string>("name") : "unknown";
 		jCtrlIndex = (u.hasChild("index")) ? u.getValueForKey<int>("index") : 254;
 		jValue = (u.hasChild("value")) ? u.getValueForKey<int>("value") : 1;
 		createIntUniform(jName, jCtrlIndex, jValue);
@@ -350,12 +350,12 @@ void VDUniform::intFromJson(const ci::JsonTree& json) {
 
 }
 void VDUniform::boolFromJson(const ci::JsonTree& json) {
-	string jName;
+	std::string jName;
 	int jCtrlIndex;
 	bool jValue;
 	if (json.hasChild("uniform")) {
 		JsonTree u(json.getChild("uniform"));
-		jName = (u.hasChild("name")) ? u.getValueForKey<string>("name") : "unknown";
+		jName = (u.hasChild("name")) ? u.getValueForKey<std::string>("name") : "unknown";
 		jCtrlIndex = (u.hasChild("index")) ? u.getValueForKey<int>("index") : 255;
 		jValue = (u.hasChild("value")) ? u.getValueForKey<bool>("value") : false;
 		createBoolUniform(jName, jCtrlIndex, jValue);

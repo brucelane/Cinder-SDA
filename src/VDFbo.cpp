@@ -8,9 +8,9 @@ namespace videodromm {
 		mVDSettings = aVDSettings;
 		mVDAnimation = aVDAnimation;
 		mVDUniform = VDUniform::create(mVDSettings);
-		string shaderFileName = "inputImage.fs";
+		std::string shaderFileName = "inputImage.fs";
 		mShaderName = mShaderFileName;
-		string shaderType = "fs";
+		std::string shaderType = "fs";
 		mShaderFragmentString = "";
 		//string textureFileName = "0.jpg"; 
 		//mTextureName = mCurrentSeqFilename = mLastCachedFilename = textureFileName;
@@ -18,9 +18,9 @@ namespace videodromm {
 		
 		if (json.hasChild("shader")) {
 			JsonTree shaderJsonTree(json.getChild("shader"));
-			mShaderName = mShaderFileName = (shaderJsonTree.hasChild("shadername")) ? shaderJsonTree.getValueForKey<string>("shadername") : "inputImage.fs";
-			mShaderFragmentString = (shaderJsonTree.hasChild("shadertext")) ? shaderJsonTree.getValueForKey<string>("shadertext") : "";
-			shaderType = (json.hasChild("shadertype")) ? json.getValueForKey<string>("shadertype") : "fs";
+			mShaderName = mShaderFileName = (shaderJsonTree.hasChild("shadername")) ? shaderJsonTree.getValueForKey<std::string>("shadername") : "inputImage.fs";
+			mShaderFragmentString = (shaderJsonTree.hasChild("shadertext")) ? shaderJsonTree.getValueForKey<std::string>("shadertext") : "";
+			shaderType = (json.hasChild("shadertype")) ? json.getValueForKey<std::string>("shadertype") : "fs";
 		}
 		if (json.hasChild("texture")) {
 
@@ -58,7 +58,7 @@ namespace videodromm {
 	VDFbo::~VDFbo(void) {
 	}
 
-	bool VDFbo::loadFragmentStringFromFile(const string& aFileName) {
+	bool VDFbo::loadFragmentStringFromFile(const std::string& aFileName) {
 		mValid = false;
 		
 		if (aFileName.length() > 0) {
@@ -100,12 +100,12 @@ namespace videodromm {
 					CI_LOG_V("fbo default vtx-frag compiled");
 				}
 				catch (gl::GlslProgCompileExc &exc) {
-					mError = string(exc.what());
-					CI_LOG_V("fbo unable to load/compile vtx-frag shader:" + string(exc.what()));
+					mError = std::string(exc.what());
+					CI_LOG_V("fbo unable to load/compile vtx-frag shader:" + std::string(exc.what()));
 				}
 				catch (const std::exception &e) {
-					mError = string(e.what());
-					CI_LOG_V("fbo unable to load vtx-frag shader:" + string(e.what()));
+					mError = std::string(e.what());
+					CI_LOG_V("fbo unable to load vtx-frag shader:" + std::string(e.what()));
 				}
 			}
 			//}
@@ -117,10 +117,10 @@ namespace videodromm {
 		return mValid;
 	}
 
-	bool VDFbo::setFragmentString(const string& aFragmentShaderString, const string& aName) {
+	bool VDFbo::setFragmentString(const std::string& aFragmentShaderString, const std::string& aName) {
 
-		string mOriginalFragmentString = aFragmentShaderString;
-		string mOutputFragmentString = aFragmentShaderString;
+		std::string mOriginalFragmentString = aFragmentShaderString;
+		std::string mOutputFragmentString = aFragmentShaderString;
 		mError = "";
 		mName = aName;
 		// we would like a name without extension
@@ -137,7 +137,7 @@ namespace videodromm {
 		}
 		mShaderName = mName + ".fs";
 
-		string mNotFoundUniformsString = "/* " + mName + "\n";
+		std::string mNotFoundUniformsString = "/* " + mName + "\n";
 		// filename to save
 		mValid = false;
 		// load fragment shader
@@ -169,12 +169,12 @@ namespace videodromm {
 		}
 		catch (gl::GlslProgCompileExc &exc)
 		{
-			mError = mName + string(exc.what());
+			mError = mName + std::string(exc.what());
 			CI_LOG_V("setFragmentString, unable to compile live fragment shader:" + mError + " frag:" + mName);
 		}
 		catch (const std::exception &e)
 		{
-			mError = mName + string(e.what());
+			mError = mName + std::string(e.what());
 			CI_LOG_V("setFragmentString, error on live fragment shader:" + mError + " frag:" + mName);
 		}
 		if (mError.length() > 0) mVDSettings->mFboMsg = mError + "\n" + mVDSettings->mFboMsg.substr(0, mVDSettings->mMsgLength);
@@ -208,8 +208,8 @@ namespace videodromm {
 			{
 				mTextureList[0]->getTexture(i)->bind(253 + i);
 			}
-			string name;
-			string texName;
+			std::string name;
+			std::string texName;
 			int texNameEndIndex = 0;
 			int texIndex = 0;
 			int channelIndex = 0;
@@ -314,7 +314,7 @@ namespace videodromm {
 			gl::drawSolidRect(Rectf(0, 0, mVDSettings->mFboWidth, mVDSettings->mFboHeight));
 			mRenderedTexture = mFbo->getColorTexture();
 			if (!isReady) {
-				string filename = mName + "-" + mTextureList[0]->getTextureName() + ".jpg";
+				std::string filename = mName + "-" + mTextureList[0]->getTextureName() + ".jpg";
 				fs::path fr = getAssetPath("") / "thumbs" / filename;
 
 				if (!fs::exists(fr)) {
@@ -353,10 +353,10 @@ namespace videodromm {
 		json.addChild(texture);
 
 		if (save) {
-			string jsonFileName = mShaderName + ".json";
+			std::string jsonFileName = mShaderName + ".json";
 			fs::path jsonFile = getAssetPath("") / mVDSettings->mAssetsPath / jsonFileName;
 			json.write(jsonFile);
-			string jsonFboFileName = "fbo" + toString(aIndex) + ".json";
+			std::string jsonFboFileName = "fbo" + toString(aIndex) + ".json";
 			fs::path jsonFboFile = getAssetPath("") / mVDSettings->mAssetsPath / jsonFboFileName;
 			json.write(jsonFboFile);
 		}

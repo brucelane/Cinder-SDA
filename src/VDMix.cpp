@@ -3,8 +3,8 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/Xml.h"
 
-using namespace ci;
-using namespace ci::app;
+//using namespace ci;
+//using namespace ci::app;
 
 namespace videodromm {
 

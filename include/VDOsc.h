@@ -12,14 +12,12 @@
 #include "VDSettings.h"
 // Animation
 #include "VDAnimation.h"
+// OSC
+#include "cinder/osc/Osc.h"
 
 using namespace ci;
 using namespace ci::app;
-using namespace std;
-/* OSC
-<requires>org.libcinder.OSC</requires>
-incompatible with SocketIO
-#include "cinder/osc/Osc.h"
+//using namespace std;
 using namespace ci::osc;
 using namespace asio;
 using namespace asio::ip;
@@ -31,7 +29,7 @@ using protocol = asio::ip::udp;
 #else
 using Receiver = osc::ReceiverTcp;
 using protocol = asio::ip::tcp;
-#endif*/
+#endif
 namespace videodromm
 {
 	// stores the pointer to the VDOsc instance
@@ -41,17 +39,17 @@ namespace videodromm
 		VDOsc(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
 		static VDOscRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 		{
-			return shared_ptr<VDOsc>(new VDOsc(aVDSettings, aVDAnimation));
+			return std::shared_ptr<VDOsc>(new VDOsc(aVDSettings, aVDAnimation));
 		}
 		
 	
 	private:
 		// Settings
-		VDSettingsRef				mVDSettings;
+		VDSettingsRef					mVDSettings;
 		// Animation
-		VDAnimationRef				mVDAnimation;
+		VDAnimationRef					mVDAnimation;
 		// osc
-//shared_ptr<osc::ReceiverUdp>			mOscReceiver;
+		std::shared_ptr<osc::ReceiverUdp>	mOscReceiver;
 //std::map<uint64_t, protocol::endpoint>	mConnections;
 	};
 }

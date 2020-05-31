@@ -29,7 +29,7 @@
 
 using namespace ci;
 using namespace ci::app;
-using namespace std;
+//using namespace std;
 
 namespace videodromm
 {
@@ -40,11 +40,11 @@ namespace videodromm
 
 	class VDShader {
 	public:
-		VDShader(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const string& aFileOrPath, const string& aShaderFragmentString, gl::TextureRef aTexture );
+		VDShader(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const std::string& aFileOrPath, const std::string& aShaderFragmentString, gl::TextureRef aTexture );
 		//void update();
-		static VDShaderRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const string& aFileOrPath, const string& aShaderFragmentString, gl::TextureRef aTexture)
+		static VDShaderRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const std::string& aFileOrPath, const std::string& aShaderFragmentString, gl::TextureRef aTexture)
 		{
-			return shared_ptr<VDShader>(new VDShader(aVDSettings, aVDAnimation, aFileOrPath, aShaderFragmentString, aTexture));
+			return std::shared_ptr<VDShader>(new VDShader(aVDSettings, aVDAnimation, aFileOrPath, aShaderFragmentString, aTexture));
 		}
 		/*VDShader(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const string& aFileOrPath, const string& aFragmentShaderString = "");
 		//void update();
@@ -55,8 +55,8 @@ namespace videodromm
 		//void fromXml(const XmlTree &xml);
 		//string							getName() { return mFileNameWithExtension; };
 		bool							isValid() { return mValid; };
-		string							getFileNameWithExtension() {return mFileNameWithExtension;};
-		string							getFragmentString() {
+		std::string							getFileNameWithExtension() {return mFileNameWithExtension;};
+		std::string							getFragmentString() {
 			//if (mFragmentShaderString.empty()) mFragmentShaderString = "void main(void){vec2 uv = gl_FragCoord.xy / iResolution.xy;fragColor = texture(iChannel0, uv);}";
 			//if (mFragmentShaderString.size() < 1 || mFragmentShaderString.size() > 256000) mFragmentShaderString = "void main(void){vec2 uv = gl_FragCoord.xy / iResolution.xy;fragColor = texture(iChannel0, uv);}";
 			return mFragmentShaderString;
@@ -79,18 +79,18 @@ namespace videodromm
 		VDAnimationRef					mVDAnimation;
 
 		//string							mName;
-		string							mText;
+		std::string							mText;
         bool							mValid;
 		gl::GlslProgRef					mShader;
 		// include shader lines
 		std::string						shaderInclude;
 		fs::path mFragFilePath;
-		string							mError;
+		std::string							mError;
 		bool							loadFragmentStringFromFile();// keep PRIVATE
-		bool							setFragmentString(const string& aFragmentShaderString, const string& aName = "");// keep PRIVATE
+		bool							setFragmentString(const std::string& aFragmentShaderString, const std::string& aName = "");// keep PRIVATE
 		std::string						mFileNameWithExtension;
 		std::string						mFragmentShaderString;
-		string							ext;
+		std::string							ext;
 		std::vector<ci::gl::GlslProg::Uniform> mUniforms;
 		// fbo
 		gl::Texture::Format				fmt;
@@ -98,7 +98,7 @@ namespace videodromm
 		gl::FboRef						mThumbFbo;
 		ci::gl::Texture2dRef			getFboTexture();
 		ci::gl::Texture2dRef			mRenderedTexture;
-		string							mName;
+		std::string							mName;
 		//! Input textures
 		gl::TextureRef					mTexture;
 

@@ -63,7 +63,7 @@ VDAnimation::VDAnimation(VDSettingsRef aVDSettings) {
 //! uniform to json
 JsonTree VDAnimation::uniformToJson(int i)
 {
-	stringstream svec4;
+	std::stringstream svec4;
 	JsonTree		json;
 	//string s = controlIndexes[i];
 

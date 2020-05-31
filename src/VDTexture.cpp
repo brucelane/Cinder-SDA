@@ -1,8 +1,8 @@
 #include "VDTexture.h"
 
 
-using namespace ci;
-using namespace ci::app;
+//using namespace ci;
+//using namespace ci::app;
 
 namespace videodromm {
 	VDTexture::VDTexture(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const JsonTree &json)
@@ -13,8 +13,8 @@ namespace videodromm {
 
 		mTexture = ci::gl::Texture::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, ci::gl::Texture::Format().loadTopDown());
 
-		mTextureName = mCurrentSeqFilename = mLastCachedFilename = (json.hasChild("texturename")) ? json.getValueForKey<string>("texturename") : "0.jpg";
-		mTypestr = (json.hasChild("texturetype")) ? json.getValueForKey<string>("texturetype") : "UNKNOWN";
+		mTextureName = mCurrentSeqFilename = mLastCachedFilename = (json.hasChild("texturename")) ? json.getValueForKey<std::string>("texturename") : "0.jpg";
+		mTypestr = (json.hasChild("texturetype")) ? json.getValueForKey<std::string>("texturetype") : "UNKNOWN";
 		mMode =  (json.hasChild("texturemode")) ? json.getValueForKey<int>("texturemode") : 0;
 
 		mType = UNKNOWN;

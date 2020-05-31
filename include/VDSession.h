@@ -19,8 +19,6 @@
 #include "VDRouter.h"
 // Builder
 #include "VDFactory.h"
-// Socketio
-#include "VDSocketio.h"
 // Animation
 #include "VDAnimation.h"
 // Fbos
@@ -34,32 +32,27 @@
 
 using namespace ci;
 using namespace ci::app;
-using namespace std;
+//using namespace std;
 using namespace ph::warping;
 
 namespace videodromm {
 
 	typedef std::shared_ptr<class VDSession> VDSessionRef;
 
-	/*struct VDMixFbo
-	{
-		ci::gl::FboRef					fbo;
-		ci::gl::Texture2dRef			texture;
-		string							name;
-	};*/
+	
 	class VDSession {
 	public:
 		VDSession(VDSettingsRef aVDSettings);
 		static VDSessionRef				create(VDSettingsRef aVDSettings);
-		bool							handleKeyDown(KeyEvent &event);
-		bool							handleKeyUp(KeyEvent &event);
+		bool							handleKeyDown(KeyEvent& event);
+		bool							handleKeyUp(KeyEvent& event);
 		void							update(unsigned int aClassIndex = 0);
 		//! Mix
-		ci::gl::TextureRef				getFboRenderedTexture(unsigned int aFboIndex) {			
-				return mVDMix->getFboRenderedTexture(aFboIndex);
+		ci::gl::TextureRef				getFboRenderedTexture(unsigned int aFboIndex) {
+			return mVDMix->getFboRenderedTexture(aFboIndex);
 		}
-		ci::gl::TextureRef				getFboTexture(unsigned int aFboIndex) {			
-				return mVDMix->getFboTexture(aFboIndex);
+		ci::gl::TextureRef				getFboTexture(unsigned int aFboIndex) {
+			return mVDMix->getFboTexture(aFboIndex);
 		}
 		ci::gl::TextureRef				getMixetteTexture(unsigned int aFboIndex) {
 			return mVDMix->getMixetteTexture(aFboIndex);
@@ -86,7 +79,7 @@ namespace videodromm {
 			Warp::setSize(mWarpList, ivec2(mVDSettings->mFboWidth, mVDSettings->mFboHeight));
 		}
 		unsigned int					getWarpCount() { return mWarpList.size(); };
-		string							getWarpName(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getName(); };// or trycatch
+		std::string							getWarpName(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getName(); };// or trycatch
 		int								getWarpWidth(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getWidth(); };
 		int								getWarpHeight(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getHeight(); };
 		void							setWarpWidth(unsigned int aWarpIndex, int aWidth) {
@@ -127,10 +120,10 @@ namespace videodromm {
 			warp->setBTextureFilename("audio");
 			mWarpList.push_back(WarpBilinear::create());
 		}
-		string							getFboShaderName(unsigned int aFboIndex) {
+		std::string							getFboShaderName(unsigned int aFboIndex) {
 			return mVDMix->getFboShaderName(aFboIndex);
 		}
-		string							getFboTextureName(unsigned int aFboIndex) {
+		std::string							getFboTextureName(unsigned int aFboIndex) {
 			return mVDMix->getFboTextureName(aFboIndex);
 		}
 		void							saveWarps() {
@@ -151,10 +144,10 @@ namespace videodromm {
 			Warp::writeSettings(mWarpList, writeFile(mSettings));
 		}
 
-		bool							handleMouseMove(MouseEvent &event);
-		bool							handleMouseDown(MouseEvent &event);
-		bool							handleMouseDrag(MouseEvent &event);
-		bool							handleMouseUp(MouseEvent &event);
+		bool							handleMouseMove(MouseEvent& event);
+		bool							handleMouseDown(MouseEvent& event);
+		bool							handleMouseDrag(MouseEvent& event);
+		bool							handleMouseUp(MouseEvent& event);
 		bool							save();
 		void							restore();
 
@@ -209,7 +202,7 @@ namespace videodromm {
 		vec4							getVec4UniformValueByIndex(unsigned int aIndex) {
 			return mVDAnimation->getVec4UniformValueByIndex(aIndex);
 		};*/
-		int								getSampler2DUniformValueByName(const string& aName) {
+		int								getSampler2DUniformValueByName(const std::string& aName) {
 			return mVDAnimation->getSampler2DUniformValueByName(aName);
 		};
 		/*vec2							getVec2UniformValueByName(const string& aName) {
@@ -221,13 +214,13 @@ namespace videodromm {
 		vec4							getVec4UniformValueByName(const string& aName) {
 			return mVDAnimation->getVec4UniformValueByName(aName);
 		};*/
-		int								getIntUniformValueByName(const string& aName) {
+		int								getIntUniformValueByName(const std::string& aName) {
 			return mVDAnimation->getIntUniformValueByName(aName);
 		};
 		int								getIntUniformValueByIndex(unsigned int aCtrl) {
 			return mVDAnimation->getIntUniformValueByIndex(aCtrl);
 		};
-		bool							getBoolUniformValueByName(const string& aName) {
+		bool							getBoolUniformValueByName(const std::string& aName) {
 			return mVDAnimation->getBoolUniformValueByName(aName);
 		};
 		bool							getBoolUniformValueByIndex(unsigned int aCtrl) {
@@ -236,22 +229,22 @@ namespace videodromm {
 		float							getUniformValue(unsigned int aCtrl) {
 			return mVDAnimation->getUniformValue(aCtrl);
 		};
-		float							getUniformValueByName(const string& aCtrlName) {
+		float							getUniformValueByName(const std::string& aCtrlName) {
 			return mVDAnimation->getUniformValueByName(aCtrlName);
 		};
 		void							setUniformValue(unsigned int aCtrl, float aValue) {
 			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
 			//! 20200526 
-			mVDSocketio->changeFloatValue(aCtrl, aValue);
+			mVDBuilder->changeFloatValue(aCtrl, aValue);
 		};
 		void							setIntUniformValueByIndex(unsigned int aCtrl, int aValue) {
 			//! 20200526 
-			mVDSocketio->changeIntValue(aCtrl, aValue);
+			mVDBuilder->changeIntValue(aCtrl, aValue);
 		};
 		void							setBoolUniformValueByIndex(unsigned int aCtrl, float aValue) {
 			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
 			//! 20200526 
-			mVDSocketio->changeBoolValue(aCtrl, aValue);
+			mVDBuilder->changeBoolValue(aCtrl, aValue);
 		};
 		// tempo
 		float							getMaxVolume() { return mVDAnimation->maxVolume; };
@@ -264,8 +257,8 @@ namespace videodromm {
 		//void							setTimeFactor(const int &aTimeFactor) { mVDAnimation->setTimeFactor(aTimeFactor); };
 		// audio
 		ci::gl::TextureRef				getAudioTexture() { return mVDAnimation->getAudioTexture(); };
-		string							getAudioTextureName() { return mVDAnimation->getAudioTextureName(); };
-		float *							getFreqs() { return mVDAnimation->iFreqs; };
+		std::string							getAudioTextureName() { return mVDAnimation->getAudioTextureName(); };
+		float* getFreqs() { return mVDAnimation->iFreqs; };
 		int								getFreqIndexSize() { return mVDAnimation->getFreqIndexSize(); };
 		float							getFreq(unsigned int aFreqIndex) { return mVDAnimation->getUniformValue(mVDSettings->IFREQ0 + aFreqIndex); };
 		int								getFreqIndex(unsigned int aFreqIndex) { return mVDAnimation->getFreqIndex(aFreqIndex); };
@@ -276,7 +269,7 @@ namespace videodromm {
 		bool							getUseLineIn() { return mVDAnimation->getUseLineIn(); };
 		void							setUseLineIn(bool useLineIn) { mVDAnimation->setUseLineIn(useLineIn); };
 		void							toggleUseLineIn() { mVDAnimation->toggleUseLineIn(); };
-		int								loadFragmentShader(const string& aFilePath, unsigned int aFboShaderIndex = 4) {
+		int								loadFragmentShader(const std::string& aFilePath, unsigned int aFboShaderIndex = 4) {
 			return mVDMix->loadFragmentShader(aFilePath, aFboShaderIndex);
 		};
 		/*bool							getFreqWSSend() { return mFreqWSSend; };
@@ -339,16 +332,16 @@ namespace videodromm {
 			return mVDUtils->getWindowsResolution();
 		};
 		// fbos
-		string							getFboName(unsigned int aFboIndex) {
+		std::string							getFboName(unsigned int aFboIndex) {
 			return mVDMix->getFboName(aFboIndex);
 
 		};
 
 		unsigned int					getFboListSize() { return mVDMix->getFboListSize(); };
-		unsigned int 					createFboShaderTexture(const JsonTree &json, unsigned int aFboIndex = 0) {
+		unsigned int 					createFboShaderTexture(const JsonTree& json, unsigned int aFboIndex = 0) {
 			return mVDMix->createFboShaderTexture(json, aFboIndex);
 		};
-		unsigned int					fboFromJson(const JsonTree &json, unsigned int aFboIndex = 0);
+		unsigned int					fboFromJson(const JsonTree& json, unsigned int aFboIndex = 0);
 
 		void							saveFbos() {
 			mVDMix->saveFbos();
@@ -398,13 +391,13 @@ namespace videodromm {
 		unsigned int					getFboInputTexturesCount(unsigned int aFboIndex = 0) {
 			return 1; //TODO support several textures
 		}
-		string							getFboStatus(unsigned int aFboIndex = 0) {
+		std::string							getFboStatus(unsigned int aFboIndex = 0) {
 			return mVDMix->getFboStatus(aFboIndex);
 		}
 		void							updateShaderThumbFile(unsigned int aFboIndex) {
 			mVDMix->updateShaderThumbFile(aFboIndex);
 		}
-		string							getFboInputTextureName(unsigned int aFboIndex = 0) {
+		std::string							getFboInputTextureName(unsigned int aFboIndex = 0) {
 			return mVDMix->getFboInputTextureName(aFboIndex);
 		}
 		ci::gl::Texture2dRef							getFboInputTexture(unsigned int aFboIndex = 0) {
@@ -413,7 +406,7 @@ namespace videodromm {
 		std::vector<ci::gl::GlslProg::Uniform>			getUniforms(unsigned int aFboIndex = 0) {
 			return mVDMix->getUniforms(aFboIndex);
 		}
-		int								getUniformIndexForName(const string& aName) {
+		int								getUniformIndexForName(const std::string& aName) {
 			return mVDAnimation->getUniformIndexForName(aName);
 		};
 
@@ -449,7 +442,7 @@ namespace videodromm {
 		bool							isAutoLayout() { return mVDSettings->mAutoLayout; };
 		void							toggleAutoLayout() { mVDSettings->mAutoLayout = !mVDSettings->mAutoLayout; }
 		// textures
-		void							loadImageFile(const string& aFile, unsigned int aTextureIndex) {
+		void							loadImageFile(const std::string& aFile, unsigned int aTextureIndex) {
 			mVDMix->loadImageFile(aFile, aTextureIndex);
 		};
 		/*unsigned int					getInputTexturesCount() {
@@ -530,24 +523,8 @@ namespace videodromm {
 		int								getMaxFrame(unsigned int aTextureIndex) {
 			return mTextureList[math<int>::min(aTextureIndex, mTextureList.size() - 1)]->getMaxFrame();
 		};*/
-		// SocketIO
-		void							sioConnect();
-		///void							sioPing();
-		void							sioWrite(std::string msg);
+
 		/*void							sendFragmentShader(unsigned int aShaderIndex);*/
-		// midi
-		void							midiSetup() { mVDRouter->midiSetup(); };
-		void							midiOutSendNoteOn(int i, int channel, int pitch, int velocity) { mVDRouter->midiOutSendNoteOn(i, channel, pitch, velocity); };
-		int								getMidiInPortsCount() { return mVDRouter->getMidiInPortsCount(); };
-		string							getMidiInPortName(int i) { return mVDRouter->getMidiInPortName(i); };
-		bool							isMidiInConnected(int i) { return mVDRouter->isMidiInConnected(i); };
-		int								getMidiOutPortsCount() { return mVDRouter->getMidiOutPortsCount(); };
-		string							getMidiOutPortName(int i) { return mVDRouter->getMidiOutPortName(i); };
-		bool							isMidiOutConnected(int i) { return mVDRouter->isMidiOutConnected(i); };
-		void							openMidiInPort(int i) { mVDRouter->openMidiInPort(i); };
-		void							closeMidiInPort(int i) { mVDRouter->closeMidiInPort(i); };
-		void							openMidiOutPort(int i) { mVDRouter->openMidiOutPort(i); };
-		void							closeMidiOutPort(int i) { mVDRouter->closeMidiOutPort(i); };
 		//! window management
 		void							createWindow() { cmd = 0; };
 		void							deleteWindow() { cmd = 1; };
@@ -570,7 +547,7 @@ namespace videodromm {
 		int								getModesCount() { return mModesList.size() - 1; };
 		void							toggleUI() { mShowUI = !mShowUI; };
 		bool							showUI() { return mShowUI; };
-		string							getModeName(unsigned int aMode) {
+		std::string							getModeName(unsigned int aMode) {
 			if (aMode > mModesList.size() - 1) aMode = mModesList.size() - 1;
 			return mModesList[aMode];
 		}
@@ -581,17 +558,17 @@ namespace videodromm {
 		VDSettingsRef					mVDSettings;
 		// Utils
 		VDUtilsRef						mVDUtils;
+		// Builder
+		VDRouterBuilderRef				mVDBuilder;
 		// Message router
-		VDRouterRef						mVDRouter;
-		// VDSocketio
-		VDSocketioRef					mVDSocketio;
+		//VDRouterRef						mVDRouter;
 		// Animation
 		VDAnimationRef					mVDAnimation;
 		// Log
 		VDLogRef						mVDLog;
 		// Mix
 		VDMixRef						mVDMix;
-		const string					sessionFileName = "session.json";
+		const std::string					sessionFileName = "session.json";
 		fs::path						sessionPath;
 		// tempo
 		float							mFpb;
@@ -655,11 +632,11 @@ namespace videodromm {
 		//! Fbos
 		map<int, VDMixFbo>				mMixFbos;
 		*/
-		
+
 		//! Modes
-		map<int, string>				mModesList;
+		std::map<int, std::string>				mModesList;
 		// blendmodes fbos
-		map<int, ci::gl::FboRef>		mBlendFbos;
+		std::map<int, ci::gl::FboRef>		mBlendFbos;
 		int								mCurrentBlend;
 		/*gl::GlslProgRef					mGlslMix, mGlslBlend, mGlslFeedback, mGlslMixette;
 		// render

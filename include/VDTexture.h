@@ -24,7 +24,7 @@
 
 using namespace ci;
 using namespace ci::app;
-using namespace std;
+//using namespace std;
 
 
 namespace videodromm
@@ -55,11 +55,11 @@ namespace videodromm
 		ci::gl::Texture2dRef					getTexture(int aPosition = 0);
 		std::string								getTextureName() { return mTextureName; };
 		//ci::gl::Texture2dRef					getCachedTexture(const string& aFilename);
-		string									getStatus() { return mStatus; };
-		string									getType() { return mTypestr; };
+		std::string									getStatus() { return mStatus; };
+		std::string									getType() { return mTypestr; };
 		int										getMode() { return mMode; };
 
-		void									setImageInputTexture(ci::gl::Texture2dRef aTextureRef, const string& aTextureFilename) {
+		void									setImageInputTexture(ci::gl::Texture2dRef aTextureRef, const std::string& aTextureFilename) {
 			mType = IMAGE;
 			mTexture = aTextureRef;
 			mTextureName = aTextureFilename;
@@ -74,14 +74,14 @@ namespace videodromm
 		// Animation
 		VDAnimationRef					mVDAnimation;
 		gl::TextureRef					mTexture;
-		map<string, ci::gl::TextureRef>	mCachedTextures;
-		string							mTextureName = "";
-		string							mLastCachedFilename = "";
-		string							mCurrentSeqFilename = "";
-		string							mStatus = "";
+		std::map<std::string, ci::gl::TextureRef>	mCachedTextures;
+		std::string							mTextureName = "";
+		std::string							mLastCachedFilename = "";
+		std::string							mCurrentSeqFilename = "";
+		std::string							mStatus = "";
 		TextureType						mType = UNKNOWN;
-		string							mTypestr = "";
-		string							mExt = "jpg";
+		std::string							mTypestr = "";
+		std::string							mExt = "jpg";
 		int								mMode = 0;
 
 	};

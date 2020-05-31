@@ -35,7 +35,7 @@
 
 using namespace ci;
 using namespace ci::app;
-using namespace std;
+//using namespace std;
 
 using namespace videodromm;
 
@@ -54,7 +54,7 @@ namespace videodromm
 		VDMix(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
 		static VDMixRef					create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 		{
-			return shared_ptr<VDMix>(new VDMix(aVDSettings, aVDAnimation));
+			return std::shared_ptr<VDMix>(new VDMix(aVDSettings, aVDAnimation));
 		}
 		// RTE in release mode 
 		//ci::gl::Texture2dRef			getRenderedTexture(bool reDraw = true);
@@ -93,13 +93,13 @@ namespace videodromm
 		void									toggleGlobal(unsigned int aFboIndex) {
 			mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->toggleGlobal();
 		};
-		string							getFboStatus(unsigned int aFboIndex = 0) {
+		std::string							getFboStatus(unsigned int aFboIndex = 0) {
 			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getStatus();
 		}
 		void							updateShaderThumbFile(unsigned int aFboIndex) {
 			mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->updateThumbFile();
 		}
-		string							getFboInputTextureName(unsigned int aFboIndex = 0) {
+		std::string							getFboInputTextureName(unsigned int aFboIndex = 0) {
 			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getTextureName();
 		}
 		ci::gl::Texture2dRef							getFboInputTexture(unsigned int aFboIndex = 0) {
@@ -111,13 +111,13 @@ namespace videodromm
 		int								getFboInputTextureHeight(unsigned int aFboIndex) {
 			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getInputTexture() ? mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getInputTexture()->getHeight() : mVDSettings->mFboHeight;
 		};
-		string							getFboName(unsigned int aFboIndex) {
+		std::string							getFboName(unsigned int aFboIndex) {
 			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getName();
 		};
-		string							getFboShaderName(unsigned int aFboIndex) {
+		std::string							getFboShaderName(unsigned int aFboIndex) {
 			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getShaderName();
 		};
-		string							getFboTextureName(unsigned int aFboIndex) {
+		std::string							getFboTextureName(unsigned int aFboIndex) {
 			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getTextureName();
 		};
 		void							saveFbos() {
@@ -130,7 +130,7 @@ namespace videodromm
 		std::vector<ci::gl::GlslProg::Uniform>			getUniforms(unsigned int aFboIndex = 0) {
 			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getUniforms();
 		}
-		int												loadFragmentShader(const string& aFilePath, unsigned int aFboShaderIndex) {
+		int												loadFragmentShader(const std::string& aFilePath, unsigned int aFboShaderIndex) {
 			int rtn = -1;
 			mVDSettings->mMsg = "load " + aFilePath + " at index " + toString(aFboShaderIndex) + "\n" + mVDSettings->mMsg.substr(0, mVDSettings->mMsgLength);
 			bool loaded = false;
@@ -152,12 +152,12 @@ namespace videodromm
 
 			return rtn;
 		}
-		void											loadImageFile(const string& aFile, unsigned int aTextureIndex) {
+		void											loadImageFile(const std::string& aFile, unsigned int aTextureIndex) {
 			int rtn = math<int>::min(aTextureIndex, mFboList.size() - 1);
 			fs::path texFileOrPath = aFile;
 			if (fs::exists(texFileOrPath)) {
 
-				string ext = "";
+				std::string ext = "";
 				int dotIndex = texFileOrPath.filename().string().find_last_of(".");
 				if (dotIndex != std::string::npos)  ext = texFileOrPath.filename().string().substr(dotIndex + 1);
 				if (ext == "jpg" || ext == "png") {
@@ -370,7 +370,7 @@ namespace videodromm
 		gl::FboRef						mMixetteFbo;
 		gl::GlslProgRef					mGlslMixette;
 		ci::gl::Texture2dRef			mMixetteTexture;
-		string							mError;
+		std::string							mError;
 		//fs::path						mMixesFilepath;
 		/*
 		//! Shaders

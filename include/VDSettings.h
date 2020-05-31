@@ -19,7 +19,7 @@
 
 using namespace ci;
 using namespace ci::app;
-using namespace std;
+//using namespace std;
 
 namespace videodromm {
 
@@ -28,8 +28,8 @@ namespace videodromm {
 	class VDSettings
 	{
 	public:
-		VDSettings(string filename);
-		static VDSettingsRef create(string filename);
+		VDSettings(std::string filename);
+		static VDSettingsRef create(std::string filename);
 
 		enum VDParams {
 			//! maximum number of fbos, shaders, textures
@@ -215,7 +215,7 @@ namespace videodromm {
 		bool						isUIDirty;
 		bool						mMIDIOpenAllInputPorts;
 		int							mCount;
-		string						mImageFile;
+		std::string						mImageFile;
 
 		// shader uniforms	
 		float						iSpeedMultiplier;   // speed multiplier
@@ -227,9 +227,9 @@ namespace videodromm {
 		int							iBlendmode;
 		ci::Anim<float> 			iAlpha;
 
-		string						mAssetsPath;
+		std::string						mAssetsPath;
 		bool						iShowFps;
-		string						sFps;
+		std::string						sFps;
 		unsigned int				shaderEditIndex;
 		// transition
 		int							iTransition;
@@ -243,7 +243,7 @@ namespace videodromm {
 		int							mRenderY;
 		int							mDisplayCount;
 		bool						mPreviewEnabled;
-		string						mCurrentFilePath;
+		std::string						mCurrentFilePath;
 		// Textures
 		bool						mRenderThumbs;
 		int							currentSelectedIndex;
@@ -283,7 +283,7 @@ namespace videodromm {
 		// spout
 		int							mFboResolution;
 		// indexes for textures
-		map<int, int>				iChannels;
+		std::map<int, int>				iChannels;
 		int							selectedChannel;
 		int							selectedWarp;
 		int							mWarpCount;
@@ -302,19 +302,19 @@ namespace videodromm {
 		bool						mIsRouter;
 		bool						mAreSocketIOEnabledAtStartup;
 		bool						mIsSocketIOServer;
-		string						mSocketIOProtocol;
-		string						mSocketIOHost;
-		string						mSocketIORoom;
-		string						mSocketIONickname;
+		std::string						mSocketIOProtocol;
+		std::string						mSocketIOHost;
+		std::string						mSocketIORoom;
+		std::string						mSocketIONickname;
 		uint16_t					mSocketIOPort;
 		std::string					mSocketIOMsg;
 		// midi
 		std::string					mMidiMsg;
 
 		// info to backup in XML
-		string						mInfo;
+		std::string						mInfo;
 		// ableton liveOSC
-		string						mTrackName;
+		std::string						mTrackName;
 		// imgui positions and sizes
 		int							uiMargin;
 		// mPreviewFboWidth 80 mPreviewFboHeight 60 margin 10 inBetween 15

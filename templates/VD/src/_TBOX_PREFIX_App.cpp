@@ -91,7 +91,7 @@ void _TBOX_PREFIX_App::fileDrop(FileDropEvent event)
 }
 void _TBOX_PREFIX_App::update()
 {
-	mVDSession->setFloatUniformValueByIndex(mVDSettings->IFPS, getAverageFps());
+	mVDSession->setUniformValue(mVDSettings->IFPS, getAverageFps());
 	mVDSession->update();
 }
 void _TBOX_PREFIX_App::cleanup()
@@ -163,17 +163,17 @@ void _TBOX_PREFIX_App::keyUp(KeyEvent event)
 void _TBOX_PREFIX_App::draw()
 {
 	gl::clear(Color::black());
-	if (mFadeInDelay) {
+	/*if (mFadeInDelay) {
 		mVDSettings->iAlpha = 0.0f;
 		if (getElapsedFrames() > mVDSession->getFadeInDelay()) {
 			mFadeInDelay = false;
 			timeline().apply(&mVDSettings->iAlpha, 0.0f, 1.0f, 1.5f, EaseInCubic());
 		}
-	}
+	}*/
 
 	//gl::setMatricesWindow(toPixels(getWindowSize()),false);
 	gl::setMatricesWindow(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight, false);
-	gl::draw(mVDSession->getMixTexture(), getWindowBounds());
+	gl::draw(mVDSession->getMixetteTexture(0), getWindowBounds());
 
 	// Spout Send
 	mSpoutOut.sendViewport();

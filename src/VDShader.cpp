@@ -11,7 +11,7 @@ using namespace videodromm;
 	save isf in assets session subfolder
 was VDShader::VDShader(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const string& aFileOrPath, const string& aFragmentShaderString) {
 */
-VDShader::VDShader(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const string& aFileOrPath, const string& aShaderFragmentString, gl::TextureRef aTexture) {
+VDShader::VDShader(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const std::string& aFileOrPath, const std::string& aShaderFragmentString, gl::TextureRef aTexture) {
 	mVDSettings = aVDSettings;
 	mVDAnimation = aVDAnimation;
 	mFragmentShaderString = aShaderFragmentString;
@@ -90,16 +90,16 @@ bool VDShader::loadFragmentStringFromFile() {
 	CI_LOG_V(mFragFilePath.string() + " loaded and compiled");
 	return mValid;
 }// aName = fullpath
-bool VDShader::setFragmentString(const string& aFragmentShaderString, const string& aName) {
+bool VDShader::setFragmentString(const std::string& aFragmentShaderString, const std::string& aName) {
 
-	string mOriginalFragmentString = aFragmentShaderString;
-	string mOutputFragmentString = aFragmentShaderString;
-	string mISFString = aFragmentShaderString;
-	string mOFISFString = "";
+	std::string mOriginalFragmentString = aFragmentShaderString;
+	std::string mOutputFragmentString = aFragmentShaderString;
+	std::string mISFString = aFragmentShaderString;
+	std::string mOFISFString = "";
 	mName = aName;
 	//string fileName = "";
-	string mCurrentUniformsString = "// active uniforms start\n";
-	string mProcessedShaderString = "";
+	std::string mCurrentUniformsString = "// active uniforms start\n";
+	std::string mProcessedShaderString = "";
 	ext = "";
 	mError = "";
 
@@ -118,7 +118,7 @@ bool VDShader::setFragmentString(const string& aFragmentShaderString, const stri
 
 	}
 	
-	string mNotFoundUniformsString = "/* " + mName + "\n";
+	std::string mNotFoundUniformsString = "/* " + mName + "\n";
 	// filename to save
 	mValid = false;
 	// load fragment shader
@@ -305,7 +305,7 @@ bool VDShader::setFragmentString(const string& aFragmentShaderString, const stri
 			// name of the shader
 			//mName = aName;
 			mValid = true;
-			string mISFUniforms = ",\n"
+			std::string mISFUniforms = ",\n"
 				"		{\n"
 				"			\"NAME\": \"iColor\", \n"
 				"			\"TYPE\" : \"color\", \n"
@@ -317,7 +317,7 @@ bool VDShader::setFragmentString(const string& aFragmentShaderString, const stri
 				"			]\n"
 				"		}\n";
 			auto &uniforms = mShader->getActiveUniforms();
-			string uniformName;
+			std::string uniformName;
 			for (const auto &uniform : uniforms) {
 				uniformName = uniform.getName();
 				CI_LOG_V(mName + ", uniform name:" + uniformName);
@@ -385,7 +385,7 @@ bool VDShader::setFragmentString(const string& aFragmentShaderString, const stri
 			}
 
 			// save ISF
-			string mISFHeader = "/*{\n"
+			std::string mISFHeader = "/*{\n"
 				"	\"CREDIT\" : \"" + mName + " by \",\n"
 				"	\"CATEGORIES\" : [\n"
 				"		\"ci\"\n"
@@ -419,7 +419,7 @@ bool VDShader::setFragmentString(const string& aFragmentShaderString, const stri
 				"		}\n";
 
 
-			string mISFFooter = "	],\n"
+			std::string mISFFooter = "	],\n"
 				"}\n"
 				"*/\n";
 
@@ -449,7 +449,7 @@ bool VDShader::setFragmentString(const string& aFragmentShaderString, const stri
 				CI_LOG_V("ISF file saved:" + isfFile.string());
 			}
 			else {*/
-			ofstream mISF(mFragFilePath.string(), std::ofstream::binary);
+			std::ofstream mISF(mFragFilePath.string(), std::ofstream::binary);
 			mISF << mISFString;
 			mISF.close();
 			CI_LOG_V("ISF file saved:" + mFragFilePath.string());
@@ -458,12 +458,12 @@ bool VDShader::setFragmentString(const string& aFragmentShaderString, const stri
 	}
 	catch (gl::GlslProgCompileExc &exc)
 	{
-		mError = mName + string(exc.what());
+		mError = mName + std::string(exc.what());
 		CI_LOG_V("setFragmentString, unable to compile live fragment shader:" + mError + " frag:" + mOutputFragmentString);
 	}
 	catch (const std::exception &e)
 	{
-		mError = mName + string(e.what());
+		mError = mName + std::string(e.what());
 		CI_LOG_V("setFragmentString, error on live fragment shader:" + mError + " frag:" + mOutputFragmentString);
 	}
 	if (mError.length() > 0) mVDSettings->mShaderMsg = mError + "\n" + mVDSettings->mShaderMsg.substr(0, mVDSettings->mMsgLength);
@@ -477,7 +477,7 @@ ci::gl::Texture2dRef VDShader::getFboTexture() {
 		gl::clear(Color::black());
 
 		if (mTexture) mTexture->bind(254);
-		string name;
+		std::string name;
 
 		mUniforms = mShader->getActiveUniforms();
 		for (const auto &uniform : mUniforms) {
@@ -538,7 +538,7 @@ ci::gl::Texture2dRef VDShader::getFboTexture() {
 		gl::drawSolidRect(Rectf(0, 0, mVDSettings->mPreviewFboWidth, mVDSettings->mPreviewFboHeight));
 		mRenderedTexture = mThumbFbo->getColorTexture();
 
-		string filename = mName + ".jpg";
+		std::string filename = mName + ".jpg";
 		fs::path fr = getAssetPath("") / "thumbs" / filename;
 
 		//if (!fs::exists(fr)) {

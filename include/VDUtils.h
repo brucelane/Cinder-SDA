@@ -16,7 +16,7 @@
 
 using namespace ci;
 using namespace ci::app;
-using namespace std;
+//using namespace std;
 
 namespace videodromm
 {
@@ -28,7 +28,7 @@ namespace videodromm
 		VDUtils(VDSettingsRef aVDSettings);
 		static VDUtilsRef	create(VDSettingsRef aVDSettings)
 		{
-			return shared_ptr<VDUtils>(new VDUtils(aVDSettings));
+			return std::shared_ptr<VDUtils>(new VDUtils(aVDSettings));
 		}
 		// TODO move to private when shadamixa upgraded
 		void						splitWarp(int fboWidth, int fboHeight);
@@ -51,12 +51,12 @@ namespace videodromm
 			mSrcAreaLeftOrTop = Area(x1LeftOrTop, y1LeftOrTop, x2LeftOrTop, y2LeftOrTop);
 		};
 		// file system
-		fs::path					getPath(string path) {
+		fs::path					getPath(std::string path) {
 			fs::path p = app::getAssetPath("");
 			if (path.length() > 0) { p += fs::path("/" + path); }
 			return p;
 		};
-		string						getFileNameFromFullPath(string path) {
+		std::string						getFileNameFromFullPath(std::string path) {
 			fs::path fullPath = path;
 			return fullPath.filename().string();
 		};

@@ -4,11 +4,11 @@
 
 #include "VDSettings.h"
 
-using namespace ci;
-using namespace std;
+//using namespace ci;
+//using namespace std;
 using namespace videodromm;
 
-VDSettings::VDSettings(string filename)
+VDSettings::VDSettings(std::string filename)
 {
 	// reset no matter what, so we don't miss anything
 	reset();
@@ -25,9 +25,9 @@ VDSettings::VDSettings(string filename)
 	}
 }
 
-VDSettingsRef VDSettings::create(string filename)
+VDSettingsRef VDSettings::create(std::string filename)
 {
-	return shared_ptr<VDSettings>(new VDSettings(filename));
+	return std::shared_ptr<VDSettings>(new VDSettings(filename));
 }
 //! to json
 JsonTree	VDSettings::toJson(bool save) const
@@ -39,7 +39,7 @@ JsonTree	VDSettings::toJson(bool save) const
 	json.addChild(osc);
 
 	if (save) {
-		string jsonFileName = "settings.json";
+		std::string jsonFileName = "settings.json";
 		fs::path jsonFile = getAssetPath("") / mAssetsPath / jsonFileName;
 		json.write(jsonFile);	
 	}
@@ -272,7 +272,7 @@ bool VDSettings::restore()
 			}
 			if (settings.hasChild("OSCDestinationHost")) {
 				XmlTree OSCDestinationHost = settings.getChild("OSCDestinationHost");
-				mOSCDestinationHost = OSCDestinationHost.getAttributeValue<string>("value");
+				mOSCDestinationHost = OSCDestinationHost.getAttributeValue<std::string>("value");
 			}
 			if (settings.hasChild("OSCDestinationPort2")) {
 				XmlTree OSCDestinationPort2 = settings.getChild("OSCDestinationPort2");
@@ -280,7 +280,7 @@ bool VDSettings::restore()
 			}
 			if (settings.hasChild("OSCDestinationHost2")) {
 				XmlTree OSCDestinationHost2 = settings.getChild("OSCDestinationHost2");
-				mOSCDestinationHost2 = OSCDestinationHost2.getAttributeValue<string>("value");
+				mOSCDestinationHost2 = OSCDestinationHost2.getAttributeValue<std::string>("value");
 			}
 			if (settings.hasChild("MIDIOpenAllInputPorts")) {
 				XmlTree MIDIOpenAllInputPorts = settings.getChild("MIDIOpenAllInputPorts");
@@ -308,11 +308,11 @@ bool VDSettings::restore()
 			}
 			if (settings.hasChild("SocketIOProtocol")) {
 				XmlTree SocketIOProtocol = settings.getChild("SocketIOProtocol");
-				mSocketIOProtocol = SocketIOProtocol.getAttributeValue<string>("value");
+				mSocketIOProtocol = SocketIOProtocol.getAttributeValue<std::string>("value");
 			}
 			if (settings.hasChild("SocketIOHost")) {
 				XmlTree SocketIOHost = settings.getChild("SocketIOHost");
-				mSocketIOHost = SocketIOHost.getAttributeValue<string>("value");
+				mSocketIOHost = SocketIOHost.getAttributeValue<std::string>("value");
 			}
 			if (settings.hasChild("SocketIOPort")) {
 				XmlTree SocketIOPort = settings.getChild("SocketIOPort");
@@ -320,20 +320,20 @@ bool VDSettings::restore()
 			}
 			if (settings.hasChild("SocketIORoom")) {
 				XmlTree SocketIORoom = settings.getChild("SocketIORoom");
-				mSocketIORoom = SocketIORoom.getAttributeValue<string>("value");
+				mSocketIORoom = SocketIORoom.getAttributeValue<std::string>("value");
 			}
 			if (settings.hasChild("SocketIONickname")) {
 				XmlTree SocketIONickname = settings.getChild("SocketIONickname");
-				mSocketIONickname = SocketIONickname.getAttributeValue<string>("value");
+				mSocketIONickname = SocketIONickname.getAttributeValue<std::string>("value");
 			}
 
 			if (settings.hasChild("Info")) {
 				XmlTree Info = settings.getChild("Info");
-				mInfo = Info.getAttributeValue<string>("value");
+				mInfo = Info.getAttributeValue<std::string>("value");
 			}
 			if (settings.hasChild("AssetsPath")) {
 				XmlTree AssetsPath = settings.getChild("AssetsPath");
-				mAssetsPath = AssetsPath.getAttributeValue<string>("value");
+				mAssetsPath = AssetsPath.getAttributeValue<std::string>("value");
 				fs::path mPath = getAssetPath("") / mAssetsPath;
 				if (!fs::exists(mPath)) {
 					// reset path
