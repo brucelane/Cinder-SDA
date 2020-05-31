@@ -56,6 +56,8 @@ namespace videodromm
 			mSelectedFboA = aWarpFboIndex; 
 		}
 		void						setWarpBFboIndex(unsigned int aWarpIndex, unsigned int aWarpFboIndex) { mSelectedFboB = aWarpFboIndex; }
+		void						setupOSCSender();
+		void						setupOSCReceiver();
 	private:
 		// Settings
 		VDSettingsRef				mVDSettings;
@@ -73,7 +75,7 @@ namespace videodromm
 		int							mSelectedFboB;
 
 		static const int			MAX = 16;
-		float						mBarStart = 0.0f;
+
 
 	};
 }

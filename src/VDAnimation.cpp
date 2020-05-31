@@ -134,10 +134,7 @@ void VDAnimation::saveUniforms()
 	}
 	return (shaderUniforms[getUniformNameForIndex(aIndex)].floatValue != controlValues[aIndex]);
 	}
-bool VDAnimation::toggleValue(unsigned int aIndex) {
-	shaderUniforms[aIndex].boolValue = !shaderUniforms[aIndex].boolValue;
-	return shaderUniforms[aIndex].boolValue;
-}
+
 bool VDAnimation::toggleAuto(unsigned int aIndex) {
 	shaderUniforms[aIndex].automatic = !shaderUniforms[aIndex].automatic;
 	return shaderUniforms[aIndex].automatic;
@@ -570,7 +567,13 @@ void VDAnimation::update() {
 	}
 #pragma endregion animation
 }
-
+bool VDAnimation::toggleValue(unsigned int aIndex) {
+	bool rtn = getBoolUniformValueByIndex(aIndex);
+	rtn = !rtn;
+	setBoolUniformValueByIndex(aIndex, rtn);
+	//shaderUniforms[aIndex].boolValue = !shaderUniforms[aIndex].boolValue;
+	return rtn;
+}
 // tempo
 void VDAnimation::tapTempo()
 {

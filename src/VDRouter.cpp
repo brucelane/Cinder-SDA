@@ -94,7 +94,12 @@ void VDRouter::sendJSON(std::string params) {
 }
 void VDRouter::shutdown() {
 }
-
+void VDRouter::setupOSCSender() {
+	mVDOsc->setupOSCSender();
+}
+void VDRouter::setupOSCReceiver() {
+	mVDOsc->setupOSCReceiver();
+}
 
 
 void VDRouter::updateParams(int iarg0, float farg1) {

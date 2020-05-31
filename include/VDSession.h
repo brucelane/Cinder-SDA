@@ -246,6 +246,15 @@ namespace videodromm {
 			//! 20200526 
 			mVDBuilder->changeBoolValue(aCtrl, aValue);
 		};
+		// OSC
+		void							setupOSCSender() {
+			mVDBuilder->setupOSCSender();
+		};
+		void							setupOSCReceiver() {
+			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
+			//! 20200526 
+			mVDBuilder->setupOSCReceiver();
+		};
 		// tempo
 		float							getMaxVolume() { return mVDAnimation->maxVolume; };
 		float							getBpm() { return mVDAnimation->getBpm(); };

@@ -42,12 +42,14 @@ namespace videodromm
 			return std::shared_ptr<VDOsc>(new VDOsc(aVDSettings, aVDAnimation));
 		}
 		
-	
+		void						setupOSCSender();
+		void						setupOSCReceiver();
 	private:
 		// Settings
 		VDSettingsRef					mVDSettings;
 		// Animation
 		VDAnimationRef					mVDAnimation;
+		float						mBarStart = 0.0f;
 		// osc
 		std::shared_ptr<osc::ReceiverUdp>	mOscReceiver;
 //std::map<uint64_t, protocol::endpoint>	mConnections;

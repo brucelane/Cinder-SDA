@@ -139,8 +139,8 @@ namespace videodromm
 			return mVDUniform->getUniformIndexForName(aName);
 			//return shaderUniforms[stringToIndex(aName)].index;
 		};
-		/*bool							toggleAuto(unsigned int aIndex);
 		bool							toggleValue(unsigned int aIndex);
+		/*bool							toggleAuto(unsigned int aIndex);
 		bool							toggleTempo(unsigned int aIndex);
 		bool							toggleBass(unsigned int aIndex);
 		bool							toggleMid(unsigned int aIndex);
