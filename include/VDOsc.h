@@ -50,6 +50,9 @@ namespace videodromm
 		VDSettingsRef				mVDSettings;
 		// Animation
 		VDAnimationRef				mVDAnimation;
+		// osc
+//shared_ptr<osc::ReceiverUdp>			mOscReceiver;
+//std::map<uint64_t, protocol::endpoint>	mConnections;
 	};
 }
 

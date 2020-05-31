@@ -384,7 +384,8 @@ void VDRouter::updateParams(int iarg0, float farg1) {
 	}
 	if (iarg0 > 10 && iarg0 < 19) {
 		// rotary 
-		//! 20200526 mVDSocketio->changeFloatValue(iarg0, farg1);
+		//! 20200526 
+		//mVDSocketio->changeFloatValue(iarg0, farg1);
 		// audio multfactor
 		//! 20200526 if (iarg0 == 13) mVDSocketio->changeFloatValue(iarg0, (farg1 + 0.01) * 10);
 		// exposure
