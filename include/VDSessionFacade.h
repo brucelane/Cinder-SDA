@@ -29,16 +29,17 @@ namespace videodromm
 		static VDSessionFacadeRef createVDSession(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 		{
 			//VDSessionRef Session = VDSessionFacade::createVDSession(aVDSettings, aVDAnimation)->setWarpBFboIndex(1, 1)->setWarpAFboIndex(1, 2)->getInstance();
-			VDMediatorObservableRef mVDMediator =
-				VDMediatorObservable::createVDMediatorObservable(aVDSettings, aVDAnimation);
-				//->addObserver(VDSocketIOObserverBuilder->connect(ip, port))->addObserver(new UIDisplay());
+			VDMediatorObservableRef mediator =
+				VDMediatorObservable::createVDMediatorObservable(aVDSettings, aVDAnimation)
+				->addObserver(VDSocketIOObserver::connect(aVDSettings->mSocketIOHost, aVDSettings->mSocketIOPort));
+				//->addObserver(new UIDisplay());
 
 			//mVDMediator->updateUniformValue(a, b);
 			/*mVDMediator->update([](observer, { "a": 1, "b" : 2 }) -> {
 				observer->setUniformValue(a, b);
 			});*/
 			//return VDRouterBuilderRef(new VDRouterBuilder(VDRouterRef(new VDRouter(aVDSettings, aVDAnimation))));
-			return VDSessionFacadeRef(new VDSessionFacade(VDSessionRef(new VDSession(aVDSettings, aVDAnimation))));
+			return VDSessionFacadeRef(new VDSessionFacade(VDSessionRef(new VDSession(aVDSettings, aVDAnimation)), mediator));
 		}
 		VDSessionFacadeRef loadFromJsonFile(const fs::path& jsonFile) {
 			mVDSession->loadFromJsonFile(jsonFile);
@@ -61,8 +62,9 @@ namespace videodromm
 		}
 
 	private:
-		VDSessionFacade(VDSessionRef session) : mVDSession(session) { }
+		VDSessionFacade(VDSessionRef session, VDMediatorObservableRef mediator) : mVDSession(session), mVDMediator(mediator){ }
 		VDSessionRef mVDSession;
+		VDMediatorObservableRef mVDMediator;
 	};
 
 

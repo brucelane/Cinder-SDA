@@ -45,15 +45,30 @@ namespace videodromm {
 	};
 
 	class VDSocketIOObserver : public VDUniformObserver {
-
+	public:
+		static VDUniformObserverRef connect(std::string host, unsigned int port) {
+			//msocketio->sendMessage(a, b);
+			VDUniformObserverRef obs(new VDSocketIOObserver(host, port));
+			return obs;
+		}
 		VDUniformObserverRef setUniformValue(int aIndex, float aValue) {
 			//msocketio->sendMessage(a, b);
 			return shared_from_this();
 		}
+
+		~VDSocketIOObserver() { /*socketIO.close();*/ }
+	private:
+		VDSocketIOObserver(std::string host, unsigned int port) {
+			//mclient.connect(host, port);
+		}
+		//sio::socketio mclient;
 	};
 
 	class VDOscObserver : public VDUniformObserver {
-
+		VDUniformObserverRef connect(std::string host, unsigned int port) {
+			//mosc->sendMessage(a, b);
+			return shared_from_this();
+		}
 		VDUniformObserverRef setUniformValue(int aIndex, float aValue) {
 			//mosc->sendMessage(a, b);
 			return shared_from_this();
@@ -62,7 +77,7 @@ namespace videodromm {
 
 	class VDMediatorObservable;
 	typedef std::shared_ptr<class VDMediatorObservable> VDMediatorObservableRef;
-	class VDMediatorObservable {
+	class VDMediatorObservable : public std::enable_shared_from_this<VDMediatorObservable> {
 	public:
 
 		static VDMediatorObservableRef createVDMediatorObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
@@ -70,20 +85,23 @@ namespace videodromm {
 			return VDMediatorObservableRef(new VDMediatorObservable(aVDSettings, aVDAnimation));
 		}
 
-		void addObserver(VDUniformObserverRef o) {
+		VDMediatorObservableRef addObserver(VDUniformObserverRef o) {
 			mObservers.push_back(o);
+			return shared_from_this();
 		}
 
-		void updateUniformValue(int aIndex, float aValue) {
+		VDMediatorObservableRef updateUniformValue(int aIndex, float aValue) {
 			for (auto observer : mObservers) {
 				observer->setUniformValue(aIndex, aValue);
 			}
+			return shared_from_this();
 		};
 
-		void updateShaderText(int aIndex, float aValue) {
+		VDMediatorObservableRef updateShaderText(int aIndex, float aValue) {
 			for (auto observer : mObservers) {
 				observer->setUniformValue(aIndex, aValue);
 			}
+			return shared_from_this();
 		};
 
 		/*void update(void (*callback) (VDUniformObserverRef, map<string, any::type>)) {
