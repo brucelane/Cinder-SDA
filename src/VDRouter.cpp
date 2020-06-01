@@ -145,7 +145,7 @@ void VDRouter::updateParams(int iarg0, float farg1) {
 		// audio multfactor
 		//! 20200526 if (iarg0 == 13) mVDSocketio->changeFloatValue(iarg0, (farg1 + 0.01) * 10);
 		// exposure
-		//! 20200526 if (iarg0 == 14) mVDSocketio->changeFloatValue(iarg0, (farg1 + 0.01) * mVDAnimation->getMaxUniformValueByIndex(14));
+		//! 20200526 if (iarg0 == 14) mVDSocketio->changeFloatValue(iarg0, (farg1 + 0.01) * mVDAnimation->getMaxUniformValue(14));
 		// xfade
 		if (iarg0 == mVDSettings->IXFADE) {//18
 			//! 20200526 mVDSocketio->changeFloatValue(iarg0, farg1);

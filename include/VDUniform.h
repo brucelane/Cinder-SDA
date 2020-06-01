@@ -209,10 +209,10 @@ namespace videodromm
 		bool							getBoolUniformValueByIndex(unsigned int aIndex) {
 			return shaderUniforms[aIndex].floatValue;
 		}
-		float							getMinUniformValueByIndex(unsigned int aIndex) {
+		float							getMinUniformValue(unsigned int aIndex) {
 			return shaderUniforms[aIndex].minValue;
 		}
-		float							getMaxUniformValueByIndex(unsigned int aIndex) {
+		float							getMaxUniformValue(unsigned int aIndex) {
 			return shaderUniforms[aIndex].maxValue;
 		}
 		bool							getBoolUniformValueByName(const std::string& aName) {

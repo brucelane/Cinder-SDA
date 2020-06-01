@@ -173,7 +173,6 @@ VDUniform::VDUniform(VDSettingsRef aVDSettings) {
 		createBoolUniform("iInvert", mVDSettings->IINVERT); // 86
 		// greyscale 
 		createBoolUniform("iGreyScale", mVDSettings->IGREYSCALE); //87
-
 		createBoolUniform("iClear", mVDSettings->ICLEAR, true); // 88
 		createBoolUniform("iDebug", mVDSettings->IDEBUG); // 129
 		createBoolUniform("iXorY", mVDSettings->IXORY); // 130

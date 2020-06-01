@@ -183,11 +183,11 @@ namespace videodromm
 		bool							getBoolUniformValueByIndex(unsigned int aIndex) {
 			return mVDUniform->getBoolUniformValueByIndex(aIndex);
 		}
-		float							getMinUniformValueByIndex(unsigned int aIndex) {
-			return mVDUniform->getMinUniformValueByIndex(aIndex);
+		float							getMinUniformValue(unsigned int aIndex) {
+			return mVDUniform->getMinUniformValue(aIndex);
 		}
-		float							getMaxUniformValueByIndex(unsigned int aIndex) {
-			return mVDUniform->getMaxUniformValueByIndex(aIndex);
+		float							getMaxUniformValue(unsigned int aIndex) {
+			return mVDUniform->getMaxUniformValue(aIndex);
 		}
 		float							getMinUniformValueByName(const std::string& aName) {
 			return mVDUniform->getMinUniformValueByName(aName);

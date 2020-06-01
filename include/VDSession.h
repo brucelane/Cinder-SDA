@@ -197,11 +197,11 @@ namespace videodromm {
 		void							resetAutoAnimation(unsigned int aIndex) {
 			//! 20200526 mVDSocketio->resetAutoAnimation(aIndex);
 		};
-		float							getMinUniformValueByIndex(unsigned int aIndex) {
-			return mVDAnimation->getMinUniformValueByIndex(aIndex);
+		float							getMinUniformValue(unsigned int aIndex) {
+			return mVDAnimation->getMinUniformValue(aIndex);
 		};
-		float							getMaxUniformValueByIndex(unsigned int aIndex) {
-			return mVDAnimation->getMaxUniformValueByIndex(aIndex);
+		float							getMaxUniformValue(unsigned int aIndex) {
+			return mVDAnimation->getMaxUniformValue(aIndex);
 		};
 
 		/*vec2							getVec2UniformValueByIndex(unsigned int aIndex) {
@@ -354,7 +354,6 @@ namespace videodromm {
 		// fbos
 		std::string							getFboName(unsigned int aFboIndex) {
 			return mVDMix->getFboName(aFboIndex);
-
 		};
 
 		unsigned int					getFboListSize() { return mVDMix->getFboListSize(); };
