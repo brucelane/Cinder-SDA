@@ -16,7 +16,7 @@
 // Utils
 #include "VDUtils.h"
 // Message router
-#include "VDRouter.h"
+//#include "VDRouter.h"
 // Builder
 #include "VDFactory.h"
 // Animation
@@ -38,15 +38,26 @@ using namespace ph::warping;
 namespace videodromm {
 
 	typedef std::shared_ptr<class VDSession> VDSessionRef;
-
+	// pattern State
+	enum STATE {
+		STATE_LOAD_FILE = 0,
+		STATE_SHADER = 1,
+		STATE_UNIFORMS = 2,
+		STATE_FAILED_COMPILE = 3,
+		STATE_SUCCESS_COMPILE = 4
+	};
 	
 	class VDSession {
 	public:
-		VDSession(VDSettingsRef aVDSettings);
-		static VDSessionRef				create(VDSettingsRef aVDSettings);
+		STATE state;
+		VDSession(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
+		//static VDSessionRef				create(VDSettingsRef aVDSettings);
 		bool							handleKeyDown(KeyEvent& event);
 		bool							handleKeyUp(KeyEvent& event);
 		void							update(unsigned int aClassIndex = 0);
+		
+		void							loadFromJsonFile(const fs::path& jsonFile);
+		
 		//! Mix
 		ci::gl::TextureRef				getFboRenderedTexture(unsigned int aFboIndex) {
 			return mVDMix->getFboRenderedTexture(aFboIndex);
@@ -565,6 +576,8 @@ namespace videodromm {
 
 		// Settings
 		VDSettingsRef					mVDSettings;
+		// Settings
+		VDAnimationRef					mVDAnimation;
 		// Utils
 		VDUtilsRef						mVDUtils;
 		// Builder

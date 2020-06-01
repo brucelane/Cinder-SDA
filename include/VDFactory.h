@@ -26,11 +26,6 @@
 using namespace ci;
 using namespace ci::app;
 //using namespace std;
-
-namespace videodromm
-{
-	typedef std::shared_ptr<class VDRouter> VDRouterRef;
-
 	/*class VDFactory {
 	public:
 		static VDRouterRef createVDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
@@ -41,7 +36,9 @@ namespace videodromm
 	private:
 		VDFactory() {}
 	};*/
-
+namespace videodromm
+{
+	typedef std::shared_ptr<class VDRouter> VDRouterRef;
 	typedef std::shared_ptr<class VDRouterBuilder> VDRouterBuilderRef;
 
 	class VDRouterBuilder : public std::enable_shared_from_this<VDRouterBuilder> {

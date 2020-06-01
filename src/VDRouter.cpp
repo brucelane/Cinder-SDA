@@ -89,7 +89,9 @@ void VDRouter::changeIntValue(unsigned int aControl, int aValue) {
 void VDRouter::sendJSON(std::string params) {
 
 	/*if (mOscSender) {
+	Observer Observable
 	mVDOsc->send(params);
+	mVDSocketio->send(params);
 	}*/
 }
 void VDRouter::shutdown() {
