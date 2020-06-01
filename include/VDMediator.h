@@ -12,6 +12,8 @@
 // Animation
 #include "VDAnimation.h"
 #include <memory>
+#include <vector>
+
 /*
 1 fois
 connect(ip, port)
@@ -99,12 +101,14 @@ namespace videodromm {
 		VDAnimationRef				mVDAnimation;
 		VDMediatorObservable() {}
 		VDMediatorObservable::VDMediatorObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
-			{
-				CI_LOG_V("VDMediatorObservable constructor");
-				mVDSettings = aVDSettings;
-				mVDAnimation = aVDAnimation;
-			}
+
+			CI_LOG_V("VDMediatorObservable constructor");
+			mVDSettings = aVDSettings;
+			mVDAnimation = aVDAnimation;
+		}
 	};
+
+}
 
 	/*VDMediatorObservableRef mVDMediator = VDMediatorObservable::create()->addObserver(VDSocketIOObserverBuilder->connect(ip, port))->addObserver(new UIDisplay());
 
@@ -113,4 +117,6 @@ namespace videodromm {
 		observer->setUniformValue(a, b);
 	});
 
-	VDProxy::connect(ip, port)*/
+	VDProxy::connect(ip, port)
+	
+	*/

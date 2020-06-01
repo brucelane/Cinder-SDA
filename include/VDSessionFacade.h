@@ -14,8 +14,11 @@
 //
 #include "VDSession.h"
 #include "VDAnimation.h"
+#include "VDMediator.h"
+
 using namespace ci;
 using namespace ci::app;
+//using namespace std;
 namespace videodromm
 {
 	typedef std::shared_ptr<class VDSession> VDSessionRef;
@@ -26,12 +29,15 @@ namespace videodromm
 		static VDSessionFacadeRef createVDSession(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 		{
 			//VDSessionRef Session = VDSessionFacade::createVDSession(aVDSettings, aVDAnimation)->setWarpBFboIndex(1, 1)->setWarpAFboIndex(1, 2)->getInstance();
-			/*VDMediatorObservableRef mVDMediator = VDMediatorObservable::create()->addObserver(VDSocketIOObserverBuilder->connect(ip, port))->addObserver(new UIDisplay());
+			VDMediatorObservableRef mVDMediator =
+				VDMediatorObservable::createVDMediatorObservable(aVDSettings, aVDAnimation);
+				//->addObserver(VDSocketIOObserverBuilder->connect(ip, port))->addObserver(new UIDisplay());
 
-			mVDMediator->updateUniformValue(a, b);
-			mVDMediator->update([](observer, { "a": 1, "b" : 2 }) -> {
+			//mVDMediator->updateUniformValue(a, b);
+			/*mVDMediator->update([](observer, { "a": 1, "b" : 2 }) -> {
 				observer->setUniformValue(a, b);
 			});*/
+			//return VDRouterBuilderRef(new VDRouterBuilder(VDRouterRef(new VDRouter(aVDSettings, aVDAnimation))));
 			return VDSessionFacadeRef(new VDSessionFacade(VDSessionRef(new VDSession(aVDSettings, aVDAnimation))));
 		}
 		VDSessionFacadeRef loadFromJsonFile(const fs::path& jsonFile) {

@@ -6,14 +6,14 @@
 
 using namespace videodromm;
 
-VDSession::VDSession(VDSettingsRef aVDSettings)
+VDSession::VDSession(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 {
 	CI_LOG_V("VDSession ctor");
 	mVDSettings = aVDSettings;
+	mVDAnimation = aVDAnimation;
 	// Utils
 	mVDUtils = VDUtils::create(mVDSettings);
 	// Animation
-	mVDAnimation = VDAnimation::create(mVDSettings);
 	// TODO: needed? mVDAnimation->tapTempo();
 	// Mix
 	mVDMix = VDMix::create(mVDSettings, mVDAnimation);

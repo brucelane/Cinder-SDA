@@ -584,8 +584,6 @@ namespace videodromm {
 		VDRouterBuilderRef				mVDBuilder;
 		// Message router
 		//VDRouterRef						mVDRouter;
-		// Animation
-		VDAnimationRef					mVDAnimation;
 		// Log
 		VDLogRef						mVDLog;
 		// Mix
