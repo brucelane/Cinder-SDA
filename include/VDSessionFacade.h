@@ -15,6 +15,8 @@
 #include "VDSession.h"
 #include "VDAnimation.h"
 #include "VDMediator.h"
+// VDRouterBuilder
+#include "VDRouterBuilder.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -28,33 +30,40 @@ namespace videodromm
 	public:
 		static VDSessionFacadeRef createVDSession(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 		{
-			//VDSessionRef Session = VDSessionFacade::createVDSession(aVDSettings, aVDAnimation)->setWarpBFboIndex(1, 1)->setWarpAFboIndex(1, 2)->getInstance();
 			VDMediatorObservableRef mediator =
 				VDMediatorObservable::createVDMediatorObservable(aVDSettings, aVDAnimation)
-				->addObserver(VDSocketIOObserver::connect(aVDSettings->mSocketIOHost, aVDSettings->mSocketIOPort));
-				//->addObserver(new UIDisplay());
-
-			//mVDMediator->updateUniformValue(a, b);
-			/*mVDMediator->update([](observer, { "a": 1, "b" : 2 }) -> {
-				observer->setUniformValue(a, b);
-			});*/
-			//return VDRouterBuilderRef(new VDRouterBuilder(VDRouterRef(new VDRouter(aVDSettings, aVDAnimation))));
+				->addObserver(VDSocketIOObserver::connect(aVDSettings->mSocketIOHost, aVDSettings->mSocketIOPort))
+				->addObserver(VDOscObserver::connect(aVDSettings->mOSCDestinationHost, aVDSettings->mOSCDestinationPort));
+				//->addObserver(new UIDisplay());		
 			return VDSessionFacadeRef(new VDSessionFacade(VDSessionRef(new VDSession(aVDSettings, aVDAnimation)), mediator));
 		}
-		void							setupOSCSender() {
-			//mVDBuilder->setupOSCSender();
-		};
-		void							setupOSCReceiver() {
-			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
-			//! 20200526 
-			//mVDBuilder->setupOSCReceiver();
-			//mediator->addObserver(VDOscObserver::connect(aVDSettings->mSocketIOHost, aVDSettings->mSocketIOPort));
+		
+		//mVDRouterBuilder = VDRouterBuilder::createVDRouter(aVDSettings, aVDAnimation)->setWarpBFboIndex(0, 1);
+		void							setIntUniformValueByIndex(unsigned int aCtrl, int aValue) {
+			//mVDRouterBuilder->changeIntValue(aCtrl, aValue);
+			mVDMediator->updateUniformValue(aCtrl, aValue);
 		}
-		VDSessionFacadeRef setUniformValue(unsigned int aCtrl, float aValue) {
-			mVDSession->setUniformValue(aCtrl, aValue);
+		void							setBoolUniformValueByIndex(unsigned int aCtrl, float aValue) {
+			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
+			//mVDRouterBuilder->changeBoolValue(aCtrl, aValue);
+			mVDMediator->updateUniformValue(aCtrl, aValue);
+		}
+		// OSC
+		void							setupOSCSender() {
+			//mVDRouterBuilder->setupOSCSender();
+			//mediator->addObserver(VDOscObserver::connect(aVDSettings->mSocketIOHost, aVDSettings->mSocketIOPort));
+		}	
+		VDSessionFacadeRef setupOSCReceiver() {
+			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
+			//mVDRouterBuilder->setupOSCReceiver();
 			return shared_from_this();
 		}
-		
+		VDSessionFacadeRef setUniformValue(unsigned int aCtrl, float aValue) {
+			mVDMediator->updateUniformValue(aCtrl, aValue);
+			//mVDRouterBuilder->changeFloatValue(aCtrl, aValue);
+			return shared_from_this();
+		}
+
 		VDSessionFacadeRef toggleValue(unsigned int aCtrl) {
 			mVDSession->toggleValue(aCtrl);
 			return shared_from_this();
@@ -80,12 +89,16 @@ namespace videodromm
 			mVDSession->loadFromJsonFile(jsonFile);
 			return shared_from_this();
 		}
+		VDSessionFacadeRef setMode(int aMode) {
+			mVDSession->setMode(aMode);
+			return shared_from_this();
+		}
 		VDSessionFacadeRef update() {
 			mVDSession->update();
 			return shared_from_this();
 		}
 		// begin terminal operations
-		bool getUseTimeWithTempo() { 
+		bool getUseTimeWithTempo() {
 			return mVDSession->getUseTimeWithTempo();
 		};
 		ci::gl::TextureRef buildRenderedMixetteTexture(unsigned int aIndex) {
@@ -106,10 +119,10 @@ namespace videodromm
 		ci::gl::TextureRef buildRenderedWarpFboTexture() {
 			return mVDSession->getRenderedWarpFboTexture();
 		}
-		unsigned int getWarpAFboIndex(unsigned int aWarpIndex) { 
+		unsigned int getWarpAFboIndex(unsigned int aWarpIndex) {
 			return mVDSession->getWarpAFboIndex(aWarpIndex);
 		}
-		unsigned int getWarpBFboIndex(unsigned int aWarpIndex) { 
+		unsigned int getWarpBFboIndex(unsigned int aWarpIndex) {
 			return mVDSession->getWarpBFboIndex(aWarpIndex);
 		}
 
@@ -134,20 +147,20 @@ namespace videodromm
 		int getFboTextureHeight(unsigned int aFboIndex) {
 			return mVDSession->getFboTextureHeight(aFboIndex);
 		}
-		unsigned int getWarpCount() { 
+		unsigned int getWarpCount() {
 			return mVDSession->getWarpCount();
 		};
-		std::string getWarpName(unsigned int aWarpIndex) { 
+		std::string getWarpName(unsigned int aWarpIndex) {
 			return mVDSession->getWarpName(aWarpIndex);
 		}// or trycatch
-		int getWarpWidth(unsigned int aWarpIndex) { 
+		int getWarpWidth(unsigned int aWarpIndex) {
 			return mVDSession->getWarpWidth(aWarpIndex);
 		}
-		int getWarpHeight(unsigned int aWarpIndex) { 
+		int getWarpHeight(unsigned int aWarpIndex) {
 			return mVDSession->getWarpHeight(aWarpIndex);
 		}
-		unsigned int getFboListSize() { 
-			return mVDSession->getFboListSize(); 
+		unsigned int getFboListSize() {
+			return mVDSession->getFboListSize();
 		}
 		std::string getFboInputTextureName(unsigned int aFboIndex = 0) {
 			return mVDSession->getFboInputTextureName(aFboIndex);
@@ -158,10 +171,10 @@ namespace videodromm
 		std::string getFboName(unsigned int aFboIndex) {
 			return mVDSession->getFboName(aFboIndex);
 		}
-		int getFFTWindowSize() { 
+		int getFFTWindowSize() {
 			return mVDSession->getFFTWindowSize();
 		}
-		float* getFreqs() { 
+		float* getFreqs() {
 			return mVDSession->getFreqs();
 		}
 		std::vector<ci::gl::GlslProg::Uniform> getUniforms(unsigned int aFboIndex = 0) {
@@ -170,7 +183,7 @@ namespace videodromm
 		ci::gl::Texture2dRef buildFboInputTexture(unsigned int aFboIndex = 0) {
 			return mVDSession->getFboInputTexture(aFboIndex);
 		}
-		int getMode() { 
+		int getMode() {
 			return mVDSession->getMode();
 		}
 		std::string getModeName(unsigned int aMode) {
@@ -185,10 +198,17 @@ namespace videodromm
 		}
 
 	private:
-		VDSessionFacade(VDSessionRef session, VDMediatorObservableRef mediator) : mVDSession(session), mVDMediator(mediator){ }
+		VDSessionFacade(VDSessionRef session, VDMediatorObservableRef mediator) : mVDSession(session), mVDMediator(mediator) { }
 		VDSessionRef mVDSession;
 		VDMediatorObservableRef mVDMediator;
+		// Builder
+		//VDRouterBuilderRef mVDRouterBuilder;
 	};
 
 
 }
+
+//mVDMediator->updateUniformValue(a, b);
+		/*mVDMediator->update([](observer, { "a": 1, "b" : 2 }) -> {
+			observer->setUniformValue(a, b);
+		});*/

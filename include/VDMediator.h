@@ -13,6 +13,10 @@
 #include "VDAnimation.h"
 #include <memory>
 #include <vector>
+#include "cinder/osc/Osc.h"
+using namespace asio;
+using namespace asio::ip;
+using namespace ci::osc;
 
 /*
 1 fois
@@ -39,7 +43,6 @@ namespace videodromm {
 	class VDUIDisplayObserver : public VDUniformObserver {
 
 		virtual VDUniformObserverRef setUniformValue(int aIndex, float aValue) {
-			//cout << a << b << endl;
 			return shared_from_this();
 		};
 	};
@@ -47,7 +50,6 @@ namespace videodromm {
 	class VDSocketIOObserver : public VDUniformObserver {
 	public:
 		static VDUniformObserverRef connect(std::string host, unsigned int port) {
-			//msocketio->sendMessage(a, b);
 			VDUniformObserverRef obs(new VDSocketIOObserver(host, port));
 			return obs;
 		}
@@ -55,7 +57,6 @@ namespace videodromm {
 			//msocketio->sendMessage(a, b);
 			return shared_from_this();
 		}
-
 		~VDSocketIOObserver() { /*socketIO.close();*/ }
 	private:
 		VDSocketIOObserver(std::string host, unsigned int port) {
@@ -64,15 +65,82 @@ namespace videodromm {
 		//sio::socketio mclient;
 	};
 
+	/*namespace osc {
+		typedef std::shared_ptr<SenderUdp> SenderUdpRef;
+	}// subject: observer observable VDOscObservable
+	*/
+	/*class VDOscObservable {
+		
+		typedef std::shared_ptr<class VDOscObservable> VDOscObservableRef;
+		class VDOscObservable : public std::enable_shared_from_this<VDOscObservable> {
+		public:
+
+			static VDOscObservableRef createVDOscObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
+			{
+				mVDOscReceiver
+				return VDOscObservableRef(new VDOscObservable(aVDSettings, aVDAnimation));
+			}
+
+			VDOscObservableRef addObserver(VDUniformObserverRef o) {
+				mObservers.push_back(o);
+				return shared_from_this();
+			}
+
+			VDOscObservableRef updateUniformValue(int aIndex, float aValue) {
+				for (auto observer : mObservers) {
+					observer->setUniformValue(aIndex, aValue);
+				}
+				return shared_from_this();
+			};
+
+			VDOscObservableRef updateShaderText(int aIndex, float aValue) {
+				for (auto observer : mObservers) {
+					observer->setUniformValue(aIndex, aValue);
+				}
+				return shared_from_this();
+			};
+		private:
+			std::vector<VDUniformObserverRef> mObservers;
+			mVDOScReceiver;
+			// Settings
+			VDSettingsRef				mVDSettings;
+			// Animation
+			VDAnimationRef				mVDAnimation;
+			VDOscObservable() {}
+			VDOscObservable::VDOscObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
+				CI_LOG_V("VDOscObservable constructor");
+				mVDSettings = aVDSettings;
+				mVDAnimation = aVDAnimation;
+			}
+		};*/
 	class VDOscObserver : public VDUniformObserver {
-		VDUniformObserverRef connect(std::string host, unsigned int port) {
-			//mosc->sendMessage(a, b);
-			return shared_from_this();
+	public:
+		static VDUniformObserverRef connect(std::string host, unsigned int port) {
+			VDOscObserver* o = new VDOscObserver(host, port);
+			o->bind();
+			
+			VDUniformObserverRef obs(o);
+			
+			return obs;
 		}
 		VDUniformObserverRef setUniformValue(int aIndex, float aValue) {
 			//mosc->sendMessage(a, b);
 			return shared_from_this();
 		}
+		VDOscObserver* bind() {
+			mSender.bind();
+			return this;
+		}
+		~VDOscObserver() {};
+	private:
+		VDOscObserver(std::string host, unsigned int port) : mSender(10002, "127.0.0.1", 10003) {
+			//mSocket = new udp::socket(App::get()->io_service(), udp::endpoint(udp::v4(), port));
+			//mSender = new SenderUdp(mSocket, udp::endpoint(address_v4::broadcast(), 10005));
+			//mSocket->set_option(asio::socket_base::broadcast(true));
+			
+		}
+		//osc::UdpSocket	mSocket;
+		osc::SenderUdp	mSender;
 	};
 
 	class VDMediatorObservable;

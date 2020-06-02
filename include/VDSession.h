@@ -15,10 +15,8 @@
 #include "VDSettings.h"
 // Utils
 #include "VDUtils.h"
-// Message router
-//#include "VDRouter.h"
 // Builder
-#include "VDFactory.h"
+//#include "VDFactory.h"
 // Animation
 #include "VDAnimation.h"
 // Fbos
@@ -243,29 +241,7 @@ namespace videodromm {
 		float							getUniformValueByName(const std::string& aCtrlName) {
 			return mVDAnimation->getUniformValueByName(aCtrlName);
 		};
-		void							setUniformValue(unsigned int aCtrl, float aValue) {
-			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
-			//! 20200526 
-			mVDBuilder->changeFloatValue(aCtrl, aValue);
-		};
-		void							setIntUniformValueByIndex(unsigned int aCtrl, int aValue) {
-			//! 20200526 
-			mVDBuilder->changeIntValue(aCtrl, aValue);
-		};
-		void							setBoolUniformValueByIndex(unsigned int aCtrl, float aValue) {
-			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
-			//! 20200526 
-			mVDBuilder->changeBoolValue(aCtrl, aValue);
-		};
-		// OSC
-		void							setupOSCSender() {
-			mVDBuilder->setupOSCSender();
-		};
-		void							setupOSCReceiver() {
-			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
-			//! 20200526 
-			mVDBuilder->setupOSCReceiver();
-		};
+
 		// tempo
 		float							getMaxVolume() { return mVDAnimation->maxVolume; };
 		float							getBpm() { return mVDAnimation->getBpm(); };
@@ -562,7 +538,7 @@ namespace videodromm {
 
 		// modeint
 		int								getMode() { return mMode; };
-		void							setMode(int aMode) { mMode = aMode; };;
+		void							setMode(int aMode) { mMode = aMode; };
 		int								getModesCount() { return mModesList.size() - 1; };
 		void							toggleUI() { mShowUI = !mShowUI; };
 		bool							showUI() { return mShowUI; };
@@ -579,8 +555,7 @@ namespace videodromm {
 		VDAnimationRef					mVDAnimation;
 		// Utils
 		VDUtilsRef						mVDUtils;
-		// Builder
-		VDRouterBuilderRef				mVDBuilder;
+
 		// Message router
 		//VDRouterRef						mVDRouter;
 		// Log

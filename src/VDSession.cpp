@@ -70,11 +70,11 @@ VDSession::VDSession(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 	
 	// Message router
 	//mVDRouter = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->addShader(0,6)->getInstance();
-	mVDBuilder = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->setWarpBFboIndex(0, 1);	
+	//mVDRouterBuilder = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->setWarpBFboIndex(0, 1);
 	//Attente d'une récupération de données via socket io
-	mVDBuilder->setWarpAFboIndex(1, 1)->setWarpBFboIndex(1,0);
+	//mVDRouterBuilder->setWarpAFboIndex(1, 1)->setWarpBFboIndex(1,0);
 	//Attente d'une autre autre récupération de données via socket io
-	mVDBuilder->setWarpAFboIndex(0, 0);
+	//mVDRouterBuilder->setWarpAFboIndex(0, 0);
 
 	//mVDRouter = builder->getInstance();
 
