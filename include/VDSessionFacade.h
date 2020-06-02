@@ -30,6 +30,7 @@ namespace videodromm
 	public:
 		static VDSessionFacadeRef createVDSession(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 		{
+			
 			VDMediatorObservableRef mediator =
 				VDMediatorObservable::createVDMediatorObservable(aVDSettings, aVDAnimation)
 				->addObserver(VDSocketIOObserver::connect(aVDSettings->mSocketIOHost, aVDSettings->mSocketIOPort))
@@ -50,6 +51,7 @@ namespace videodromm
 		}
 		// OSC
 		void							setupOSCSender() {
+			//mVDMediator->addObserver(VDOscObserver::connect(mVDSettings->mOSCDestinationHost, mVDSettings->mOSCDestinationPort));
 			//mVDRouterBuilder->setupOSCSender();
 			//mediator->addObserver(VDOscObserver::connect(aVDSettings->mSocketIOHost, aVDSettings->mSocketIOPort));
 		}	
@@ -200,6 +202,8 @@ namespace videodromm
 	private:
 		VDSessionFacade(VDSessionRef session, VDMediatorObservableRef mediator) : mVDSession(session), mVDMediator(mediator) { }
 		VDSessionRef mVDSession;
+		//VDSettingsRef mVDSettings;
+		//VDAnimationRef mVDAnimation;
 		VDMediatorObservableRef mVDMediator;
 		// Builder
 		//VDRouterBuilderRef mVDRouterBuilder;

@@ -62,7 +62,6 @@ namespace videodromm
 
 		VDRouterBuilderRef setWarpAFboIndex(float v1, float v2) {
 			mVDRouter->setWarpAFboIndex(1, 1);
-			//return VDRouterBuilderRef(this); //BAD !!
 			return shared_from_this();
 		}
 		VDRouterBuilderRef setWarpBFboIndex(float v1, float v2) {
