@@ -56,11 +56,11 @@ namespace videodromm {
 		VDMediatorObservableRef setupOSCReceiver() {
 			//mVDOsc
 			mVDOsc = VDOsc::create(mVDSettings, mVDAnimation);
-			mVDOsc->setupOSCReceiver();
+			mVDOsc->setupOSCReceiver();//shared_from_this()
 			return shared_from_this();
 		}
 		
-		VDMediatorObservableRef updateUniformValue(int aIndex, float aValue) {
+		VDMediatorObservableRef setUniformValue(int aIndex, float aValue) {
 			for (auto observer : mObservers) {
 				observer->setUniformValue(aIndex, aValue);
 			}
@@ -74,13 +74,13 @@ namespace videodromm {
 			return shared_from_this();
 		};
 	private:
-		std::vector<VDUniformObserverRef> mObservers;
+		std::vector<VDUniformObserverRef>	mObservers;
 		// Settings
-		VDSettingsRef				mVDSettings;
+		VDSettingsRef						mVDSettings;
 		// Animation
-		VDAnimationRef				mVDAnimation;
+		VDAnimationRef						mVDAnimation;
 		// OSC
-		VDOscRef					mVDOsc;
+		VDOscRef							mVDOsc;
 		VDMediatorObservable() {}
 		VDMediatorObservable::VDMediatorObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 
@@ -98,7 +98,7 @@ namespace videodromm {
 		};*/
 /*VDMediatorObservableRef mVDMediator = VDMediatorObservable::create()->addObserver(VDSocketIOObserverBuilder->connect(ip, port))->addObserver(new UIDisplay());
 
-mVDMediator->updateUniformValue(a, b);
+mVDMediator->setUniformValue(a, b);
 mVDMediator->update([](observer, { "a": 1, "b" : 2 }) -> {
 	observer->setUniformValue(a, b);
 });

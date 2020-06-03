@@ -45,7 +45,7 @@ namespace videodromm
 			return mVDMediator->getUniformValue(aCtrl);
 		};
 		VDSessionFacadeRef setUniformValue(unsigned int aCtrl, float aValue) {
-			mVDMediator->updateUniformValue(aCtrl, aValue);
+			mVDMediator->setUniformValue(aCtrl, aValue);
 			//mVDRouterBuilder->changeFloatValue(aCtrl, aValue);
 			return shared_from_this();
 		}
@@ -66,12 +66,12 @@ namespace videodromm
 		//mVDRouterBuilder = VDRouterBuilder::createVDRouter(aVDSettings, aVDAnimation)->setWarpBFboIndex(0, 1);
 		void							setIntUniformValueByIndex(unsigned int aCtrl, int aValue) {
 			//mVDRouterBuilder->changeIntValue(aCtrl, aValue);
-			mVDMediator->updateUniformValue(aCtrl, aValue);
+			mVDMediator->setUniformValue(aCtrl, aValue);
 		}
 		void							setBoolUniformValueByIndex(unsigned int aCtrl, float aValue) {
 			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
 			//mVDRouterBuilder->changeBoolValue(aCtrl, aValue);
-			mVDMediator->updateUniformValue(aCtrl, aValue);
+			mVDMediator->setUniformValue(aCtrl, aValue);
 		}
 
 		VDSessionFacadeRef toggleValue(unsigned int aCtrl) {
@@ -218,7 +218,7 @@ namespace videodromm
 
 }
 
-//mVDMediator->updateUniformValue(a, b);
+//mVDMediator->setUniformValue(a, b);
 		/*mVDMediator->update([](observer, { "a": 1, "b" : 2 }) -> {
 			observer->setUniformValue(a, b);
 		});*/

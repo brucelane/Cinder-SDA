@@ -5,11 +5,11 @@ using namespace videodromm;
 VDOsc::VDOsc(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 	mVDSettings = aVDSettings;
 	mVDAnimation = aVDAnimation;
-
 	CI_LOG_V("VDOsc constructor");
 }
-
+//VDMediatorObservableRef aVDMediator
 void VDOsc::setupOSCReceiver() {
+	//mVDMediator = aVDMediator;
 	mOscReceiver = std::make_shared<osc::ReceiverUdp>(mVDSettings->mOSCReceiverPort);
 	// Romina
 	/*mOscReceiver->setListener("*",
@@ -34,25 +34,13 @@ void VDOsc::setupOSCReceiver() {
 			index = addr.find(ctrl);
 			if (index != std::string::npos)
 			{
-				// from hydra standalone
+				// from midi2osc (Cinder) or hydra standalone
 				found = true;
-				i = msg[0].int32();// TODO check was flt();
-				f = msg[1].flt() / 128;
+				i = msg[0].int32();// TODO check was flt() from hydra standalone if ok can merge with midi;
+				f = msg[1].flt();// was for hydra / 128;
 				mVDAnimation->setUniformValue(i, f);
+				//mVDMediator->setUniformValue(i, f);
 				//ss << " midi from OSC " << i << " value " << f;
-			}
-			if (!found)
-			{
-				// from midi2osc (Cinder)
-				ctrl = "midi";
-				index = addr.find(ctrl);
-				if (index != std::string::npos)
-				{
-					found = true;
-					i = msg[0].int32();
-					f = msg[1].flt();
-					mVDAnimation->setUniformValue(i, f);
-				}
 			}
 			if (!found)
 			{
