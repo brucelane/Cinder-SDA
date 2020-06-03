@@ -15,6 +15,7 @@
 #include "VDSession.h"
 #include "VDAnimation.h"
 #include "VDMediator.h"
+#include "VDOscSender.h"
 // VDRouterBuilder
 #include "VDRouterBuilder.h"
 
