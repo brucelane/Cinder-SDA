@@ -14,19 +14,15 @@
 #include <memory>
 #include <vector>
 #include "cinder/osc/Osc.h"
+
+using namespace ci;
+using namespace ci::app;
 using namespace asio;
 using namespace asio::ip;
 using namespace ci::osc;
 
-/*
-1 fois
-connect(ip, port)
-plusieurs
-changeUniform->sendMessage*/
 
-using namespace ci;
-using namespace ci::app;
-//using namespace std;
+
 namespace videodromm {
 	class VDUniformObserver;
 	typedef std::shared_ptr<class VDUniformObserver> VDUniformObserverRef;
@@ -69,58 +65,55 @@ namespace videodromm {
 		typedef std::shared_ptr<SenderUdp> SenderUdpRef;
 	}// subject: observer observable VDOscObservable
 	*/
-	/*class VDOscObservable {
-		
-		typedef std::shared_ptr<class VDOscObservable> VDOscObservableRef;
-		class VDOscObservable : public std::enable_shared_from_this<VDOscObservable> {
-		public:
+	class VDOscObservable;
+	typedef std::shared_ptr<class VDOscObservable> VDOscObservableRef;
 
-			static VDOscObservableRef createVDOscObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
-			{
-				mVDOscReceiver
-				return VDOscObservableRef(new VDOscObservable(aVDSettings, aVDAnimation));
+	class VDOscObservable : public std::enable_shared_from_this<VDOscObservable> {
+	public:
+
+		static VDOscObservableRef createVDOscObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
+		{
+			//mOscReceiver = std::make_shared<osc::ReceiverUdp>(aVDSettings->mOSCReceiverPort);
+			return VDOscObservableRef(new VDOscObservable(aVDSettings, aVDAnimation));
+		}
+
+		VDOscObservableRef addObserver(VDUniformObserverRef o) {
+			mObservers.push_back(o);
+			return shared_from_this();
+		}
+
+		VDOscObservableRef updateUniformValue(int aIndex, float aValue) {
+			for (auto observer : mObservers) {
+				observer->setUniformValue(aIndex, aValue);
 			}
+			return shared_from_this();
+		};
 
-			VDOscObservableRef addObserver(VDUniformObserverRef o) {
-				mObservers.push_back(o);
-				return shared_from_this();
-			}
 
-			VDOscObservableRef updateUniformValue(int aIndex, float aValue) {
-				for (auto observer : mObservers) {
-					observer->setUniformValue(aIndex, aValue);
-				}
-				return shared_from_this();
-			};
+	private:
+		std::vector<VDUniformObserverRef>	mObservers;
+		// osc
+		std::shared_ptr<osc::ReceiverUdp>	mOscReceiver;
 
-			VDOscObservableRef updateShaderText(int aIndex, float aValue) {
-				for (auto observer : mObservers) {
-					observer->setUniformValue(aIndex, aValue);
-				}
-				return shared_from_this();
-			};
-		private:
-			std::vector<VDUniformObserverRef> mObservers;
-			mVDOScReceiver;
-			// Settings
-			VDSettingsRef				mVDSettings;
-			// Animation
-			VDAnimationRef				mVDAnimation;
-			VDOscObservable() {}
-			VDOscObservable::VDOscObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
-				CI_LOG_V("VDOscObservable constructor");
-				mVDSettings = aVDSettings;
-				mVDAnimation = aVDAnimation;
-			}
-		};*/
+		// Settings
+		VDSettingsRef						mVDSettings;
+		// Animation
+		VDAnimationRef						mVDAnimation;
+		VDOscObservable() {}
+		VDOscObservable::VDOscObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
+			CI_LOG_V("VDOscObservable constructor");
+			mVDSettings = aVDSettings;
+			mVDAnimation = aVDAnimation;
+		}
+	};
 	class VDOscObserver : public VDUniformObserver {
 	public:
 		static VDUniformObserverRef connect(std::string host, unsigned int port) {
 			VDOscObserver* o = new VDOscObserver(host, port);
 			o->bind();
-			
+
 			VDUniformObserverRef obs(o);
-			
+
 			return obs;
 		}
 		VDUniformObserverRef setUniformValue(int aIndex, float aValue) {
@@ -159,11 +152,10 @@ namespace videodromm {
 			}
 		}
 		bool mIsConnected = false;
-		~VDOscObserver() {mSender.close();};
+		~VDOscObserver() { mSender.close(); };
 	private:
 		VDOscObserver(std::string host, unsigned int port) : mSender(10002, host, port) {
 		}
-		//osc::UdpSocket	mSocket;
 		osc::SenderUdp	mSender;
 	};
 
@@ -220,13 +212,13 @@ namespace videodromm {
 
 }
 
-	/*VDMediatorObservableRef mVDMediator = VDMediatorObservable::create()->addObserver(VDSocketIOObserverBuilder->connect(ip, port))->addObserver(new UIDisplay());
+/*VDMediatorObservableRef mVDMediator = VDMediatorObservable::create()->addObserver(VDSocketIOObserverBuilder->connect(ip, port))->addObserver(new UIDisplay());
 
-	mVDMediator->updateUniformValue(a, b);
-	mVDMediator->update([](observer, { "a": 1, "b" : 2 }) -> {
-		observer->setUniformValue(a, b);
-	});
+mVDMediator->updateUniformValue(a, b);
+mVDMediator->update([](observer, { "a": 1, "b" : 2 }) -> {
+	observer->setUniformValue(a, b);
+});
 
-	VDProxy::connect(ip, port)
-	
-	*/
+VDProxy::connect(ip, port)
+
+*/

@@ -56,8 +56,8 @@ namespace videodromm
 			mSelectedFboA = aWarpFboIndex; 
 		}
 		void						setWarpBFboIndex(unsigned int aWarpIndex, unsigned int aWarpFboIndex) { mSelectedFboB = aWarpFboIndex; }
-		void						setupOSCSender();
-		void						setupOSCReceiver();
+		/*void						setupOSCSender();
+		void						setupOSCReceiver();*/
 	private:
 		// Settings
 		VDSettingsRef				mVDSettings;

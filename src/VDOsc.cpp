@@ -8,7 +8,7 @@ VDOsc::VDOsc(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 
 	CI_LOG_V("VDOsc constructor");
 }
-void VDOsc::setupOSCSender() {}
+
 void VDOsc::setupOSCReceiver() {
 	mOscReceiver = std::make_shared<osc::ReceiverUdp>(mVDSettings->mOSCReceiverPort);
 	// Romina

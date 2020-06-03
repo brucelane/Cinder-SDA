@@ -40,9 +40,7 @@ namespace videodromm
 		static VDOscRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 		{
 			return std::shared_ptr<VDOsc>(new VDOsc(aVDSettings, aVDAnimation));
-		}
-		
-		void						setupOSCSender();
+		}	
 		void						setupOSCReceiver();
 	private:
 		// Settings

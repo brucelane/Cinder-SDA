@@ -39,14 +39,14 @@ namespace videodromm
 
 			return VDRouterBuilderRef(new VDRouterBuilder(VDRouterRef(new VDRouter(aVDSettings, aVDAnimation))));
 		}
-		VDRouterBuilderRef setupOSCSender() {
+		/*VDRouterBuilderRef setupOSCSender() {
 			mVDRouter->setupOSCSender();
 			return shared_from_this();
 		}
 		VDRouterBuilderRef setupOSCReceiver() {
 			mVDRouter->setupOSCReceiver();
 			return shared_from_this();
-		}
+		}*/
 		VDRouterBuilderRef changeFloatValue(unsigned int aControl, float aValue, bool forceSend = false, bool toggle = false, bool increase = false, bool decrease = false) {
 			mVDRouter->changeFloatValue(aControl, aValue, forceSend, toggle, increase, decrease);
 			return shared_from_this();
