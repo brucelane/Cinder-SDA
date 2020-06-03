@@ -34,15 +34,16 @@ void VDOsc::setupOSCReceiver() {
 			index = addr.find(ctrl);
 			if (index != std::string::npos)
 			{
+				// from hydra standalone
 				found = true;
-				i = msg[0].flt();
+				i = msg[0].int32();// TODO check was flt();
 				f = msg[1].flt() / 128;
 				mVDAnimation->setUniformValue(i, f);
 				//ss << " midi from OSC " << i << " value " << f;
 			}
 			if (!found)
 			{
-				// accxyz
+				// from midi2osc (Cinder)
 				ctrl = "midi";
 				index = addr.find(ctrl);
 				if (index != std::string::npos)

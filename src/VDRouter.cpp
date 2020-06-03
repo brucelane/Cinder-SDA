@@ -5,7 +5,7 @@ using namespace videodromm;
 VDRouter::VDRouter(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 	mVDSettings = aVDSettings;
 	mVDAnimation = aVDAnimation;
-	mVDOsc = VDOsc::create(mVDSettings, mVDAnimation);
+	//mVDOsc = VDOsc::create(mVDSettings, mVDAnimation);
 	CI_LOG_V("VDRouter constructor");
 	mFBOAChanged = false;
 	mFBOBChanged = false;

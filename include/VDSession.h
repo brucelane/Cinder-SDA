@@ -235,9 +235,9 @@ namespace videodromm {
 		bool							getBoolUniformValueByIndex(unsigned int aCtrl) {
 			return mVDAnimation->getBoolUniformValueByIndex(aCtrl);
 		}
-		float							getUniformValue(unsigned int aCtrl) {
+		/*float							getUniformValue(unsigned int aCtrl) {
 			return mVDAnimation->getUniformValue(aCtrl);
-		};
+		};*/
 		float							getUniformValueByName(const std::string& aCtrlName) {
 			return mVDAnimation->getUniformValueByName(aCtrlName);
 		};

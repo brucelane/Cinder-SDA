@@ -137,7 +137,7 @@ void VDSession::loadFbos() {
 void VDSession::update(unsigned int aClassIndex) {
 	
 	// fps calculated in main app
-	mVDSettings->sFps = toString(floor(getUniformValue(mVDSettings->IFPS)));
+	mVDSettings->sFps = toString(floor(mVDAnimation->getUniformValue(mVDSettings->IFPS)));
 	mVDAnimation->update();
 	
 	mVDMix->getMixetteTexture(0);
@@ -163,11 +163,11 @@ void VDSession::renderPostToFbo()
 		// not used yet mGlslPost->uniform("TIME", getUniformValue(mVDSettings->ITIME) - mVDSettings->iStart);;
 		mGlslPost->uniform("iResolution", vec3(mVDSettings->mFboWidth, mVDSettings->mFboHeight, 1.0));
 		mGlslPost->uniform("iChannel0", 40); // texture 0
-		mGlslPost->uniform("iSobel", getUniformValue(mVDSettings->ISOBEL));
-		mGlslPost->uniform("iExposure", getUniformValue(mVDSettings->IEXPOSURE));
-		mGlslPost->uniform("iTrixels", getUniformValue(mVDSettings->ITRIXELS)); // trixels if > 0.
-		mGlslPost->uniform("iZoom", getUniformValue(mVDSettings->IZOOM));
-		mGlslPost->uniform("iChromatic", getUniformValue(mVDSettings->ICHROMATIC));
+		mGlslPost->uniform("iSobel", mVDAnimation->getUniformValue(mVDSettings->ISOBEL));
+		mGlslPost->uniform("iExposure", mVDAnimation->getUniformValue(mVDSettings->IEXPOSURE));
+		mGlslPost->uniform("iTrixels", mVDAnimation->getUniformValue(mVDSettings->ITRIXELS)); // trixels if > 0.
+		mGlslPost->uniform("iZoom", mVDAnimation->getUniformValue(mVDSettings->IZOOM));
+		mGlslPost->uniform("iChromatic", mVDAnimation->getUniformValue(mVDSettings->ICHROMATIC));
 		mGlslPost->uniform("iFlipV", (int)getBoolUniformValueByIndex(mVDSettings->IFLIPPOSTV));
 		mGlslPost->uniform("iFlipH", (int)getBoolUniformValueByIndex(mVDSettings->IFLIPPOSTH));
 		mGlslPost->uniform("iInvert", (int)getBoolUniformValueByIndex(mVDSettings->IINVERT));

@@ -15,7 +15,8 @@
 #include "VDSession.h"
 #include "VDAnimation.h"
 #include "VDMediator.h"
-#include "VDOscSender.h"
+#include "VDOscObserver.h"
+#include "VDSocketIOObserver.h"
 // VDRouterBuilder
 #include "VDRouterBuilder.h"
 
@@ -33,13 +34,35 @@ namespace videodromm
 		{
 			
 			VDMediatorObservableRef mediator =
-				VDMediatorObservable::createVDMediatorObservable(aVDSettings, aVDAnimation)
-				->addObserver(VDSocketIOObserver::connect(aVDSettings->mSocketIOHost, aVDSettings->mSocketIOPort))
-				->addObserver(VDOscObserver::connect(aVDSettings->mOSCDestinationHost, aVDSettings->mOSCDestinationPort));
-				//->addObserver(new UIDisplay());		
+				VDMediatorObservable::createVDMediatorObservable(aVDSettings, aVDAnimation);
+				// OK ->addObserver(VDSocketIOObserver::connect(aVDSettings->mSocketIOHost, aVDSettings->mSocketIOPort))
+				// OK ->addObserver(VDOscObserver::connect(aVDSettings->mOSCDestinationHost, aVDSettings->mOSCDestinationPort));
+				// TODO ->addObserver(new UIDisplay());		
 			return VDSessionFacadeRef(new VDSessionFacade(VDSessionRef(new VDSession(aVDSettings, aVDAnimation)), mediator));
 		}
-		
+
+		float getUniformValue(unsigned int aCtrl) {
+			return mVDMediator->getUniformValue(aCtrl);
+		};
+		VDSessionFacadeRef setUniformValue(unsigned int aCtrl, float aValue) {
+			mVDMediator->updateUniformValue(aCtrl, aValue);
+			//mVDRouterBuilder->changeFloatValue(aCtrl, aValue);
+			return shared_from_this();
+		}
+		VDSessionFacadeRef setupOSCReceiver() {
+			//mVDRouterBuilder->setupOSCReceiver();
+			mVDMediator->setupOSCReceiver();
+			return shared_from_this();
+		}		
+		VDSessionFacadeRef addOSCObserver(std::string host, unsigned int port) {
+			mVDMediator->addObserver(VDOscObserver::connect(host, port));
+			return shared_from_this();
+		}
+		VDSessionFacadeRef addSocketIOObserver(std::string host, unsigned int port) {
+			mVDMediator->addObserver(VDSocketIOObserver::connect(host, port));
+			return shared_from_this();
+		}
+
 		//mVDRouterBuilder = VDRouterBuilder::createVDRouter(aVDSettings, aVDAnimation)->setWarpBFboIndex(0, 1);
 		void							setIntUniformValueByIndex(unsigned int aCtrl, int aValue) {
 			//mVDRouterBuilder->changeIntValue(aCtrl, aValue);
@@ -49,22 +72,6 @@ namespace videodromm
 			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
 			//mVDRouterBuilder->changeBoolValue(aCtrl, aValue);
 			mVDMediator->updateUniformValue(aCtrl, aValue);
-		}
-		// OSC
-		void							setupOSCSender() {
-			//mVDMediator->addObserver(VDOscObserver::connect(mVDSettings->mOSCDestinationHost, mVDSettings->mOSCDestinationPort));
-			//mVDRouterBuilder->setupOSCSender();
-			//mediator->addObserver(VDOscObserver::connect(aVDSettings->mSocketIOHost, aVDSettings->mSocketIOPort));
-		}	
-		VDSessionFacadeRef setupOSCReceiver() {
-			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
-			//mVDRouterBuilder->setupOSCReceiver();
-			return shared_from_this();
-		}
-		VDSessionFacadeRef setUniformValue(unsigned int aCtrl, float aValue) {
-			mVDMediator->updateUniformValue(aCtrl, aValue);
-			//mVDRouterBuilder->changeFloatValue(aCtrl, aValue);
-			return shared_from_this();
 		}
 
 		VDSessionFacadeRef toggleValue(unsigned int aCtrl) {
@@ -135,9 +142,7 @@ namespace videodromm
 		float getBpm() {
 			return mVDSession->getBpm();
 		};
-		float getUniformValue(unsigned int aIndex) {
-			return mVDSession->getMinUniformValue(aIndex);
-		}
+		
 		float getMinUniformValue(unsigned int aIndex) {
 			return mVDSession->getMinUniformValue(aIndex);
 		}

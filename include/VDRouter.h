@@ -18,7 +18,7 @@
 // Animation
 #include "VDAnimation.h"
 // Osc
-#include "VDOsc.h"
+//#include "VDOsc.h"
 
 
 using namespace ci;
@@ -63,8 +63,8 @@ namespace videodromm
 		VDSettingsRef				mVDSettings;
 		// Animation
 		VDAnimationRef				mVDAnimation;
-		// Animation
-		VDOscRef					mVDOsc;
+		// OSC
+		// VDOscRef					mVDOsc;
 		// lights4events
 		void						colorWrite();
 		bool						mFBOAChanged;
