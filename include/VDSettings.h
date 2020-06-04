@@ -65,6 +65,7 @@ namespace videodromm {
 			IBR = 26,
 			IBG = 27,
 			IBB = 28,
+			IMAXVOLUME = 29,
 
 			IWEIGHT0 = 31,
 			IWEIGHT1 = 32,

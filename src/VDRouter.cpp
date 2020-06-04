@@ -74,7 +74,7 @@ void VDRouter::changeFloatValue(unsigned int aControl, float aValue, bool forceS
 		sendJSON(strParams);
 	}
 }
-void VDRouter::changeBoolValue(unsigned int aControl, bool aValue) {
+/*void VDRouter::changeBoolValue(unsigned int aControl, bool aValue) {
 	// check if changed
 	mVDAnimation->setBoolUniformValueByIndex(aControl, aValue);
 	std::stringstream sParams;
@@ -85,24 +85,14 @@ void VDRouter::changeBoolValue(unsigned int aControl, bool aValue) {
 }
 void VDRouter::changeIntValue(unsigned int aControl, int aValue) {
 	mVDAnimation->setIntUniformValueByIndex(aControl, aValue);
-}
+}*/
 void VDRouter::sendJSON(std::string params) {
-
 	/*if (mOscSender) {
 	Observer Observable
 	mVDOsc->send(params);
 	mVDSocketio->send(params);
 	}*/
 }
-void VDRouter::shutdown() {
-}
-/*void VDRouter::setupOSCSender() {
-	mVDOsc->setupOSCSender();
-}
-void VDRouter::setupOSCReceiver() {
-	mVDOsc->setupOSCReceiver();
-}*/
-
 
 void VDRouter::updateParams(int iarg0, float farg1) {
 	if (farg1 > 0.1) {

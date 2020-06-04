@@ -82,7 +82,7 @@ namespace videodromm
 		// audio
 		ci::gl::TextureRef				getAudioTexture();
 		std::string						getAudioTextureName() { return mAudioName; };
-		float							maxVolume;
+		//float							maxVolume;
 		bool							mLineInInitialized;
 		bool							mWaveInitialized;
 		audio::InputDeviceNodeRef		mLineIn;
@@ -153,12 +153,12 @@ namespace videodromm
 		bool							setBoolUniformValueByIndex(unsigned int aIndex, bool aValue) {
 			return mVDUniform->setBoolUniformValueByIndex(aIndex, aValue);
 		}
-		void							setIntUniformValueByName(const std::string& aName, int aValue) {
+		/*void							setIntUniformValueByName(const std::string& aName, int aValue) {
 			mVDUniform->setIntUniformValueByName(aName, aValue);
 		};
 		void							setIntUniformValueByIndex(unsigned int aIndex, int aValue) {
 			mVDUniform->setIntUniformValueByIndex(aIndex, aValue);
-		}
+		}*/
 		void							setFloatUniformValueByName(const std::string& aName, float aValue) {
 			mVDUniform->setFloatUniformValueByName(aName, aValue);
 		}

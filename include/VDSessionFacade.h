@@ -138,9 +138,9 @@ namespace videodromm
 		unsigned int getWarpBFboIndex(unsigned int aWarpIndex) {
 			return mVDSession->getWarpBFboIndex(aWarpIndex);
 		}
-		float getMaxVolume() {
-			return mVDSession->getMaxVolume();
-		};
+		/*float getMaxVolume() {
+			return mVDSession->getUniformValue(mVDSettings->IMAXVOLUME);
+		};*/
 		float getMinUniformValue(unsigned int aIndex) {
 			return mVDSession->getMinUniformValue(aIndex);
 		}

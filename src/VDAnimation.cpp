@@ -12,8 +12,6 @@ VDAnimation::VDAnimation(VDSettingsRef aVDSettings) {
 	mLineInInitialized = false;
 	mWaveInitialized = false;
 	mAudioName = "not initialized";
-	//setUseLineIn(true);
-	maxVolume = 0.0f;
 	for (int i = 0; i < 7; i++)
 	{
 		freqIndexes[i] = i * 7;
@@ -125,45 +123,7 @@ void VDAnimation::saveUniforms()
 	json.write(mUniformsJson);*/
 }
 
-/*bool VDAnimation::hasFloatChanged(int aIndex) {
-	if (shaderUniforms[getUniformNameForIndex(aIndex)].floatValue != controlValues[aIndex]) {
-	//CI_LOG_V("hasFloatChanged, aIndex:" + toString(aIndex));
-	CI_LOG_V("hasFloatChanged, shaderUniforms[getUniformNameForIndex(aIndex)].floatValue:" + toString(shaderUniforms[getUniformNameForIndex(aIndex)].floatValue));
-	CI_LOG_V("hasFloatChanged, controlValues[aIndex]:" + toString(controlValues[aIndex]));
-	//CI_LOG_W("hasFloatChanged, getUniformNameForIndex(aIndex):" + toString(getUniformNameForIndex(aIndex)));
-	}
-	return (shaderUniforms[getUniformNameForIndex(aIndex)].floatValue != controlValues[aIndex]);
-	}
-
-bool VDAnimation::toggleAuto(unsigned int aIndex) {
-	shaderUniforms[aIndex].automatic = !shaderUniforms[aIndex].automatic;
-	return shaderUniforms[aIndex].automatic;
-}
-bool VDAnimation::toggleTempo(unsigned int aIndex) {
-	shaderUniforms[aIndex].autotime = !shaderUniforms[aIndex].autotime;
-	return shaderUniforms[aIndex].autotime;
-}
-bool VDAnimation::toggleBass(unsigned int aIndex) {
-	shaderUniforms[aIndex].autobass = !shaderUniforms[aIndex].autobass;
-	return shaderUniforms[aIndex].autobass;
-}
-bool VDAnimation::toggleMid(unsigned int aIndex) {
-	shaderUniforms[aIndex].automid = !shaderUniforms[aIndex].automid;
-	return shaderUniforms[aIndex].automid;
-}
-bool VDAnimation::toggleTreble(unsigned int aIndex) {
-	shaderUniforms[aIndex].autotreble = !shaderUniforms[aIndex].autotreble;
-	return shaderUniforms[aIndex].autotreble;
-}
-void VDAnimation::resetAutoAnimation(unsigned int aIndex) {
-	shaderUniforms[aIndex].automatic = false;
-	shaderUniforms[aIndex].autotime = false;
-	shaderUniforms[aIndex].autobass = false;
-	shaderUniforms[aIndex].automid = false;
-	shaderUniforms[aIndex].autotreble = false;
-	shaderUniforms[aIndex].floatValue = shaderUniforms[aIndex].defaultValue;
-}
-
+/*
 bool VDAnimation::isExistingUniform(const string& aName) {
 	return shaderUniforms[stringToIndex(aName)].isValid;
 }
@@ -340,8 +300,8 @@ ci::gl::TextureRef VDAnimation::getAudioTexture() {
 	}
 #endif
 	if (!mMagSpectrum.empty()) {
-
-		maxVolume = 0.0f;//mIntensity
+		setUniformValue(mVDSettings->IMAXVOLUME, 0.0f);
+		//maxVolume = 0.0f;//mIntensity
 		size_t mDataSize = mMagSpectrum.size();
 		if (mDataSize > 0 && mDataSize < mFFTWindowSize) {// TODO 20200221 CHECK was + 1
 			float db;
@@ -349,17 +309,17 @@ ci::gl::TextureRef VDAnimation::getAudioTexture() {
 			for (size_t i = 0; i < mDataSize; i++) {
 				float f = mMagSpectrum[i];
 				db = audio::linearToDecibel(f);
-				f = db * getUniformValueByName("iAudioMult");
-				if (f > maxVolume)
+				f = db * getUniformValue(mVDSettings->IAUDIOX);
+				if (f > getUniformValue(mVDSettings->IMAXVOLUME))
 				{
-					maxVolume = f;
+					setUniformValue(mVDSettings->IMAXVOLUME, f);
 				}
 				iFreqs[i] = f;
 				// update iFreq uniforms 
-				if (i == getFreqIndex(0)) setFloatUniformValueByName("iFreq0", f);
-				if (i == getFreqIndex(1)) setFloatUniformValueByName("iFreq1", f);
-				if (i == getFreqIndex(2)) setFloatUniformValueByName("iFreq2", f);
-				if (i == getFreqIndex(3)) setFloatUniformValueByName("iFreq3", f);
+				if (i == getFreqIndex(0)) setUniformValue(mVDSettings->IFREQ0, f);
+				if (i == getFreqIndex(1)) setUniformValue(mVDSettings->IFREQ1, f);
+				if (i == getFreqIndex(2)) setUniformValue(mVDSettings->IFREQ2, f);
+				if (i == getFreqIndex(3)) setUniformValue(mVDSettings->IFREQ3, f);
 
 				if (i < mFFTWindowSize) {
 					int ger = f;
@@ -396,15 +356,15 @@ ci::gl::TextureRef VDAnimation::getAudioTexture() {
 		unsigned char signal[mFFTWindowSize];
 		for (size_t i = 0; i < mFFTWindowSize; i++) {
 			float f = iFreqs[i];
-			if (f > maxVolume)
+			if (f > getUniformValue(mVDSettings->IMAXVOLUME))
 			{
-				maxVolume = f;
+				setUniformValue(mVDSettings->IMAXVOLUME, f);
 			}
 			// update iFreq uniforms 
-			if (i == getFreqIndex(0)) setFloatUniformValueByName("iFreq0", f);
-			if (i == getFreqIndex(1)) setFloatUniformValueByName("iFreq1", f);
-			if (i == getFreqIndex(2)) setFloatUniformValueByName("iFreq2", f);
-			if (i == getFreqIndex(3)) setFloatUniformValueByName("iFreq3", f);
+			if (i == getFreqIndex(0)) setUniformValue(mVDSettings->IFREQ0, f);
+			if (i == getFreqIndex(1)) setUniformValue(mVDSettings->IFREQ1, f);
+			if (i == getFreqIndex(2)) setUniformValue(mVDSettings->IFREQ2, f);
+			if (i == getFreqIndex(3)) setUniformValue(mVDSettings->IFREQ3, f);
 
 			if (i < mFFTWindowSize) {
 				int ger = f;

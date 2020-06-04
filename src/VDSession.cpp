@@ -268,8 +268,8 @@ void VDSession::restore()
 				mVDAnimation->setUniformValue(mVDSettings->IBPM, mOriginalBpm);
 				//CI_LOG_W("getBpm" + toString(mVDAnimation->getBpm()));
 			};
-			if (settings.hasChild("beatsperbar")) mVDAnimation->setIntUniformValueByName("iBeatsPerBar", settings.getValueForKey<int>("beatsperbar"));
-			if (mVDAnimation->getIntUniformValueByName("iBeatsPerBar") < 1) mVDAnimation->setIntUniformValueByName("iBeatsPerBar", 4);
+			if (settings.hasChild("beatsperbar")) mVDAnimation->setUniformValue(mVDSettings->IBEATSPERBAR, settings.getValueForKey<int>("beatsperbar"));
+			if (mVDAnimation->getUniformValue(mVDSettings->IBEATSPERBAR) < 1) mVDAnimation->setUniformValue(mVDSettings->IBEATSPERBAR, 4);
 			//if (settings.hasChild("fadeindelay")) mFadeInDelay = settings.getValueForKey<int>("fadeindelay");
 			//if (settings.hasChild("fadeoutdelay")) mFadeOutDelay = settings.getValueForKey<int>("fadeoutdelay");
 			if (settings.hasChild("endframe")) mVDAnimation->mEndFrame = settings.getValueForKey<int>("endframe");

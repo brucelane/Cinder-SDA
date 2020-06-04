@@ -237,15 +237,13 @@ namespace videodromm {
 		bool							getBoolUniformValueByIndex(unsigned int aCtrl) {
 			return mVDAnimation->getBoolUniformValueByIndex(aCtrl);
 		}
-		/*float							getUniformValue(unsigned int aCtrl) {
-			return mVDAnimation->getUniformValue(aCtrl);
-		};*/
+
 		float							getUniformValueByName(const std::string& aCtrlName) {
 			return mVDAnimation->getUniformValueByName(aCtrlName);
 		};
 
 		// tempo
-		float							getMaxVolume() { return mVDAnimation->maxVolume; };
+		//float							getMaxVolume() { return mVDAnimation->maxVolume; };
 		//float							getBpm() { return mVDAnimation->getBpm(); };
 		//void							setBpm(float aBpm) { mVDAnimation->setBpm(aBpm); };
 		void							tapTempo() { mVDAnimation->tapTempo(); };

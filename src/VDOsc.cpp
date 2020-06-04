@@ -121,20 +121,20 @@ void VDOsc::setupOSCReceiver(/*VDSessionFacadeRef aVDSession*/) {
 				if (index != std::string::npos)
 				{
 					found = true;
-					mVDAnimation->maxVolume = 0.0f;
+					mVDAnimation->setUniformValue(mVDSettings->IMAXVOLUME, 0.0f);
 					for (int a = 0; a < msg.getNumArgs(); a++) {
 						// get the argument type 'f'
 						if (msg.getArgType(i) == ArgType::FLOAT) {
-							f = msg[a].flt() * 200.0f * mVDAnimation->getUniformValueByName("iAudioMult");
-							if (f > mVDAnimation->maxVolume)
+							f = msg[a].flt() * 200.0f * mVDAnimation->getUniformValue(mVDSettings->IAUDIOX);
+							if (f > mVDAnimation->getUniformValue(mVDSettings->IMAXVOLUME))
 							{
-								mVDAnimation->maxVolume = f;
+								mVDAnimation->setUniformValue(mVDSettings->IMAXVOLUME, f);
 							}
 							mVDAnimation->iFreqs[a] = f;
-							if (a == mVDAnimation->getFreqIndex(0)) mVDAnimation->setFloatUniformValueByName("iFreq0", f);
-							if (a == mVDAnimation->getFreqIndex(1)) mVDAnimation->setFloatUniformValueByName("iFreq1", f);
-							if (a == mVDAnimation->getFreqIndex(2)) mVDAnimation->setFloatUniformValueByName("iFreq2", f);
-							if (a == mVDAnimation->getFreqIndex(3)) mVDAnimation->setFloatUniformValueByName("iFreq3", f);
+							if (a == mVDAnimation->getFreqIndex(0)) mVDAnimation->setUniformValue(mVDSettings->IFREQ0, f);
+							if (a == mVDAnimation->getFreqIndex(1)) mVDAnimation->setUniformValue(mVDSettings->IFREQ1, f);
+							if (a == mVDAnimation->getFreqIndex(2)) mVDAnimation->setUniformValue(mVDSettings->IFREQ2, f);
+							if (a == mVDAnimation->getFreqIndex(3)) mVDAnimation->setUniformValue(mVDSettings->IFREQ3, f);
 						}
 					}
 				}
@@ -184,10 +184,10 @@ void VDOsc::setupOSCReceiver(/*VDSessionFacadeRef aVDSession*/) {
 				if (index != std::string::npos)
 				{
 					found = true;
-					mVDAnimation->setIntUniformValueByIndex(mVDSettings->IBEAT, msg[0].int32() - 1);
-					mVDAnimation->setIntUniformValueByIndex(
+					mVDAnimation->setUniformValue(mVDSettings->IBEAT, msg[0].int32() - 1);
+					mVDAnimation->setUniformValue(
 						mVDSettings->IBARBEAT,
-						mVDAnimation->getIntUniformValueByIndex(mVDSettings->IBAR) * 4 + mVDAnimation->getIntUniformValueByIndex(mVDSettings->IBEAT));
+						mVDAnimation->getUniformValue(mVDSettings->IBAR) * 4 + mVDAnimation->getUniformValue(mVDSettings->IBEAT));
 
 					//CI_LOG_I("beat:" + toString(mVDSettings->IBEAT) + " " + toString(mVDAnimation->getIntUniformValueByIndex(mVDSettings->IBEAT)));
 
@@ -209,8 +209,8 @@ void VDOsc::setupOSCReceiver(/*VDSessionFacadeRef aVDSession*/) {
 						mBarStart = mVDAnimation->getUniformValue(mVDSettings->ITIME);
 					}
 					// TODO END
-					mVDAnimation->setIntUniformValueByIndex(mVDSettings->IBAR, msg[0].int32());
-					mVDAnimation->setIntUniformValueByIndex(
+					mVDAnimation->setUniformValue(mVDSettings->IBAR, msg[0].int32());
+					mVDAnimation->setUniformValue(
 						mVDSettings->IBARBEAT,
 						mVDAnimation->getIntUniformValueByIndex(mVDSettings->IBAR) * 4 + mVDAnimation->getIntUniformValueByIndex(mVDSettings->IBEAT));
 

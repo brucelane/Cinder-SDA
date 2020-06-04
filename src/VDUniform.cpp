@@ -81,6 +81,8 @@ VDUniform::VDUniform(VDSettingsRef aVDSettings) {
 		createFloatUniform("iBG", mVDSettings->IBG, 0.0f); // 27
 		// background blue
 		createFloatUniform("iBB", mVDSettings->IBB, 1.0f); // 28
+		// Max Volume
+		createFloatUniform("iMaxVolume", mVDSettings->IMAXVOLUME, 0.0f); // 29
 
 
 		// weight mix fbo texture 0
