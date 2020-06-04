@@ -19,43 +19,35 @@
 
 using namespace ci;
 using namespace ci::app;
-using namespace asio;
-using namespace asio::ip;
-using namespace ci::osc;
 
 namespace videodromm {
 	
 	class VDUIObserver : public VDUniformObserver {
 	public:
-		static VDUniformObserverRef connect(std::string host, unsigned int port) {
-			VDUIObserver* o = new VDUIObserver(host, port);
-			o->bind();
-
+		static VDUniformObserverRef connect(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
+			VDUIObserver* o = new VDUIObserver(aVDSettings, aVDAnimation);
+			
 			VDUniformObserverRef obs(o);
 
 			return obs;
 		}
 		VDUniformObserverRef setUniformValue(int aIndex, float aValue) {
-			
+			mVDAnimation->setUniformValue(aIndex, aValue);
 			return shared_from_this();
 		}
-		VDUIObserver* bind() {
-			try {
-				// Bind the sender to the endpoint. This function may throw. The exception will contain asio::error_code information.
-				mSender.bind();
-				mIsConnected = true;
-			}
-			catch (const osc::Exception& ex) {
-				CI_LOG_E("Error binding: " << ex.what() << " val: " << ex.value());
-			}
-			return this;
-		}
+		
 		
 		bool mIsConnected = false;
-		~VDUIObserver() { mSender.close(); };
+		~VDUIObserver() {  };
 	private:
-		VDUIObserver(std::string host, unsigned int port) : mSender(10002, host, port) {
+		VDUIObserver(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
+			CI_LOG_V("VDUIObserver ctor");
+			mVDSettings = aVDSettings;
+			mVDAnimation = aVDAnimation;
 		}
-		osc::SenderUdp	mSender;
+		// Settings
+		VDSettingsRef	mVDSettings;
+		// Animation
+		VDAnimationRef	mVDAnimation;
 	};
 }

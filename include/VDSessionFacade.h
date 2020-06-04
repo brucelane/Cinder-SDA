@@ -17,6 +17,7 @@
 #include "VDMediator.h"
 #include "VDOscObserver.h"
 #include "VDSocketIOObserver.h"
+#include "VDUIObserver.h"
 // VDRouterBuilder
 #include "VDRouterBuilder.h"
 
@@ -34,10 +35,10 @@ namespace videodromm
 		{
 			
 			VDMediatorObservableRef mediator =
-				VDMediatorObservable::createVDMediatorObservable(aVDSettings, aVDAnimation);
+				VDMediatorObservable::createVDMediatorObservable(aVDSettings, aVDAnimation)
 				// OK ->addObserver(VDSocketIOObserver::connect(aVDSettings->mSocketIOHost, aVDSettings->mSocketIOPort))
 				// OK ->addObserver(VDOscObserver::connect(aVDSettings->mOSCDestinationHost, aVDSettings->mOSCDestinationPort));
-				// TODO ->addObserver(new UIDisplay());		
+				->addObserver(VDUIObserver::connect(aVDSettings, aVDAnimation));// ->addObserver(new UIDisplay());	
 			return VDSessionFacadeRef(new VDSessionFacade(VDSessionRef(new VDSession(aVDSettings, aVDAnimation)), mediator));
 		}
 
@@ -54,6 +55,10 @@ namespace videodromm
 			mVDMediator->setupOSCReceiver();
 			return shared_from_this();
 		}		
+		VDSessionFacadeRef addUIObserver(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
+			mVDMediator->addObserver(VDUIObserver::connect(aVDSettings, aVDAnimation));
+			return shared_from_this();
+		}
 		VDSessionFacadeRef addOSCObserver(std::string host, unsigned int port) {
 			mVDMediator->addObserver(VDOscObserver::connect(host, port));
 			return shared_from_this();
