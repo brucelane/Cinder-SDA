@@ -181,7 +181,9 @@ namespace videodromm {
 		int								getTextEnd() { return mTextPlaybackEnd; };
 		bool							hasText() { return mText.length() > 0; };
 		*/
-
+		void							setAnim(unsigned int aCtrl, unsigned int aAnim) {
+			mVDAnimation->setAnim(aCtrl, aAnim);
+		}
 		// control values
 		void							toggleValue(unsigned int aCtrl) {
 			//! 20200526 mVDSocketio->toggleValue(aCtrl);

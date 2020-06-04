@@ -68,15 +68,7 @@ namespace videodromm
 		void							useTimeWithTempo() { mUseTimeWithTempo = true; };
 		bool							getUseTimeWithTempo() { return mUseTimeWithTempo; };
 		float							iTempoTimeBeatPerBar;
-		/*float							getBpm() {
-			return getUniformValue(mVDSettings->IBPM);
-		};
-		void							setBpm(float aBpm) {
-			if (aBpm > 0.0f) {
-				setUniformValue(mVDSettings->IBPM, aBpm);
-				setUniformValue(mVDSettings->IDELTATIME, 60 / aBpm);
-			}
-		};*/
+		
 		void							tapTempo();
 		int								getEndFrame() { return mEndFrame; };
 		void							setEndFrame(int frame) { mEndFrame = frame; };
@@ -146,10 +138,13 @@ namespace videodromm
 		bool							toggleMid(unsigned int aIndex);
 		bool							toggleTreble(unsigned int aIndex);
 		void							resetAutoAnimation(unsigned int aIndex);*/
+		void							setAnim(unsigned int aCtrl, unsigned int aAnim) {
+			mVDUniform->setAnim(aCtrl, aAnim);
+		}
 		bool							setUniformValue(unsigned int aIndex, float aValue) {
 			if (aIndex == mVDSettings->IBPM) {
 				if (aValue > 0.0f) {
-					setUniformValue(mVDSettings->IDELTATIME, 60 / aValue);
+					mVDUniform->setUniformValue(mVDSettings->IDELTATIME, 60 / aValue);
 				}
 			}
 			return mVDUniform->setUniformValue(aIndex, aValue);
@@ -214,6 +209,9 @@ namespace videodromm
 		};*/
 		float							getUniformValue(unsigned int aIndex) {
 			return mVDUniform->getUniformValue(aIndex);
+		}
+		int								getUniformAnim(unsigned int aIndex) {
+			return mVDUniform->getUniformAnim(aIndex);
 		}
 		float							getFloatUniformDefaultValueByIndex(unsigned int aIndex) {
 			return mVDUniform->getFloatUniformDefaultValueByIndex(aIndex);

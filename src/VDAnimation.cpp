@@ -508,37 +508,31 @@ void VDAnimation::update() {
 		previousTime = mVDUniform->getUniformValue(mVDSettings->ITEMPOTIME);
 
 		// TODO (modulo < 0.1) ? tempoMvg->setNameColor(ColorA::white()) : tempoMvg->setNameColor(UIController::DEFAULT_NAME_COLOR);
-		/*for (unsigned int anim = 1; anim < 29; anim++)
+		for (unsigned int anim = 1; anim < 29; anim++)
 		{
-			if (shaderUniforms[anim].autotime)
-			{
-				setUniformValue(anim, (modulo < 0.1) ? shaderUniforms[anim].maxValue : shaderUniforms[anim].minValue);
+			//unsigned int animType = mVDUniform->getUniformAnim(anim)
+			switch (mVDUniform->getUniformAnim(anim)) {				
+			case 1: // ANIM_TIME
+				setUniformValue(anim, (modulo < 0.1) ? mVDUniform->getUniformMaxValue(anim) : mVDUniform->getUniformMinValue(anim));
+				break;
+			case 2: // ANIM_AUTO
+				setUniformValue(anim, lmap<float>(mVDUniform->getUniformValue(mVDSettings->ITEMPOTIME), 0.00001,
+					getUniformValue(mVDSettings->IDELTATIME), mVDUniform->getUniformMinValue(anim), mVDUniform->getUniformMaxValue(anim)));
+				break;
+			case 3: // ANIM_BASS
+				setUniformValue(anim, (getFloatUniformDefaultValueByIndex(anim) + 0.01f) * getUniformValue(mVDSettings->IFREQ0) / 25.0f);
+				break;
+			case 4: // ANIM_MID
+				setUniformValue(anim, (getFloatUniformDefaultValueByIndex(anim) + 0.01f) * getUniformValue(mVDSettings->IFREQ1) / 5.0f);
+				break;
+			case 5: // ANIM_TREBLE
+				setUniformValue(anim, (getFloatUniformDefaultValueByIndex(anim) + 0.01f) * getUniformValue(mVDSettings->IFREQ2) / 2.0f);
+				break;
+			default:
+				// no animation
+				break;
 			}
-			else
-			{
-				if (shaderUniforms[anim].automatic) {
-					setUniformValue(anim, lmap<float>(shaderUniforms[mVDSettings->ITEMPOTIME].floatValue, 0.00001, getUniformValue(mVDSettings->IDELTATIME), shaderUniforms[anim].minValue, shaderUniforms[anim].maxValue));
-				}
-				else
-				{
-					if (shaderUniforms[anim].autobass) {
-						setUniformValue(anim, (getFloatUniformDefaultValueByIndex(anim) + 0.01f) * getUniformValue(mVDSettings->IFREQ0) / 25.0f);
-					}
-					else
-					{
-						if (shaderUniforms[anim].automid) {
-							setUniformValue(anim, (getFloatUniformDefaultValueByIndex(anim) + 0.01f) * getUniformValue(mVDSettings->IFREQ1) / 5.0f);
-						}
-						else
-						{
-							if (shaderUniforms[anim].autotreble) {
-								setUniformValue(anim, (getFloatUniformDefaultValueByIndex(anim) + 0.01f) * getUniformValue(mVDSettings->IFREQ2) / 2.0f);
-							}
-						}
-					}
-				}
-			}
-		}*/
+		}
 
 		// foreground color vec3 update
 		mVDUniform->setVec3UniformValueByIndex(mVDSettings->ICOLOR, vec3(getUniformValue(mVDSettings->IFR), getUniformValue(mVDSettings->IFG), getUniformValue(mVDSettings->IFB)));

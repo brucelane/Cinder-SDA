@@ -18,25 +18,19 @@ namespace videodromm
 	// cinder::gl::GlslProg::Uniform
 	struct VDUniformStruct
 	{
-		std::string							name;
+		std::string						name;
 		int								uniformType;
 		int								index;
 		float							defaultValue;
-		//union {
 		float							floatValue;
-		//bool							boolValue;
-		//int								intValue;
-		//vec2							vec2Value;
-		//vec3							vec3Value;
-		//vec4							vec4Value;
-		//};
 		float							minValue;
 		float							maxValue;
-		bool							autotime;
+		int								anim;
+		/*bool							autotime;
 		bool							automatic;
 		bool							autobass;
 		bool							automid;
-		bool							autotreble;
+		bool							autotreble;*/
 		int								textureIndex;
 		//bool							isValid;
 	};
@@ -73,7 +67,9 @@ namespace videodromm
 		int								getUniformTextureIndex(unsigned int aIndex) {
 			return shaderUniforms[aIndex].textureIndex;
 		}
-
+		void							setAnim(unsigned int aCtrl, unsigned int aAnim) {
+			shaderUniforms[aCtrl].anim = aAnim;
+		}
 		bool setUniformValue(unsigned int aIndex, float aValue) {
 			bool rtn = false;
 			// we can't change TIME at index 0
@@ -83,7 +79,7 @@ namespace videodromm
 				}*/
 				//string uniformName = getUniformNameForIndex(aIndex);
 				if (shaderUniforms[aIndex].floatValue != aValue) {
-					if ((aValue >= shaderUniforms[aIndex].minValue && aValue <= shaderUniforms[aIndex].maxValue) || shaderUniforms[aIndex].autobass || shaderUniforms[aIndex].automid || shaderUniforms[aIndex].autotreble) {
+					if ((aValue >= shaderUniforms[aIndex].minValue && aValue <= shaderUniforms[aIndex].maxValue) || shaderUniforms[aIndex].anim > 0) {
 						shaderUniforms[aIndex].floatValue = aValue;
 						rtn = true;
 					}
@@ -235,6 +231,9 @@ namespace videodromm
 		float							getUniformValue(unsigned int aIndex) {
 			return shaderUniforms[aIndex].floatValue;
 		}
+		int								getUniformAnim(unsigned int aIndex) {
+			return shaderUniforms[aIndex].anim;
+		}
 		float							getFloatUniformDefaultValueByIndex(unsigned int aIndex) {
 			return shaderUniforms[aIndex].defaultValue;
 		}
@@ -260,11 +259,7 @@ namespace videodromm
 				shaderUniforms[aCtrlIndex].minValue = aMin;
 				shaderUniforms[aCtrlIndex].maxValue = aMax;
 				shaderUniforms[aCtrlIndex].defaultValue = aValue;
-				shaderUniforms[aCtrlIndex].autotime = false;
-				shaderUniforms[aCtrlIndex].automatic = false;
-				shaderUniforms[aCtrlIndex].autobass = false;
-				shaderUniforms[aCtrlIndex].automid = false;
-				shaderUniforms[aCtrlIndex].autotreble = false;
+				shaderUniforms[aCtrlIndex].anim = 0;
 				shaderUniforms[aCtrlIndex].index = aCtrlIndex;
 				shaderUniforms[aCtrlIndex].floatValue = aValue;
 				shaderUniforms[aCtrlIndex].uniformType = 0;
@@ -335,11 +330,7 @@ namespace videodromm
 			shaderUniforms[aCtrlIndex].maxValue = 1;
 			shaderUniforms[aCtrlIndex].defaultValue = aValue;
 			//shaderUniforms[aCtrlIndex].boolValue = aValue;
-			shaderUniforms[aCtrlIndex].autotime = false;
-			shaderUniforms[aCtrlIndex].automatic = false;
-			shaderUniforms[aCtrlIndex].autobass = false;
-			shaderUniforms[aCtrlIndex].automid = false;
-			shaderUniforms[aCtrlIndex].autotreble = false;
+			shaderUniforms[aCtrlIndex].anim = 0;
 			shaderUniforms[aCtrlIndex].index = aCtrlIndex;
 			shaderUniforms[aCtrlIndex].floatValue = aValue;
 			shaderUniforms[aCtrlIndex].uniformType = 6;

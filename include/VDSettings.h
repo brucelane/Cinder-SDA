@@ -165,6 +165,15 @@ namespace videodromm {
 			MODE_HYDRA = 5
 		};
 
+		enum VDAnims {
+			ANIM_NONE = 0,
+			ANIM_TIME = 1,
+			ANIM_AUTO = 2,
+			ANIM_BASS = 3,
+			ANIM_MID = 4,
+			ANIM_TREBLE = 5
+		};
+
 		bool						save();
 		bool						restore();
 		void						reset();
