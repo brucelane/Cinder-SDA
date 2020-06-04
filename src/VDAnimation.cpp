@@ -606,7 +606,7 @@ void VDAnimation::calculateTempo()
 	}
 	averageTime = (double)(tAverage / buffer.size());
 	setUniformValue(mVDSettings->IDELTATIME, averageTime);
-	setBpm(60 / averageTime);
+	setUniformValue(mVDSettings->IBPM, 60 / averageTime);
 }
 
 void VDAnimation::preventLineInCrash() {

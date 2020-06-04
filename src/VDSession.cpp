@@ -264,18 +264,18 @@ void VDSession::restore()
 			JsonTree settings(doc.getChild("settings"));
 			if (settings.hasChild("bpm")) {
 				mOriginalBpm = settings.getValueForKey<float>("bpm", 166.0f);
-				CI_LOG_W("getBpm" + toString(mVDAnimation->getBpm()) + " mOriginalBpm " + toString(mOriginalBpm));
-				mVDAnimation->setBpm(mOriginalBpm);
-				CI_LOG_W("getBpm" + toString(mVDAnimation->getBpm()));
+				//CI_LOG_W("getBpm" + toString(mVDAnimation->getBpm()) + " mOriginalBpm " + toString(mOriginalBpm));
+				mVDAnimation->setUniformValue(mVDSettings->IBPM, mOriginalBpm);
+				//CI_LOG_W("getBpm" + toString(mVDAnimation->getBpm()));
 			};
 			if (settings.hasChild("beatsperbar")) mVDAnimation->setIntUniformValueByName("iBeatsPerBar", settings.getValueForKey<int>("beatsperbar"));
 			if (mVDAnimation->getIntUniformValueByName("iBeatsPerBar") < 1) mVDAnimation->setIntUniformValueByName("iBeatsPerBar", 4);
 			//if (settings.hasChild("fadeindelay")) mFadeInDelay = settings.getValueForKey<int>("fadeindelay");
 			//if (settings.hasChild("fadeoutdelay")) mFadeOutDelay = settings.getValueForKey<int>("fadeoutdelay");
 			if (settings.hasChild("endframe")) mVDAnimation->mEndFrame = settings.getValueForKey<int>("endframe");
-			CI_LOG_W("getBpm" + toString(mVDAnimation->getBpm()) + " mTargetFps " + toString(mTargetFps));
-			mTargetFps = mVDAnimation->getBpm() / 60.0f * mFpb;
-			CI_LOG_W("getBpm" + toString(mVDAnimation->getBpm()) + " mTargetFps " + toString(mTargetFps));
+			//CI_LOG_W("getBpm" + toString(mVDAnimation->getBpm()) + " mTargetFps " + toString(mTargetFps));
+			mTargetFps = mVDAnimation->getUniformValue(mVDSettings->IBPM) / 60.0f * mFpb;
+			//CI_LOG_W("getBpm" + toString(mVDAnimation->getBpm()) + " mTargetFps " + toString(mTargetFps));
 		}
 
 		/*if (doc.hasChild("assets")) {
@@ -299,7 +299,7 @@ void VDSession::restore()
 void VDSession::resetSomeParams() {
 	// parameters not exposed in json file
 	mFpb = 16;
-	mVDAnimation->setBpm(mOriginalBpm);
+	mVDAnimation->setUniformValue(mVDSettings->IBPM, mOriginalBpm);
 	mTargetFps = mOriginalBpm / 60.0f * mFpb;
 }
 

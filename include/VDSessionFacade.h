@@ -35,10 +35,10 @@ namespace videodromm
 		{
 			
 			VDMediatorObservableRef mediator =
-				VDMediatorObservable::createVDMediatorObservable(aVDSettings, aVDAnimation)
+				VDMediatorObservable::createVDMediatorObservable(aVDSettings, aVDAnimation);
 				// OK ->addObserver(VDSocketIOObserver::connect(aVDSettings->mSocketIOHost, aVDSettings->mSocketIOPort))
 				// OK ->addObserver(VDOscObserver::connect(aVDSettings->mOSCDestinationHost, aVDSettings->mOSCDestinationPort));
-				->addObserver(VDUIObserver::connect(aVDSettings, aVDAnimation));// ->addObserver(new UIDisplay());	
+				// OK ->addObserver(VDUIObserver::connect(aVDSettings, aVDAnimation));// ->addObserver(new UIDisplay());	
 			return VDSessionFacadeRef(new VDSessionFacade(VDSessionRef(new VDSession(aVDSettings, aVDAnimation)), mediator));
 		}
 
@@ -52,7 +52,7 @@ namespace videodromm
 		}
 		VDSessionFacadeRef setupOSCReceiver() {
 			//mVDRouterBuilder->setupOSCReceiver();
-			mVDMediator->setupOSCReceiver();
+			mVDMediator->setupOSCReceiver(/*shared_from_this()*/);
 			return shared_from_this();
 		}		
 		VDSessionFacadeRef addUIObserver(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
@@ -84,10 +84,10 @@ namespace videodromm
 			return shared_from_this();
 		}
 
-		VDSessionFacadeRef  setBpm(float aBpm) {
+		/*VDSessionFacadeRef  setBpm(float aBpm) {
 			mVDSession->setBpm(aBpm);
 			return shared_from_this();
-		};
+		};*/
 		VDSessionFacadeRef  tapTempo() {
 			mVDSession->tapTempo();
 			return shared_from_this();
@@ -144,9 +144,9 @@ namespace videodromm
 		float getMaxVolume() {
 			return mVDSession->getMaxVolume();
 		};
-		float getBpm() {
+		/*float getBpm() {
 			return mVDSession->getBpm();
-		};
+		};*/
 		
 		float getMinUniformValue(unsigned int aIndex) {
 			return mVDSession->getMinUniformValue(aIndex);

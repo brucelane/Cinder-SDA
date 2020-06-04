@@ -8,8 +8,8 @@ VDOsc::VDOsc(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 	CI_LOG_V("VDOsc constructor");
 }
 //VDMediatorObservableRef aVDMediator
-void VDOsc::setupOSCReceiver() {
-	//mVDMediator = aVDMediator;
+void VDOsc::setupOSCReceiver(/*VDSessionFacadeRef aVDSession*/) {
+	//mVDSession = aVDSession;
 	mOscReceiver = std::make_shared<osc::ReceiverUdp>(mVDSettings->mOSCReceiverPort);
 	// Romina
 	/*mOscReceiver->setListener("*",
@@ -39,6 +39,7 @@ void VDOsc::setupOSCReceiver() {
 				i = msg[0].int32();// TODO check was flt() from hydra standalone if ok can merge with midi;
 				f = msg[1].flt();// was for hydra / 128;
 				mVDAnimation->setUniformValue(i, f);
+				//mVDSession->setUniformValue(aCtrl, aValue);
 				//mVDMediator->setUniformValue(i, f);
 				//ss << " midi from OSC " << i << " value " << f;
 			}
@@ -61,7 +62,7 @@ void VDOsc::setupOSCReceiver() {
 				{
 					found = true;
 					//mVDAnimation->setAutoBeatAnimation(false);
-					mVDAnimation->setBpm(msg[0].flt());
+					mVDAnimation->setUniformValue(mVDSettings->IBPM, msg[0].flt());
 				}
 			}
 			if (!found)
@@ -107,7 +108,7 @@ void VDOsc::setupOSCReceiver() {
 					found = true;
 					mVDAnimation->useTimeWithTempo();
 					f = msg[0].flt();
-					mVDAnimation->setBpm(f);
+					mVDAnimation->setUniformValue(mVDSettings->IBPM, f);
 					//ss << " " << f;
 					//CI_LOG_I("tempo:" + toString(mVDAnimation->getBpm()));
 				}
@@ -224,7 +225,7 @@ void VDOsc::setupOSCReceiver() {
 				{
 					found = true;
 					double d0 = msg[0].dbl(); // tempo
-					mVDAnimation->setBpm(d0);
+					mVDAnimation->setUniformValue(mVDSettings->IBPM, d0);
 					double d1 = msg[1].dbl();
 					int d2 = msg[2].int32();
 					//! 20200526 mVDSocketio->changeIntValue(mVDSettings->IBEAT, d2);

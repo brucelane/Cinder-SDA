@@ -68,7 +68,7 @@ namespace videodromm
 		void							useTimeWithTempo() { mUseTimeWithTempo = true; };
 		bool							getUseTimeWithTempo() { return mUseTimeWithTempo; };
 		float							iTempoTimeBeatPerBar;
-		float							getBpm() {
+		/*float							getBpm() {
 			return getUniformValue(mVDSettings->IBPM);
 		};
 		void							setBpm(float aBpm) {
@@ -76,7 +76,7 @@ namespace videodromm
 				setUniformValue(mVDSettings->IBPM, aBpm);
 				setUniformValue(mVDSettings->IDELTATIME, 60 / aBpm);
 			}
-		};
+		};*/
 		void							tapTempo();
 		int								getEndFrame() { return mEndFrame; };
 		void							setEndFrame(int frame) { mEndFrame = frame; };
@@ -89,7 +89,7 @@ namespace videodromm
 		bool							handleKeyUp(KeyEvent& event);
 		// audio
 		ci::gl::TextureRef				getAudioTexture();
-		std::string							getAudioTextureName() { return mAudioName; };
+		std::string						getAudioTextureName() { return mAudioName; };
 		float							maxVolume;
 		bool							mLineInInitialized;
 		bool							mWaveInitialized;
@@ -101,13 +101,13 @@ namespace videodromm
 		audio::MonitorSpectralNodeRef	mScopeLineInFmt;
 		audio::BufferPlayerNodeRef		mBufferPlayerNode;
 
-		std::vector<float>					mMagSpectrum;
+		std::vector<float>				mMagSpectrum;
 
 		// number of frequency bands of our spectrum
 		static const int				mFFTWindowSize = 32; // fft window size 20200222 was 128;
 		float							iFreqs[mFFTWindowSize];
 		int								mPosition;
-		std::string							mAudioName;
+		std::string						mAudioName;
 		void							preventLineInCrash(); // at next launch
 		void							saveLineIn();
 		bool							getUseAudio() {
@@ -147,6 +147,11 @@ namespace videodromm
 		bool							toggleTreble(unsigned int aIndex);
 		void							resetAutoAnimation(unsigned int aIndex);*/
 		bool							setUniformValue(unsigned int aIndex, float aValue) {
+			if (aIndex == mVDSettings->IBPM) {
+				if (aValue > 0.0f) {
+					setUniformValue(mVDSettings->IDELTATIME, 60 / aValue);
+				}
+			}
 			return mVDUniform->setUniformValue(aIndex, aValue);
 		}
 

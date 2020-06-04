@@ -53,10 +53,10 @@ namespace videodromm {
 		float getUniformValue(int aIndex) {
 			return mVDAnimation->getUniformValue(aIndex);
 		}
-		VDMediatorObservableRef setupOSCReceiver() {
+		VDMediatorObservableRef setupOSCReceiver(/*VDSessionFacadeRef aVDSession*/) {
 			//mVDOsc
 			mVDOsc = VDOsc::create(mVDSettings, mVDAnimation);
-			mVDOsc->setupOSCReceiver();//shared_from_this()
+			mVDOsc->setupOSCReceiver(/*aVDSession*/);//shared_from_this()
 			return shared_from_this();
 		}
 		

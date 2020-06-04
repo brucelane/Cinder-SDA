@@ -215,7 +215,7 @@ namespace videodromm {
 			int channelIndex = 0;
 			mUniforms = mShader->getActiveUniforms();
 			for (const auto &uniform : mUniforms) {
-				name = uniform.getName();
+				name = uniform.getName(); // TODO uniform.getType()
 				//CI_LOG_V(mShader->getLabel() + ", getShader uniform name:" + uniform.getName() + ", type:" + toString( uniform.getType() ));
 				if (mVDAnimation->isExistingUniform(name)) {
 					int uniformType = mVDUniform->getUniformTypeByName(name);

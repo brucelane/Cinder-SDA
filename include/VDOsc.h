@@ -12,6 +12,10 @@
 #include "VDSettings.h"
 // Animation
 #include "VDAnimation.h"
+// Mediator
+//#include "VDMediator.h"
+// Session
+//#include "VDSessionFacade.h"
 // OSC
 #include "cinder/osc/Osc.h"
 
@@ -41,13 +45,15 @@ namespace videodromm
 		{
 			return std::shared_ptr<VDOsc>(new VDOsc(aVDSettings, aVDAnimation));
 		}	
-		void						setupOSCReceiver();
+		void						setupOSCReceiver(/*VDSessionFacadeRef aVDSession*/);
 	private:
 		// Settings
 		VDSettingsRef					mVDSettings;
 		// Animation
 		VDAnimationRef					mVDAnimation;
-		float						mBarStart = 0.0f;
+		// VDSession
+		//VDSessionFacadeRef				mVDSession;
+		float							mBarStart = 0.0f;
 		// osc
 		std::shared_ptr<osc::ReceiverUdp>	mOscReceiver;
 //std::map<uint64_t, protocol::endpoint>	mConnections;

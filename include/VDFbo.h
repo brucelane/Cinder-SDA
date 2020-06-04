@@ -74,7 +74,7 @@ namespace videodromm
 		std::string								getShaderName() { return mShaderName; };
 		std::string								getTextureName() { return mTextureList[0]->getTextureName(); };
 		ci::gl::Texture2dRef					getInputTexture() { return mTextureList[0]->getTexture(); };
-		std::string									getStatus() { return mTextureList[0]->getStatus(); };
+		std::string								getStatus() { return mTextureList[0]->getStatus(); };
 		void									setImageInputTexture(ci::gl::Texture2dRef aTextureRef, const std::string& aTextureFilename) {
 			mTextureList[0]->setImageInputTexture( aTextureRef, aTextureFilename);
 		};
@@ -110,7 +110,6 @@ namespace videodromm
 			mTextureList.push_back(texRef);
 			rtn = mTextureList.size() - 1;
 			return rtn;
-
 		}
 		// video
 		/*ciWMFVideoPlayer				mVideo;
@@ -122,9 +121,9 @@ namespace videodromm
 		gl::GlslProgRef					mShader;
 		VDShaderRef						shaderToLoad;
 		std::vector<ci::gl::GlslProg::Uniform> mUniforms;
-		std::string							mShaderName = "";
-		std::string							mName = "";
-		std::string							mShaderFileName = "";
+		std::string						mShaderName = "";
+		std::string						mName = "";
+		std::string						mShaderFileName = "";
 
 		std::string						mShaderFragmentString;
 		std::string						mFileNameWithExtension;
@@ -144,9 +143,6 @@ namespace videodromm
 		gl::Fbo::Format					fboFmt;
 		bool							isReady;
 		ci::gl::Texture2dRef			mRenderedTexture;
-		ci::gl::Texture2dRef			getFboTexture();
-
-		
-		
+		ci::gl::Texture2dRef			getFboTexture();		
 	};
 }

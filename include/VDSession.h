@@ -244,8 +244,8 @@ namespace videodromm {
 
 		// tempo
 		float							getMaxVolume() { return mVDAnimation->maxVolume; };
-		float							getBpm() { return mVDAnimation->getBpm(); };
-		void							setBpm(float aBpm) { mVDAnimation->setBpm(aBpm); };
+		//float							getBpm() { return mVDAnimation->getBpm(); };
+		//void							setBpm(float aBpm) { mVDAnimation->setBpm(aBpm); };
 		void							tapTempo() { mVDAnimation->tapTempo(); };
 		void							toggleUseTimeWithTempo() { mVDAnimation->toggleUseTimeWithTempo(); };
 		void							useTimeWithTempo() { mVDAnimation->useTimeWithTempo(); };
