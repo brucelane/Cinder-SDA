@@ -262,7 +262,7 @@ namespace videodromm
 				shaderUniforms[aCtrlIndex].anim = 0;
 				shaderUniforms[aCtrlIndex].index = aCtrlIndex;
 				shaderUniforms[aCtrlIndex].floatValue = aValue;
-				shaderUniforms[aCtrlIndex].uniformType = 0;
+				shaderUniforms[aCtrlIndex].uniformType = GL_FLOAT;
 				//shaderUniforms[aCtrlIndex].isValid = true;
 			}
 		}
@@ -270,7 +270,7 @@ namespace videodromm
 			shaderUniforms[aCtrlIndex].name = aName;
 			shaderUniforms[aCtrlIndex].textureIndex = aTextureIndex;
 			shaderUniforms[aCtrlIndex].index = aCtrlIndex;
-			shaderUniforms[aCtrlIndex].uniformType = 1;
+			shaderUniforms[aCtrlIndex].uniformType = GL_SAMPLER_2D;
 			//shaderUniforms[aCtrlIndex].isValid = true;
 		}
 
@@ -295,7 +295,7 @@ namespace videodromm
 		void createVec2Uniform(const std::string& aName, int aCtrlIndex, vec2 aValue = vec2(0.0)) {
 			shaderUniforms[aCtrlIndex].name = aName;
 			shaderUniforms[aCtrlIndex].index = aCtrlIndex;
-			shaderUniforms[aCtrlIndex].uniformType = 2;
+			shaderUniforms[aCtrlIndex].uniformType = GL_FLOAT_VEC2;
 			//shaderUniforms[aCtrlIndex].isValid = true;
 			shaderUniforms[aCtrlIndex].floatValue = aValue.x;
 			//shaderUniforms[aCtrlIndex].vec2Value = aValue;
@@ -303,7 +303,7 @@ namespace videodromm
 		void createVec3Uniform(const std::string& aName, int aCtrlIndex, vec3 aValue = vec3(0.0)) {
 			shaderUniforms[aCtrlIndex].name = aName;
 			shaderUniforms[aCtrlIndex].index = aCtrlIndex;
-			shaderUniforms[aCtrlIndex].uniformType = 3;
+			shaderUniforms[aCtrlIndex].uniformType = GL_FLOAT_VEC3;
 			//shaderUniforms[aCtrlIndex].isValid = true;
 			shaderUniforms[aCtrlIndex].floatValue = aValue.x;
 			//shaderUniforms[aCtrlIndex].vec3Value = aValue;
@@ -311,7 +311,7 @@ namespace videodromm
 		void createVec4Uniform(const std::string& aName, int aCtrlIndex, vec4 aValue = vec4(0.0)) {
 			shaderUniforms[aCtrlIndex].name = aName;
 			shaderUniforms[aCtrlIndex].index = aCtrlIndex;
-			shaderUniforms[aCtrlIndex].uniformType = 4;
+			shaderUniforms[aCtrlIndex].uniformType = GL_FLOAT_VEC4;
 			//shaderUniforms[aCtrlIndex].isValid = true;
 			shaderUniforms[aCtrlIndex].floatValue = aValue.x;
 			//shaderUniforms[aCtrlIndex].vec4Value = aValue;
@@ -319,7 +319,7 @@ namespace videodromm
 		void createIntUniform(const std::string& aName, int aCtrlIndex, int aValue = 1) {
 			shaderUniforms[aCtrlIndex].name = aName;
 			shaderUniforms[aCtrlIndex].index = aCtrlIndex;
-			shaderUniforms[aCtrlIndex].uniformType = 5;
+			shaderUniforms[aCtrlIndex].uniformType = GL_INT;
 			//shaderUniforms[aCtrlIndex].isValid = true;
 			shaderUniforms[aCtrlIndex].floatValue = aValue;
 		}
@@ -331,7 +331,7 @@ namespace videodromm
 			shaderUniforms[aCtrlIndex].anim = 0;
 			shaderUniforms[aCtrlIndex].index = aCtrlIndex;
 			shaderUniforms[aCtrlIndex].floatValue = aValue;
-			shaderUniforms[aCtrlIndex].uniformType = 6;
+			shaderUniforms[aCtrlIndex].uniformType = GL_BOOL;
 			//shaderUniforms[aCtrlIndex].isValid = true;
 		}
 		int stringToIndex(const std::string& key) {

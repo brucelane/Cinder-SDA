@@ -132,12 +132,7 @@ namespace videodromm
 			//return shaderUniforms[stringToIndex(aName)].index;
 		};
 		bool							toggleValue(unsigned int aIndex);
-		/*bool							toggleAuto(unsigned int aIndex);
-		bool							toggleTempo(unsigned int aIndex);
-		bool							toggleBass(unsigned int aIndex);
-		bool							toggleMid(unsigned int aIndex);
-		bool							toggleTreble(unsigned int aIndex);
-		void							resetAutoAnimation(unsigned int aIndex);*/
+
 		void							setAnim(unsigned int aCtrl, unsigned int aAnim) {
 			mVDUniform->setAnim(aCtrl, aAnim);
 		}

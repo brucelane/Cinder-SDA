@@ -216,12 +216,12 @@ namespace videodromm {
 			mUniforms = mShader->getActiveUniforms();
 			for (const auto &uniform : mUniforms) {
 				name = uniform.getName(); // TODO uniform.getType()
-				CI_LOG_E(mShader->getLabel() + ", getShader uniform name:" + uniform.getName() + ", type:" + toString( uniform.getType() ));
+				// CI_LOG_E(mShader->getLabel() + ", getShader uniform name:" + uniform.getName() + ", type:" + toString( uniform.getType() ));
 				if (mVDAnimation->isExistingUniform(name)) {
 					int uniformType = mVDUniform->getUniformTypeByName(name);
 					switch (uniformType)
 					{
-					case 0: // float
+					case GL_FLOAT: // float 5126 GL_FLOAT 0x1406
 						if (name == "TIME") {
 							mShader->uniform(name, mVDAnimation->getUniformValueByName("TIME"));
 						}
@@ -237,7 +237,7 @@ namespace videodromm {
 							}
 						}
 						break;
-					case 1: // sampler2D
+					case GL_SAMPLER_2D: // sampler2D 35678 GL_SAMPLER_2D 0x8B5E
 						texNameEndIndex = name.find_last_of("iChannel");
 						if (texNameEndIndex != std::string::npos) {
 							texName = name.substr(0, texNameEndIndex + 1);
@@ -255,7 +255,7 @@ namespace videodromm {
 							mShader->uniform(name, (uint32_t)(253 + i));
 						}
 						break;
-					case 2://GL_FLOAT_VEC2: // vec2
+					case GL_FLOAT_VEC2://GL_FLOAT_VEC2: // vec2 35664 GL_FLOAT_VEC2 0x8B50
 						if (name == "RENDERSIZE") {
 							//mShader->uniform(name, vec2(mTexture->getWidth(), mTexture->getHeight()));
 							mShader->uniform(name, vec2(mVDSettings->mFboWidth, mVDSettings->mFboHeight));
@@ -264,13 +264,13 @@ namespace videodromm {
 							mShader->uniform(name, mVDAnimation->getVec2UniformValueByName(name));
 						}
 						break;
-					case 3://GL_FLOAT_VEC3: // vec3
+					case GL_FLOAT_VEC3://GL_FLOAT_VEC3: // vec3 35665 GL_FLOAT_VEC3 0x8B51
 						mShader->uniform(name, mVDAnimation->getVec3UniformValueByName(name));
 						break;
-					case 4://GL_FLOAT_VEC4: // vec4
+					case GL_FLOAT_VEC4://GL_FLOAT_VEC4: // vec4 35666 GL_FLOAT_VEC4 0x8B52
 						mShader->uniform(name, mVDAnimation->getVec4UniformValueByName(name));
 						break;
-					case 5: // int
+					case GL_INT: // int 5124 GL_INT 0x1404
 						// IBEAT 51
 						// IBAR 52
 						// IBARBEAT 53
@@ -283,7 +283,7 @@ namespace videodromm {
 						}
 
 						break;
-					case 6: // bool
+					case GL_BOOL: // boolean 35670 GL_BOOL 0x8B56
 						if (mGlobal) {
 							mShader->uniform(name, mVDAnimation->getBoolUniformValueByName(name));
 						}
@@ -293,15 +293,22 @@ namespace videodromm {
 						}
 
 						break;
+					case GL_FLOAT_MAT4: // 35676 GL_FLOAT_MAT4 0x8B5C ciModelViewProjection
+						
+
+						break;
 					default:
 						break;
 					}
 				}
 				else {
-					if (name != "ciModelViewProjection") {//type 35676
+					if (name != "ciModelViewProjection") {//type 35676 GL_FLOAT_MAT4 0x8B5C
 						mError = "fbo uniform not found " + name;
 						mVDSettings->mErrorMsg = mError + "\n" + mVDSettings->mErrorMsg.substr(0, mVDSettings->mMsgLength);
 						CI_LOG_E(mError);
+					}
+					else {
+						mError = "should not arrive here " + name;
 					}
 				}
 			}

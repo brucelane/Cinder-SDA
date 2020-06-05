@@ -249,32 +249,32 @@ void VDUniform::loadUniforms(const ci::DataSourceRef& source) {
 				// create uniform of the correct type
 				int uniformType = (w.hasChild("type")) ? w.getValueForKey<int>("type") : 0;
 				switch (uniformType) {
-				case 0:
-					//float
+				case GL_FLOAT:
+					// float 5126 GL_FLOAT 0x1406
 					floatFromJson(child);
 					break;
-				case 1:
-					// sampler2d
+				case GL_SAMPLER_2D:
+					// sampler2d 35678 GL_SAMPLER_2D 0x8B5E
 					sampler2dFromJson(child);
 					break;
-				case 2:
-					// vec2
+				case GL_FLOAT_VEC2:
+					// vec2 35664
 					vec2FromJson(child);
 					break;
-				case 3:
-					// vec3
+				case GL_FLOAT_VEC3:
+					// vec3 35665
 					vec3FromJson(child);
 					break;
-				case 4:
-					// vec4
+				case GL_FLOAT_VEC4:
+					// vec4 35666 GL_FLOAT_VEC4
 					vec4FromJson(child);
 					break;
-				case 5:
-					// int
+				case GL_INT:
+					// int 5124 GL_INT 0x1404
 					intFromJson(child);
 					break;
-				case 6:
-					// boolean
+				case GL_BOOL:
+					// boolean 35670 GL_BOOL 0x8B56
 					boolFromJson(child);
 					break;
 				}

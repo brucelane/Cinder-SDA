@@ -326,8 +326,8 @@ bool VDShader::setFragmentString(const std::string& aFragmentShaderString, const
 					int uniformType = mVDAnimation->getUniformTypeByName(uniformName);
 					switch (uniformType)
 					{
-					case 0:
-						// float
+					case GL_FLOAT:
+						// float  5126 GL_FLOAT 0x1406
 						mShader->uniform(uniformName, mVDAnimation->getUniformValueByName(uniformName));
 						mCurrentUniformsString += "uniform float " + uniformName + "; // " + toString(mVDAnimation->getUniformValueByName(uniformName)) + "\n";
 						if (uniformName != "TIME") {
@@ -341,35 +341,35 @@ bool VDShader::setFragmentString(const std::string& aFragmentShaderString, const
 								"		}\n";
 						}
 						break;
-					case 1:
-						// sampler2D
+					case GL_SAMPLER_2D:
+						// sampler2d 35678 GL_SAMPLER_2D 0x8B5E
 						mShader->uniform(uniformName, mVDAnimation->getSampler2DUniformValueByName(uniformName));
 						mCurrentUniformsString += "uniform sampler2D " + uniformName + "; // " + toString(mVDAnimation->getSampler2DUniformValueByName(uniformName)) + "\n";
 						break;
-					case 2:
-						// vec2 IRESOLUTION IRESOLUTIONX IRESOLUTIONY
+					case GL_FLOAT_VEC2:
+						// vec2 35664 IRESOLUTION IRESOLUTIONX IRESOLUTIONY
 						mShader->uniform(uniformName, mVDAnimation->getVec2UniformValueByName(uniformName));
 						//mShader->uniform(uniformName + "x", mVDAnimation->getUniformValueByName(uniformName + "x"),
 						//	mVDAnimation->getUniformValueByName(uniformName + "y")));
 						mCurrentUniformsString += "uniform vec2 " + uniformName + "; // " + toString(mVDAnimation->getVec2UniformValueByName(uniformName)) + "\n";
 						break;
-					case 3:
-						// vec3
+					case GL_FLOAT_VEC3:
+						// vec3 35665
 						mShader->uniform(uniformName, mVDAnimation->getVec3UniformValueByName(uniformName));
 						mCurrentUniformsString += "uniform vec3 " + uniformName + "; // " + toString(mVDAnimation->getVec3UniformValueByName(uniformName)) + "\n";
 						break;
-					case 4:
-						// vec4
+					case GL_FLOAT_VEC4:
+						// vec4 35666 GL_FLOAT_VEC4
 						mShader->uniform(uniformName, mVDAnimation->getVec4UniformValueByName(uniformName));
 						mCurrentUniformsString += "uniform vec4 " + uniformName + "; // " + toString(mVDAnimation->getVec4UniformValueByName(uniformName)) + "\n";
 						break;
-					case 5:
-						// int
+					case GL_INT:
+						// int 5124 GL_INT 0x1404
 						mShader->uniform(uniformName, mVDAnimation->getIntUniformValueByName(uniformName));
 						mCurrentUniformsString += "uniform int " + uniformName + "; // " + toString(mVDAnimation->getIntUniformValueByName(uniformName)) + "\n";
 						break;
-					case 6:
-						// bool
+					case GL_BOOL:
+						// boolean 35670 GL_BOOL 0x8B56
 						mShader->uniform(uniformName, mVDAnimation->getBoolUniformValueByName(uniformName));
 						mCurrentUniformsString += "uniform bool " + uniformName + "; // " + toString(mVDAnimation->getBoolUniformValueByName(uniformName)) + "\n";
 						break;
