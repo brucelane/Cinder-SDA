@@ -52,7 +52,7 @@ namespace videodromm
 		int								getUniformTypeByName(const std::string& aName) {
 			return shaderUniforms[stringToIndex(aName)].uniformType;
 		}
-		std::string							getUniformName(unsigned int aIndex) {
+		std::string						getUniformName(unsigned int aIndex) {
 			return shaderUniforms[aIndex].name;
 		}
 		float							getUniformDefaultValue(unsigned int aIndex) {
@@ -322,14 +322,12 @@ namespace videodromm
 			shaderUniforms[aCtrlIndex].uniformType = 5;
 			//shaderUniforms[aCtrlIndex].isValid = true;
 			shaderUniforms[aCtrlIndex].floatValue = aValue;
-			//shaderUniforms[aCtrlIndex].intValue = aValue;
 		}
 		void createBoolUniform(const std::string& aName, int aCtrlIndex, bool aValue = false) {
 			shaderUniforms[aCtrlIndex].name = aName;
 			shaderUniforms[aCtrlIndex].minValue = 0;
 			shaderUniforms[aCtrlIndex].maxValue = 1;
 			shaderUniforms[aCtrlIndex].defaultValue = aValue;
-			//shaderUniforms[aCtrlIndex].boolValue = aValue;
 			shaderUniforms[aCtrlIndex].anim = 0;
 			shaderUniforms[aCtrlIndex].index = aCtrlIndex;
 			shaderUniforms[aCtrlIndex].floatValue = aValue;
@@ -372,9 +370,9 @@ namespace videodromm
 			else if (key == "iSobel") {
 				rtn = mVDSettings->ISOBEL;
 			} // 8
-			// bad tv
-			else if (key == "iBadTv") {
-				rtn = mVDSettings->IBADTV;
+			// RotationSpeed
+			else if (key == "iRotationSpeed") {
+				rtn = mVDSettings->IROTATIONSPEED;
 			} // 9
 			// Steps
 			else if (key == "iSteps") {
@@ -497,10 +495,7 @@ namespace videodromm
 			else if (key == "iContour") {
 				rtn = mVDSettings->ICONTOUR;
 			} // 40
-			// RotationSpeed
-			else if (key == "iRotationSpeed") {
-				rtn = mVDSettings->IROTATIONSPEED;
-			} // 41
+
 
 			// iMouseX  
 			else if (key == "iMouseX") {
@@ -522,6 +517,10 @@ namespace videodromm
 			else if (key == "iVFallOff") {
 				rtn = mVDSettings->IVFALLOFF;
 			} // 46
+			// bad tv
+			else if (key == "iBadTv") {
+			rtn = mVDSettings->IBADTV;
+			} // 48
 
 			// iTimeFactor
 			else if (key == "iTimeFactor") {

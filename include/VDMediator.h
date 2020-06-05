@@ -50,8 +50,11 @@ namespace videodromm {
 			mObservers.push_back(o);
 			return shared_from_this();
 		}
-		float getUniformValue(int aIndex) {
+		float getUniformValue(unsigned int aIndex) {
 			return mVDAnimation->getUniformValue(aIndex);
+		}
+		std::string getUniformName(unsigned int aIndex) {
+			return mVDAnimation->getUniformName(aIndex);
 		}
 		VDMediatorObservableRef setupOSCReceiver(/*VDSessionFacadeRef aVDSession*/) {
 			//mVDOsc

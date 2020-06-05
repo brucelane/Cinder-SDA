@@ -37,8 +37,9 @@ VDUniform::VDUniform(VDSettingsRef aVDSettings) {
 		createFloatUniform("iBlueMultiplier", mVDSettings->IFBX, 1.0f, 0.0f, 3.0f); // 7
 		// gstnsmk
 		createFloatUniform("iSobel", mVDSettings->ISOBEL, 0.02f, 0.02f, 1.0f); // 8
-		// bad tv
-		//createFloatUniform("iBadTv", mVDSettings->IBADTV, 0.0f, 0.0f, 5.0f); // 9
+		// RotationSpeed
+		createFloatUniform("iRotationSpeed", mVDSettings->IROTATIONSPEED, 0.02f, -0.1f, 0.1f); // 9
+
 		// Steps
 		createFloatUniform("iSteps", mVDSettings->ISTEPS, 16.0f, 1.0f, 128.0f); // 10
 
@@ -108,8 +109,6 @@ VDUniform::VDUniform(VDSettingsRef aVDSettings) {
 
 		// contour
 		createFloatUniform("iContour", mVDSettings->ICONTOUR, 0.0f, 0.0f, 0.5f); // 40
-		// RotationSpeed
-		createFloatUniform("iRotationSpeed", mVDSettings->IROTATIONSPEED, 0.02f, -0.1f, 0.1f); // 41
 
 		// iMouseX  
 		createFloatUniform("iMouseX", mVDSettings->IMOUSEX, 320.0f, 0.0f, 1280.0f); // 42
@@ -125,6 +124,8 @@ VDUniform::VDUniform(VDSettingsRef aVDSettings) {
 		//createFloatUniform("time", mVDSettings->TIME, 0.0f); // 47
 		// current beat
 		//createFloatUniform("iPhase", mVDSettings->IPHASE, 0.0f); // 48
+		// bad tv
+		createFloatUniform("iBadTv", mVDSettings->IBADTV, 0.0f, 0.0f, 5.0f); // 48
 		// iTimeFactor
 		createFloatUniform("iTimeFactor", mVDSettings->ITIMEFACTOR, 1.0f); // 49
 		// int

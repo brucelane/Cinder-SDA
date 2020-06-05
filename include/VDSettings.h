@@ -45,6 +45,7 @@ namespace videodromm {
 			IFGX = 6,
 			IFBX = 7,
 			ISOBEL = 8,
+			IROTATIONSPEED = 9,
 			ISTEPS = 10,
 			IRATIO = 11,
 			IZOOM = 12,
@@ -78,7 +79,6 @@ namespace videodromm {
 			IWEIGHT8 = 39, // 20200304 was IELAPSED
 
 			ICONTOUR = 40,
-			IROTATIONSPEED = 41,
 			IMOUSEX = 42,
 			IMOUSEY = 43,
 			IMOUSEZ = 44,

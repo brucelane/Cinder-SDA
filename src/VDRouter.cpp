@@ -74,18 +74,7 @@ void VDRouter::changeFloatValue(unsigned int aControl, float aValue, bool forceS
 		sendJSON(strParams);
 	}
 }
-/*void VDRouter::changeBoolValue(unsigned int aControl, bool aValue) {
-	// check if changed
-	mVDAnimation->setBoolUniformValueByIndex(aControl, aValue);
-	std::stringstream sParams;
-	// TODO: check boolean value:
-	sParams << "{\"params\" :[{\"name\" : " << aControl << ",\"value\" : " << (int)aValue << "}]}";
-	std::string strParams = sParams.str();
-	sendJSON(strParams);
-}
-void VDRouter::changeIntValue(unsigned int aControl, int aValue) {
-	mVDAnimation->setIntUniformValueByIndex(aControl, aValue);
-}*/
+
 void VDRouter::sendJSON(std::string params) {
 	/*if (mOscSender) {
 	Observer Observable

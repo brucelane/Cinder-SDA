@@ -45,6 +45,9 @@ namespace videodromm
 		float getUniformValue(unsigned int aCtrl) {
 			return mVDMediator->getUniformValue(aCtrl);
 		};
+		std::string getUniformName(unsigned int aIndex) {
+			return mVDMediator->getUniformName(aIndex);
+		}
 		VDSessionFacadeRef setUniformValue(unsigned int aCtrl, float aValue) {
 			mVDMediator->setUniformValue(aCtrl, aValue);
 			//mVDRouterBuilder->changeFloatValue(aCtrl, aValue);

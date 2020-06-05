@@ -210,6 +210,9 @@ namespace videodromm
 		float							getUniformValue(unsigned int aIndex) {
 			return mVDUniform->getUniformValue(aIndex);
 		}
+		std::string						getUniformName(unsigned int aIndex) {
+			return mVDUniform->getUniformName(aIndex);
+		}
 		int								getUniformAnim(unsigned int aIndex) {
 			return mVDUniform->getUniformAnim(aIndex);
 		}
