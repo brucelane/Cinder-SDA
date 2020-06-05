@@ -67,7 +67,7 @@ VDSession::VDSession(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 	mModesList[8] = "Fbo7";
 	mModesList[9] = "Fbo8";
 	mMode = 0;
-	
+
 	// Message router
 	//mVDRouter = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->addShader(0,6)->getInstance();
 	//mVDRouterBuilder = VDRouterBuilder::createVDRouter(mVDSettings, mVDAnimation)->setWarpBFboIndex(0, 1);
@@ -111,17 +111,17 @@ void VDSession::loadFbos() {
 	std::string textureFileName;
 	while (found) {
 		std::string jsonFileName = "fbo" + toString(f) + ".json";
-	
+
 		fs::path jsonFile = getAssetPath("") / mVDSettings->mAssetsPath / jsonFileName;
 		if (fs::exists(jsonFile)) {
-// nouveau
-	/*loadFromJsonFile(jsonFile)
-			->createShader()
-			->createUniforms()
-			->compile()
-			->createFboWhenSuccess()
-			->addToFboList();*/
-	// ancien
+			// nouveau
+				/*loadFromJsonFile(jsonFile)
+						->createShader()
+						->createUniforms()
+						->compile()
+						->createFboWhenSuccess()
+						->addToFboList();*/
+						// ancien
 			JsonTree json(loadFile(jsonFile));
 			fboFromJson(json);
 			f++;
@@ -134,11 +134,11 @@ void VDSession::loadFbos() {
 }
 
 void VDSession::update(unsigned int aClassIndex) {
-	
+
 	// fps calculated in main app
 	mVDSettings->sFps = toString(floor(mVDAnimation->getUniformValue(mVDSettings->IFPS)));
 	mVDAnimation->update();
-	
+
 	mVDMix->getMixetteTexture(0);
 	renderWarpsToFbo();
 	renderPostToFbo();
@@ -187,7 +187,7 @@ void VDSession::renderWarpsToFbo()
 		int i = 0;
 		int a = 0;
 		int s = 0;
-		for (auto &warp : mWarpList) {
+		for (auto& warp : mWarpList) {
 			a = warp->getAFboIndex();
 			if (a < 0) a = 0; // TODO 20200228 a could be negative if warps3.xml > warps01.json
 			i = math<int>::min(a, getFboListSize() - 1);
@@ -377,7 +377,7 @@ void VDSession::fileDrop(FileDropEvent event) {
 }
 
 #pragma region events
-bool VDSession::handleMouseMove(MouseEvent &event)
+bool VDSession::handleMouseMove(MouseEvent& event)
 {
 	bool handled = true;
 	// 20180318 handled in VDUIMouse mVDAnimation->setVec4UniformValueByIndex(70, vec4(event.getX(), event.getY(), event.isLeftDown(), event.isRightDown()));
@@ -391,7 +391,7 @@ bool VDSession::handleMouseMove(MouseEvent &event)
 	return event.isHandled();
 }
 
-bool VDSession::handleMouseDown(MouseEvent &event)
+bool VDSession::handleMouseDown(MouseEvent& event)
 {
 	bool handled = true;
 	// pass this mouse event to the warp editor first
@@ -404,7 +404,7 @@ bool VDSession::handleMouseDown(MouseEvent &event)
 	return event.isHandled();
 }
 
-bool VDSession::handleMouseDrag(MouseEvent &event)
+bool VDSession::handleMouseDrag(MouseEvent& event)
 {
 
 	bool handled = true;
@@ -418,7 +418,7 @@ bool VDSession::handleMouseDrag(MouseEvent &event)
 	return event.isHandled();
 }
 
-bool VDSession::handleMouseUp(MouseEvent &event)
+bool VDSession::handleMouseUp(MouseEvent& event)
 {
 	bool handled = true;
 	// pass this mouse event to the warp editor first
@@ -433,7 +433,7 @@ bool VDSession::handleMouseUp(MouseEvent &event)
 }
 
 
-bool VDSession::handleKeyDown(KeyEvent &event)
+bool VDSession::handleKeyDown(KeyEvent& event)
 {
 	bool handled = true;
 	float newValue;
@@ -447,170 +447,82 @@ bool VDSession::handleKeyDown(KeyEvent &event)
 	CI_LOG_V("session keydown: " + toString(event.getCode()) + " ctrl: " + toString(isModDown) + " shift: " + toString(isShiftDown) + " alt: " + toString(isAltDown));
 	// pass this key event to the warp editor first
 	if (!Warp::handleKeyDown(mWarpList, event)) {
-		// pass this event to Mix handler
-		if (!mVDAnimation->handleKeyDown(event)) {
-			switch (event.getCode()) {
-			case KeyEvent::KEY_w:
-				CI_LOG_V("oscConnect");
-				if (isModDown) {
-					//oscConnect();
-				}
-				else {
-					// handled in main app
-					//handled = false;
-					// toggle warp edit mode
-					Warp::enableEditMode(!Warp::isEditModeEnabled());
-				}
-				break;
 
-			case KeyEvent::KEY_F1:
-				mMode = 0;
-				break;
-			case KeyEvent::KEY_F2:
-				mMode = 1;
-				break;
-			case KeyEvent::KEY_F3:
-				mMode = 2;
-				break;
-			case KeyEvent::KEY_F4:
-				mMode = 3;
-				break;
-			case KeyEvent::KEY_F5:
-				mMode = 4;
-				break;
-			case KeyEvent::KEY_F6:
-				mMode = 5;
-				break;
-			case KeyEvent::KEY_F7:
-				mMode = 6;
-				break;
-			case KeyEvent::KEY_F8:
-				mMode = 7;
-				break;
-			case KeyEvent::KEY_F9:
-				mMode = 8;
-				break;
-				//case KeyEvent::KEY_SPACE:
-				//mVDTextures->playMovie();
-				//mVDAnimation->currentScene++;
-				//if (mMovie) { if (mMovie->isPlaying()) mMovie->stop(); else mMovie->play(); }
-				//break;
-			//case KeyEvent::KEY_0:
-				//break;
-			//case KeyEvent::KEY_l:
-				// live params TODO mVDAnimation->load();
-				//mLoopVideo = !mLoopVideo;
-				//if (mMovie) mMovie->setLoop(mLoopVideo);
-				//break;
-			case KeyEvent::KEY_x:
-				// trixels
-				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->ITRIXELS, mVDAnimation->getUniformValue(mVDSettings->ITRIXELS) + 0.05f);
-				break;
-			case KeyEvent::KEY_r:
-				if (isAltDown) {
-					//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IBR, mVDAnimation->getUniformValue(mVDSettings->IBR), false, true, isShiftDown, isModDown);
-				}
-				else {
-					//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IFR, mVDAnimation->getUniformValue(mVDSettings->IFR), false, true, isShiftDown, isModDown);
-				}
-				break;
-			case KeyEvent::KEY_g:
-				if (isAltDown) {
-					//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IBG, mVDAnimation->getUniformValue(mVDSettings->IBG), false, true, isShiftDown, isModDown);
-				}
-				else {
-					//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IFG, mVDAnimation->getUniformValue(mVDSettings->IFG), false, true, isShiftDown, isModDown);
-				}
-				break;
-			case KeyEvent::KEY_b:
-				if (isAltDown) {
-					//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IBB, mVDAnimation->getUniformValue(mVDSettings->IBB), false, true, isShiftDown, isModDown);
-				}
-				else {
-					//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IFB, mVDAnimation->getUniformValue(mVDSettings->IFB), false, true, isShiftDown, isModDown);
-				}
-				break;
-			case KeyEvent::KEY_a:
-				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IFA, mVDAnimation->getUniformValue(mVDSettings->IFA), false, true, isShiftDown, isModDown);
-				break;
-			case KeyEvent::KEY_u:
-				// chromatic
-				// TODO find why can't put value >0.9 or 0.85!
-				newValue = mVDAnimation->getUniformValue(mVDSettings->ICHROMATIC) + 0.05f;
-				if (newValue > 1.0f) newValue = 0.0f;
-				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->ICHROMATIC, newValue);
-				break;
-			case KeyEvent::KEY_p:
-				// pixelate
-				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IPIXELATE, mVDAnimation->getUniformValue(mVDSettings->IPIXELATE) + 0.05f);
-				break;
-			case KeyEvent::KEY_y:
-				// glitch
-				//! 20200526 mVDSocketio->changeBoolValue(mVDSettings->IGLITCH, true);
-				break;
-			case KeyEvent::KEY_i:
-				// invert
-				//! 20200526 mVDSocketio->changeBoolValue(mVDSettings->IINVERT, true);
-				break;
-			case KeyEvent::KEY_o:
-				// toggle
-				//! 20200526 mVDSocketio->changeBoolValue(mVDSettings->ITOGGLE, true);
-				break;
-			case KeyEvent::KEY_z:
-				// zoom
-				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IZOOM, mVDAnimation->getUniformValue(mVDSettings->IZOOM) - 0.05f);
-				break;
-				/* removed temp for Sky Project case KeyEvent::KEY_LEFT:
-					//mVDTextures->rewindMovie();
-					if (mVDAnimation->getUniformValue(21) > 0.1f) mVDSocketio->changeFloatValue(21, mVDAnimation->getUniformValue(21) - 0.1f);
-					break;
-				case KeyEvent::KEY_RIGHT:
-					//mVDTextures->fastforwardMovie();
-					if (mVDAnimation->getUniformValue(21) < 1.0f) mVDSocketio->changeFloatValue(21, mVDAnimation->getUniformValue(21) + 0.1f);
-					break;*/
-			case KeyEvent::KEY_PAGEDOWN:
-			case KeyEvent::KEY_RIGHT:
-				// crossfade right
-				//! 20200526 if (mVDAnimation->getUniformValue(mVDSettings->IXFADE) < 1.0f) mVDSocketio->changeFloatValue(mVDSettings->IXFADE, mVDAnimation->getUniformValue(mVDSettings->IXFADE) + 0.1f);
-				break;
-			case KeyEvent::KEY_PAGEUP:
-			case KeyEvent::KEY_LEFT:
-				// crossfade left
-				//! 20200526 if (mVDAnimation->getUniformValue(mVDSettings->IXFADE) > 0.0f) mVDSocketio->changeFloatValue(mVDSettings->IXFADE, mVDAnimation->getUniformValue(mVDSettings->IXFADE) - 0.1f);
-				break;
-			case KeyEvent::KEY_UP:
-				// imgseq next
-				//incrementSequencePosition();
-				break;
-			case KeyEvent::KEY_DOWN:
-				// imgseq next
-				//decrementSequencePosition();
-				break;
-			case KeyEvent::KEY_v:
-				//if (isModDown) fboFlipV(0);// TODO other indexes mVDSettings->mFlipV = !mVDSettings->mFlipV; useless?
-				break;
-			case KeyEvent::KEY_h:
-				if (isModDown) {
-					//fboFlipH(0);// TODO other indexes mVDSettings->mFlipH = !mVDSettings->mFlipH; useless?
-				}
-				else {
-					// ui visibility
-					toggleUI();
-				}
-				break;
-			case KeyEvent::KEY_d:
-				/*if (isAltDown) {
-					setSpeed(0, getSpeed(0) - 0.01f);
-				}
-				else {
-					setSpeed(0, getSpeed(0) + 0.01f);
-				}*/
-				break;
-			default:
-				CI_LOG_V("session keydown: " + toString(event.getCode()));
-				handled = false;
-				break;
+		switch (event.getCode()) {
+		case KeyEvent::KEY_w:
+			CI_LOG_V("oscConnect");
+			if (isModDown) {
+				//oscConnect();
 			}
+			else {
+				// handled in main app
+				//handled = false;
+				// toggle warp edit mode
+				Warp::enableEditMode(!Warp::isEditModeEnabled());
+			}
+			break;
+
+		case KeyEvent::KEY_F1:
+			mMode = 0;
+			break;
+		case KeyEvent::KEY_F2:
+			mMode = 1;
+			break;
+		case KeyEvent::KEY_F3:
+			mMode = 2;
+			break;
+		case KeyEvent::KEY_F4:
+			mMode = 3;
+			break;
+		case KeyEvent::KEY_F5:
+			mMode = 4;
+			break;
+		case KeyEvent::KEY_F6:
+			mMode = 5;
+			break;
+		case KeyEvent::KEY_F7:
+			mMode = 6;
+			break;
+		case KeyEvent::KEY_F8:
+			mMode = 7;
+			break;
+		case KeyEvent::KEY_F9:
+			mMode = 8;
+			break;
+
+		
+		case KeyEvent::KEY_UP:
+			// imgseq next
+			//incrementSequencePosition();
+			break;
+		case KeyEvent::KEY_DOWN:
+			// imgseq next
+			//decrementSequencePosition();
+			break;
+		case KeyEvent::KEY_v:
+			//if (isModDown) fboFlipV(0);// TODO other indexes mVDSettings->mFlipV = !mVDSettings->mFlipV; useless?
+			break;
+		case KeyEvent::KEY_h:
+			if (isModDown) {
+				//fboFlipH(0);// TODO other indexes mVDSettings->mFlipH = !mVDSettings->mFlipH; useless?
+			}
+			else {
+				// ui visibility
+				toggleUI();
+			}
+			break;
+		case KeyEvent::KEY_d:
+			/*if (isAltDown) {
+				setSpeed(0, getSpeed(0) - 0.01f);
+			}
+			else {
+				setSpeed(0, getSpeed(0) + 0.01f);
+			}*/
+			break;
+		default:
+			CI_LOG_V("session keydown: " + toString(event.getCode()));
+			handled = false;
+			break;
 		}
 	}
 	CI_LOG_V((handled ? "session keydown handled " : "session keydown not handled "));
@@ -618,7 +530,7 @@ bool VDSession::handleKeyDown(KeyEvent &event)
 	return event.isHandled();
 }
 
-bool VDSession::handleKeyUp(KeyEvent &event) {
+bool VDSession::handleKeyUp(KeyEvent& event) {
 	bool handled = true;
 
 	// pass this key event to the warp editor first
@@ -676,7 +588,7 @@ bool VDSession::handleKeyUp(KeyEvent &event) {
 #pragma region mix
 
 
-unsigned int VDSession::fboFromJson(const JsonTree &json, unsigned int aFboIndex) {
+unsigned int VDSession::fboFromJson(const JsonTree& json, unsigned int aFboIndex) {
 	unsigned int rtn = 0;
 
 	rtn = createFboShaderTexture(json, aFboIndex);

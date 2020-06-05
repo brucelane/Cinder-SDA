@@ -49,7 +49,7 @@ namespace videodromm {
 	public:
 		STATE state;
 		VDSession(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
-		//static VDSessionRef				create(VDSettingsRef aVDSettings);
+
 		bool							handleKeyDown(KeyEvent& event);
 		bool							handleKeyUp(KeyEvent& event);
 		void							update(unsigned int aClassIndex = 0);
@@ -88,7 +88,7 @@ namespace videodromm {
 			Warp::setSize(mWarpList, ivec2(mVDSettings->mFboWidth, mVDSettings->mFboHeight));
 		}
 		unsigned int					getWarpCount() { return mWarpList.size(); };
-		std::string							getWarpName(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getName(); };// or trycatch
+		std::string						getWarpName(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getName(); };// or trycatch
 		int								getWarpWidth(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getWidth(); };
 		int								getWarpHeight(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getHeight(); };
 		void							setWarpWidth(unsigned int aWarpIndex, int aWidth) {
@@ -202,8 +202,8 @@ namespace videodromm {
 		//void							setTimeFactor(const int &aTimeFactor) { mVDAnimation->setTimeFactor(aTimeFactor); };
 		// audio
 		ci::gl::TextureRef				getAudioTexture() { return mVDAnimation->getAudioTexture(); };
-		std::string							getAudioTextureName() { return mVDAnimation->getAudioTextureName(); };
-		float* getFreqs() { return mVDAnimation->iFreqs; };
+		std::string						getAudioTextureName() { return mVDAnimation->getAudioTextureName(); };
+		float*							getFreqs() { return mVDAnimation->iFreqs; };
 		int								getFreqIndexSize() { return mVDAnimation->getFreqIndexSize(); };
 		float							getFreq(unsigned int aFreqIndex) { return mVDAnimation->getUniformValue(mVDSettings->IFREQ0 + aFreqIndex); };
 		int								getFreqIndex(unsigned int aFreqIndex) { return mVDAnimation->getFreqIndex(aFreqIndex); };
@@ -269,7 +269,7 @@ namespace videodromm {
 		float							getTargetFps() { return mTargetFps; };
 		void							blendRenderEnable(bool render);
 		void							fileDrop(FileDropEvent event);
-		void VDSession::setFboInputTexture(unsigned int aFboIndex, unsigned int aInputTextureIndex) {
+		void							setFboInputTexture(unsigned int aFboIndex, unsigned int aInputTextureIndex) {
 			//mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->setInputTexture(mTextureList[aInputTextureIndex]->getTexture());
 		}
 		// utils
@@ -277,7 +277,7 @@ namespace videodromm {
 			return mVDUtils->getWindowsResolution();
 		};
 		// fbos
-		std::string							getFboName(unsigned int aFboIndex) {
+		std::string						getFboName(unsigned int aFboIndex) {
 			return mVDMix->getFboName(aFboIndex);
 		};
 

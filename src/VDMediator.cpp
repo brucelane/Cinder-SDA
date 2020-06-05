@@ -17,12 +17,20 @@ VDMediatorObservableRef VDMediatorObservable::addObserver(VDUniformObserverRef o
 	return shared_from_this();
 }
 VDMediatorObservableRef VDMediatorObservable::setupOSCReceiver() {
-	//mVDOsc
+	// Osc Receiver
 	mVDOscReceiver = VDOscReceiver::create(mVDSettings, mVDAnimation);
 	mVDOscReceiver->setupOSCReceiver(shared_from_this());
 	return shared_from_this();
 }
-
+VDMediatorObservableRef VDMediatorObservable::setupKeyboard() {
+	// Keyboard
+	mVDKeyboard = VDKeyboard::create(mVDSettings, mVDAnimation);
+	mVDKeyboard->setupKeyboard(shared_from_this());
+	return shared_from_this();
+}
+bool VDMediatorObservable::handleKeyDown(KeyEvent& event) {
+	return mVDKeyboard->handleKeyDown(event);
+}
 float VDMediatorObservable::getUniformValue(unsigned int aIndex) {
 	return mVDAnimation->getUniformValue(aIndex);
 }

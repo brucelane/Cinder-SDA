@@ -19,7 +19,7 @@
 #include "VDSocketIOObserver.h"
 #include "VDUIObserver.h"
 // VDRouterBuilder
-#include "VDRouterBuilder.h"
+//#include "VDRouterBuilder.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -58,6 +58,10 @@ namespace videodromm
 			}
 			return shared_from_this();
 		}
+		VDSessionFacadeRef setupKeyboard() {
+			mVDMediator->setupKeyboard();
+			return shared_from_this();
+		}
 		VDSessionFacadeRef addOSCObserver(std::string host, unsigned int port) {
 			if (!mOscSenderConnected) {
 				mOscSenderConnected = true;
@@ -69,8 +73,6 @@ namespace videodromm
 			mVDMediator->addObserver(VDSocketIOObserver::connect(host, port));
 			return shared_from_this();
 		}
-
-
 		VDSessionFacadeRef setAnim(unsigned int aCtrl, unsigned int aAnim) {
 			mVDSession->setAnim(aCtrl, aAnim);
 			return shared_from_this();
@@ -79,15 +81,15 @@ namespace videodromm
 			mVDSession->toggleValue(aCtrl);
 			return shared_from_this();
 		}
-		VDSessionFacadeRef  tapTempo() {
+		VDSessionFacadeRef tapTempo() {
 			mVDSession->tapTempo();
 			return shared_from_this();
 		};
-		VDSessionFacadeRef  toggleUseTimeWithTempo() {
+		VDSessionFacadeRef toggleUseTimeWithTempo() {
 			mVDSession->toggleUseTimeWithTempo();
 			return shared_from_this();
 		};
-		VDSessionFacadeRef  useTimeWithTempo() {
+		VDSessionFacadeRef useTimeWithTempo() {
 			mVDSession->useTimeWithTempo();
 			return shared_from_this();
 		};
@@ -209,7 +211,15 @@ namespace videodromm
 		// end terminal operations 
 		// begin events
 		bool handleKeyDown(KeyEvent& event) {
-			return mVDSession->handleKeyDown(event);
+			bool handled = true;
+			if (!mVDSession->handleKeyDown(event)) {
+				if (!mVDMediator->handleKeyDown(event)) {
+					handled = false;
+				}
+			}
+			return mVDMediator->handleKeyDown(event);
+			event.setHandled(handled);
+			return event.isHandled();
 		}
 		// end events
 		VDSessionRef getInstance() const {
@@ -222,13 +232,13 @@ namespace videodromm
 		VDMediatorObservableRef mVDMediator;
 		bool mOscSenderConnected = false;
 		bool mOscReceiverConnected = false;
-		// Builder
-		//VDRouterBuilderRef mVDRouterBuilder;
 	};
 
 
 }
-/*
+/*		
+// Builder
+//VDRouterBuilderRef mVDRouterBuilder;
 mVDRouterBuilder = VDRouterBuilder::createVDRouter(aVDSettings, aVDAnimation)->setWarpBFboIndex(0, 1);
 mVDMediator->setUniformValue(a, b);
 mVDMediator->update([](observer, { "a": 1, "b" : 2 }) -> {

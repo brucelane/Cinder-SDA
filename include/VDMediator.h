@@ -7,25 +7,25 @@
 #pragma once
 #include "cinder/Cinder.h"
 #include "cinder/app/App.h"
-// Settings
-//#include "VDSettings.h"
-// Animation
-//#include "VDAnimation.h"
+
+// Keyboard
+#include "VDKeyboard.h"
 // Osc
 #include "VDOscReceiver.h"
 #include <memory>
 #include <vector>
-//#include "cinder/osc/Osc.h"
+
 
 using namespace ci;
 using namespace ci::app;
-/*using namespace asio;
-using namespace asio::ip;
-using namespace ci::osc;*/
 
 namespace videodromm {
 	class VDOscReceiver;
 	typedef std::shared_ptr<VDOscReceiver> VDOscReceiverRef;
+
+	class VDKeyboard;
+	typedef std::shared_ptr<VDKeyboard> VDKeyboardRef;
+
 
 	class VDUniformObserver;
 	typedef std::shared_ptr<class VDUniformObserver> VDUniformObserverRef;
@@ -40,13 +40,15 @@ namespace videodromm {
 	typedef std::shared_ptr<class VDMediatorObservable> VDMediatorObservableRef;
 	class VDMediatorObservable : public std::enable_shared_from_this<VDMediatorObservable> {
 	public:
-		static VDMediatorObservableRef createVDMediatorObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
-		VDMediatorObservableRef addObserver(VDUniformObserverRef o);
-		VDMediatorObservableRef setupOSCReceiver(/*VDSessionFacadeRef aVDSession*/);
-		float getUniformValue(unsigned int aIndex);
-		std::string getUniformName(unsigned int aIndex);
-		VDMediatorObservableRef setUniformValue(int aIndex, float aValue);
-		VDMediatorObservableRef updateShaderText(int aIndex, float aValue);
+		static VDMediatorObservableRef		createVDMediatorObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
+		VDMediatorObservableRef				addObserver(VDUniformObserverRef o);
+		VDMediatorObservableRef				setupOSCReceiver();
+		VDMediatorObservableRef				setupKeyboard();
+		float								getUniformValue(unsigned int aIndex);
+		std::string							getUniformName(unsigned int aIndex);
+		VDMediatorObservableRef				setUniformValue(int aIndex, float aValue);
+		VDMediatorObservableRef				updateShaderText(int aIndex, float aValue);
+		bool								handleKeyDown(KeyEvent& event);
 	private:
 		std::vector<VDUniformObserverRef>	mObservers;
 		// Settings
@@ -54,7 +56,9 @@ namespace videodromm {
 		// Animation
 		VDAnimationRef						mVDAnimation;
 		// OSC
-		VDOscReceiverRef							mVDOscReceiver;
+		VDOscReceiverRef					mVDOscReceiver;
+		// Keyboard
+		VDKeyboardRef						mVDKeyboard;
 		VDMediatorObservable() {}
 		VDMediatorObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
 	};

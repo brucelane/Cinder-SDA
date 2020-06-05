@@ -12,15 +12,11 @@ VDOscReceiver::VDOscReceiver(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimat
 	mVDAnimation = aVDAnimation;
 	CI_LOG_V("VDOscReceiver constructor");
 }
-//VDMediatorObservableRef aVDMediator
+
 void VDOscReceiver::setupOSCReceiver(VDMediatorObservableRef aVDMediator) {
 	mVDMediator = aVDMediator;
 	mOscReceiver = std::make_shared<osc::ReceiverUdp>(mVDSettings->mOSCReceiverPort);
-	// Romina
-	/*mOscReceiver->setListener("*",
-		[&](const osc::Message &msg) {
-			std::string addr = msg.getAddress();
-	});*/
+
 	mOscReceiver->setListener("/*",
 		[&](const osc::Message& msg) {
 			// touchosc
