@@ -50,7 +50,6 @@ namespace videodromm
 		}
 		VDSessionFacadeRef setUniformValue(unsigned int aCtrl, float aValue) {
 			mVDMediator->setUniformValue(aCtrl, aValue);
-			//mVDRouterBuilder->changeFloatValue(aCtrl, aValue);
 			return shared_from_this();
 		}
 		VDSessionFacadeRef addUIObserver(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
@@ -58,10 +57,9 @@ namespace videodromm
 			return shared_from_this();
 		}
 		VDSessionFacadeRef setupOSCReceiver() {
-			//mVDRouterBuilder->setupOSCReceiver();
 			if (!mOscReceiverConnected) {
 				mOscReceiverConnected = true;
-				mVDMediator->setupOSCReceiver(/*shared_from_this()*/);
+				mVDMediator->setupOSCReceiver();
 			}
 			return shared_from_this();
 		}

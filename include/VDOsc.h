@@ -13,7 +13,7 @@
 // Animation
 #include "VDAnimation.h"
 // Mediator
-//#include "VDMediator.h"
+#include "VDMediator.h"
 // Session
 //#include "VDSessionFacade.h"
 // OSC
@@ -36,23 +36,25 @@ using protocol = asio::ip::tcp;
 #endif
 namespace videodromm
 {
+	class VDMediatorObservable;
+	typedef std::shared_ptr<VDMediatorObservable> VDMediatorObservableRef;
+
+	class VDOsc;
 	// stores the pointer to the VDOsc instance
-	typedef std::shared_ptr<class VDOsc> VDOscRef;
+	typedef std::shared_ptr<VDOsc> VDOscRef;
 	class VDOsc {
 	public:
 		VDOsc(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
-		static VDOscRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
-		{
-			return std::shared_ptr<VDOsc>(new VDOsc(aVDSettings, aVDAnimation));
-		}	
-		void						setupOSCReceiver(/*VDSessionFacadeRef aVDSession*/);
+		static VDOscRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
+
+		void						setupOSCReceiver(VDMediatorObservableRef aVDMediator);
 	private:
 		// Settings
 		VDSettingsRef					mVDSettings;
 		// Animation
 		VDAnimationRef					mVDAnimation;
-		// VDSession
-		//VDSessionFacadeRef				mVDSession;
+		//Mediator
+		VDMediatorObservableRef			mVDMediator;
 		float							mBarStart = 0.0f;
 		// osc
 		std::shared_ptr<osc::ReceiverUdp>	mOscReceiver;

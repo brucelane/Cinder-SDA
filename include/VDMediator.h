@@ -8,9 +8,9 @@
 #include "cinder/Cinder.h"
 #include "cinder/app/App.h"
 // Settings
-#include "VDSettings.h"
+//#include "VDSettings.h"
 // Animation
-#include "VDAnimation.h"
+//#include "VDAnimation.h"
 // Osc
 #include "VDOsc.h"
 #include <memory>
@@ -24,58 +24,29 @@ using namespace asio::ip;
 using namespace ci::osc;*/
 
 namespace videodromm {
+	class VDOsc;
+	typedef std::shared_ptr<VDOsc> VDOscRef;
+
 	class VDUniformObserver;
 	typedef std::shared_ptr<class VDUniformObserver> VDUniformObserverRef;
 
 	class VDUniformObserver : public std::enable_shared_from_this<VDUniformObserver> {
 	public:
 		virtual VDUniformObserverRef setUniformValue(int aIndex, float aValue) = 0;
-		/*VDUniformObserverRef getInstance() const {
-			return std::shared_from_this();
-		}*/
-			
+		/*VDUniformObserverRef getInstance() const {return std::shared_from_this();}*/			
 	private:
 	};
-
 	class VDMediatorObservable;
 	typedef std::shared_ptr<class VDMediatorObservable> VDMediatorObservableRef;
 	class VDMediatorObservable : public std::enable_shared_from_this<VDMediatorObservable> {
 	public:
-		static VDMediatorObservableRef createVDMediatorObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
-		{
-			return VDMediatorObservableRef(new VDMediatorObservable(aVDSettings, aVDAnimation));
-		}
-
-		VDMediatorObservableRef addObserver(VDUniformObserverRef o) {
-			mObservers.push_back(o);
-			return shared_from_this();
-		}
-		float getUniformValue(unsigned int aIndex) {
-			return mVDAnimation->getUniformValue(aIndex);
-		}
-		std::string getUniformName(unsigned int aIndex) {
-			return mVDAnimation->getUniformName(aIndex);
-		}
-		VDMediatorObservableRef setupOSCReceiver(/*VDSessionFacadeRef aVDSession*/) {
-			//mVDOsc
-			mVDOsc = VDOsc::create(mVDSettings, mVDAnimation);
-			mVDOsc->setupOSCReceiver(/*aVDSession*/);//shared_from_this()
-			return shared_from_this();
-		}
-		
-		VDMediatorObservableRef setUniformValue(int aIndex, float aValue) {
-			for (auto observer : mObservers) {
-				observer->setUniformValue(aIndex, aValue);
-			}
-			return shared_from_this();
-		};
-
-		VDMediatorObservableRef updateShaderText(int aIndex, float aValue) {
-			for (auto observer : mObservers) {
-				observer->setUniformValue(aIndex, aValue);
-			}
-			return shared_from_this();
-		};
+		static VDMediatorObservableRef createVDMediatorObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
+		VDMediatorObservableRef addObserver(VDUniformObserverRef o);
+		VDMediatorObservableRef setupOSCReceiver(/*VDSessionFacadeRef aVDSession*/);
+		float getUniformValue(unsigned int aIndex);
+		std::string getUniformName(unsigned int aIndex);
+		VDMediatorObservableRef setUniformValue(int aIndex, float aValue);
+		VDMediatorObservableRef updateShaderText(int aIndex, float aValue);
 	private:
 		std::vector<VDUniformObserverRef>	mObservers;
 		// Settings
@@ -85,12 +56,7 @@ namespace videodromm {
 		// OSC
 		VDOscRef							mVDOsc;
 		VDMediatorObservable() {}
-		VDMediatorObservable::VDMediatorObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
-
-			CI_LOG_V("VDMediatorObservable constructor");
-			mVDSettings = aVDSettings;
-			mVDAnimation = aVDAnimation;
-		}
+		VDMediatorObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
 	};
 
 }

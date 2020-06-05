@@ -2,14 +2,19 @@
 
 using namespace videodromm;
 
+VDOscRef VDOsc::create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
+{
+	return std::shared_ptr<VDOsc>(new VDOsc(aVDSettings, aVDAnimation));
+}
+
 VDOsc::VDOsc(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 	mVDSettings = aVDSettings;
 	mVDAnimation = aVDAnimation;
 	CI_LOG_V("VDOsc constructor");
 }
 //VDMediatorObservableRef aVDMediator
-void VDOsc::setupOSCReceiver(/*VDSessionFacadeRef aVDSession*/) {
-	//mVDSession = aVDSession;
+void VDOsc::setupOSCReceiver(VDMediatorObservableRef aVDMediator) {
+	mVDMediator = aVDMediator;
 	mOscReceiver = std::make_shared<osc::ReceiverUdp>(mVDSettings->mOSCReceiverPort);
 	// Romina
 	/*mOscReceiver->setListener("*",
@@ -38,9 +43,9 @@ void VDOsc::setupOSCReceiver(/*VDSessionFacadeRef aVDSession*/) {
 				found = true;
 				i = msg[0].int32();// TODO check was flt() from hydra standalone if ok can merge with midi;
 				f = msg[1].flt();// was for hydra / 128;
-				mVDAnimation->setUniformValue(i, f);
+				//mVDAnimation->setUniformValue(i, f);
 				//mVDSession->setUniformValue(aCtrl, aValue);
-				//mVDMediator->setUniformValue(i, f);
+				mVDMediator->setUniformValue(i, f);
 				//ss << " midi from OSC " << i << " value " << f;
 			}
 			if (!found)
