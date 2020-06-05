@@ -75,7 +75,6 @@ VDSession::VDSession(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 	//mVDRouterBuilder->setWarpAFboIndex(1, 1)->setWarpBFboIndex(1,0);
 	//Attente d'une autre autre récupération de données via socket io
 	//mVDRouterBuilder->setWarpAFboIndex(0, 0);
-
 	//mVDRouter = builder->getInstance();
 
 	// reset no matter what, so we don't miss anything

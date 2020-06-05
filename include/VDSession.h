@@ -160,27 +160,6 @@ namespace videodromm {
 		bool							save();
 		void							restore();
 
-
-		/*void							fromXml(const ci::XmlTree &xml);
-
-		//! read a xml file and pass back a vector of VDMixs
-		void							readSettings(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const ci::DataSourceRef &source);
-		string							getWaveFileName() { return mWaveFileName; };
-		int								getWavePlaybackDelay() { return mWavePlaybackDelay; };
-		string							getMovieFileName() { return mMovieFileName; };
-		int								getMoviePlaybackDelay() { return mMoviePlaybackDelay; };
-		bool							hasMovie() { return mMovieFileName.length() > 0; };
-		unsigned int					getFadeInDelay() {
-			return mFadeInDelay;
-		};
-		unsigned int					getFadeOutDelay() { return mFadeOutDelay; };
-		string							getImageSequencePath() { return mImageSequencePath; };
-		bool							hasImageSequencePath() { return mImageSequencePath.length() > 0; };
-		string							getText() { return mText; };
-		int								getTextStart() { return mTextPlaybackDelay; };
-		int								getTextEnd() { return mTextPlaybackEnd; };
-		bool							hasText() { return mText.length() > 0; };
-		*/
 		void							setAnim(unsigned int aCtrl, unsigned int aAnim) {
 			mVDAnimation->setAnim(aCtrl, aAnim);
 		}
@@ -188,43 +167,16 @@ namespace videodromm {
 		void							toggleValue(unsigned int aCtrl) {
 			//! 20200526 mVDSocketio->toggleValue(aCtrl);
 		};
-		void							toggleAuto(unsigned int aCtrl) {
-			//! 20200526 mVDSocketio->toggleAuto(aCtrl);
-		};
-		void							toggleTempo(unsigned int aCtrl) {
-			//! 20200526 mVDSocketio->toggleTempo(aCtrl);
-		};
-		void							resetAutoAnimation(unsigned int aIndex) {
-			//! 20200526 mVDSocketio->resetAutoAnimation(aIndex);
-		};
+
 		float							getMinUniformValue(unsigned int aIndex) {
 			return mVDAnimation->getMinUniformValue(aIndex);
 		};
 		float							getMaxUniformValue(unsigned int aIndex) {
 			return mVDAnimation->getMaxUniformValue(aIndex);
 		};
-
-		/*vec2							getVec2UniformValueByIndex(unsigned int aIndex) {
-			return mVDAnimation->getVec2UniformValueByIndex(aIndex);
-		};
-		vec3							getVec3UniformValueByIndex(unsigned int aIndex) {
-			return mVDAnimation->getVec3UniformValueByIndex(aIndex);
-		};
-		vec4							getVec4UniformValueByIndex(unsigned int aIndex) {
-			return mVDAnimation->getVec4UniformValueByIndex(aIndex);
-		};*/
 		int								getSampler2DUniformValueByName(const std::string& aName) {
 			return mVDAnimation->getSampler2DUniformValueByName(aName);
 		};
-		/*vec2							getVec2UniformValueByName(const string& aName) {
-			return mVDAnimation->getVec2UniformValueByName(aName);
-		};
-		vec3							getVec3UniformValueByName(const string& aName) {
-			return mVDAnimation->getVec3UniformValueByName(aName);
-		};
-		vec4							getVec4UniformValueByName(const string& aName) {
-			return mVDAnimation->getVec4UniformValueByName(aName);
-		};*/
 		int								getIntUniformValueByName(const std::string& aName) {
 			return mVDAnimation->getIntUniformValueByName(aName);
 		};
@@ -243,9 +195,6 @@ namespace videodromm {
 		};
 
 		// tempo
-		//float							getMaxVolume() { return mVDAnimation->maxVolume; };
-		//float							getBpm() { return mVDAnimation->getBpm(); };
-		//void							setBpm(float aBpm) { mVDAnimation->setBpm(aBpm); };
 		void							tapTempo() { mVDAnimation->tapTempo(); };
 		void							toggleUseTimeWithTempo() { mVDAnimation->toggleUseTimeWithTempo(); };
 		void							useTimeWithTempo() { mVDAnimation->useTimeWithTempo(); };
@@ -370,19 +319,6 @@ namespace videodromm {
 		void									toggleGlobal(unsigned int aFboIndex) {
 			mVDMix->toggleGlobal(aFboIndex);
 		};
-		/*
-		void							fboFlipV(unsigned int aFboIndex) {
-			mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->flipV();
-		};
-		bool							isFboFlipV(unsigned int aFboIndex) {
-			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->isFlipV();
-		};
-		void							fboFlipH(unsigned int aFboIndex) {
-			mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->flipH();
-		};
-		bool							isFboFlipH(unsigned int aFboIndex) {
-			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->isFlipH();
-		};*/
 		unsigned int					getFboInputTexturesCount(unsigned int aFboIndex = 0) {
 			return 1; //TODO support several textures
 		}
@@ -406,30 +342,8 @@ namespace videodromm {
 		};
 
 
-		// RTE in release mode? 
-		//ci::gl::Texture2dRef			getRenderedTexture(bool reDraw = true) { return mVDMix->getRenderedTexture(reDraw); };
-		//string							getFboFragmentShaderText(unsigned int aFboIndex);
-		// feedback get/set
-		/*int								getFeedbackFrames() {
-			return mVDMix->getFeedbackFrames();
-		};
-		void							setFeedbackFrames(int aFeedbackFrames) {
-			mVDMix->setFeedbackFrames(aFeedbackFrames);
-		};*/
-		/*string							getMixFboName(unsigned int aMixFboIndex);
-		ci::gl::TextureRef				getMixTexture(unsigned int aMixFboIndex = 0);
 
-		unsigned int					getMixFbosCount() { return mMixFbos.size(); };
-		ci::gl::TextureRef				getRenderTexture();
-		bool							isEnabledAlphaBlending() { return mEnabledAlphaBlending; };
-		void							toggleEnabledAlphaBlending() { mEnabledAlphaBlending = !mEnabledAlphaBlending; }
-		bool							isRenderTexture() { return mRenderTexture; };
-		void							toggleRenderTexture() { mRenderTexture = !mRenderTexture; }
-		bool							isFlipH() { return mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPH); };
-		bool							isFlipV() { return mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPV); };
-		void							flipH(){mVDAnimation->setBoolUniformValueByIndex(mVDSettings->IFLIPH, !mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPH));};
-		void							flipV(){ mVDAnimation->setBoolUniformValueByIndex(mVDSettings->IFLIPV, !mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPV));};
-
+		/*
 		// blendmodes
 		unsigned int					getFboBlendCount() { return mBlendFbos.size(); };
 		void							useBlendmode(unsigned int aBlendIndex) { mVDSettings->iBlendmode = aBlendIndex; };

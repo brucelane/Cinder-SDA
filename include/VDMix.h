@@ -210,149 +210,8 @@ namespace videodromm
 		}
 		ci::gl::TextureRef				getMixetteTexture(unsigned int aFboIndex);
 		ci::gl::TextureRef				getRenderedMixetteTexture(unsigned int aFboIndex) { return mMixetteTexture; };
-		/*void							update();
-		void							updateAudio();
-		void							resize();
-		bool							handleMouseMove(MouseEvent &event);
-		bool							handleMouseDown(MouseEvent &event);
-		bool							handleMouseDrag(MouseEvent &event);
-		bool							handleMouseUp(MouseEvent &event);
-		bool							handleKeyDown(KeyEvent &event);
-		bool							handleKeyUp(KeyEvent &event);
-		bool							isFlipH() { return mFlipH; };
-		bool							isFlipV() { return mFlipV; };
-
-		unsigned int					getMixFbosCount() { return mMixFbos.size(); };
-		string							getMixFboName(unsigned int aMixFboIndex);
-
-		// blendmodes
-		unsigned int					getFboBlendCount();
-		ci::gl::TextureRef				getFboThumb(unsigned int aBlendIndex);
-		void							useBlendmode(unsigned int aBlendIndex);
-
-
-		ci::gl::TextureRef				getMixTexture(unsigned int aMixFboIndex = 0);
-		ci::gl::TextureRef				getFboTexture(unsigned int aFboIndex = 0);
-		ci::gl::TextureRef				getFboRenderedTexture(unsigned int aFboIndex);
-		unsigned int					getBlendFbosCount() { return mBlendFbos.size(); }*/
-		// warps
-
-		/*string							getWarpName(unsigned int aWarpIndex) { return mWarpList[aWarpIndex]->getName(); };
-		unsigned int					getWarpAFboIndex(unsigned int aWarpIndex) { return mWarpList[aWarpIndex]->getAFboIndex(); };
-		unsigned int					getWarpBFboIndex(unsigned int aWarpIndex) { return mWarpList[aWarpIndex]->getBFboIndex(); };
-		unsigned int					getWarpAShaderIndex(unsigned int aWarpIndex);
-		unsigned int					getWarpBShaderIndex(unsigned int aWarpIndex);
-		void							createWarp(string wName = "warp", unsigned int aFboIndex = 0, unsigned int aShaderIndex = 0, unsigned int bFboIndex = 0, unsigned int bShaderIndex = 0, float xFade = 1.0f);
-		void							setWarpAFboIndex(unsigned int aWarpIndex, unsigned int aWarpFboIndex);
-		void							setWarpBFboIndex(unsigned int aWarpIndex, unsigned int aWarpFboIndex);
-		void							setWarpAShaderIndex(unsigned int aWarpIndex, unsigned int aWarpShaderIndex);
-		void							setWarpBShaderIndex(unsigned int aWarpIndex, unsigned int aWarpShaderIndex);
-		float							getWarpCrossfade(unsigned int aWarpIndex) {
-			//if (aWarpIndex > mWarpList.size() - 1) aWarpIndex = 0;
-			//return mWarpList[aWarpIndex]->ABCrossfade;
-			return mVDAnimation->getUniformValue( mVDSettings->IXFADE);
-		};
-		void							setWarpCrossfade(unsigned int aWarpIndex, float aCrossfade) {
-			//if (aWarpIndex < mWarpList.size()) mWarpList[aWarpIndex]->ABCrossfade = aCrossfade;
-			mVDAnimation->setUniformValue(mVDSettings->IXFADE, aCrossfade);
-		};
-		void							updateWarpName(unsigned int aWarpIndex);
-		//void							crossfadeWarp(unsigned int aWarpIndex, float aValue) { timeline().apply(&mWarpList[aWarpIndex]->ABCrossfade, aValue, 2.0f); };
-		bool							isWarpActive(unsigned int aWarpIndex) { return mWarpList[aWarpIndex]->isActive(); };
-		void							toggleWarpActive(unsigned int aWarpIndex) { mWarpList[aWarpIndex]->toggleWarpActive(); };
-		bool							isWarpSolo(unsigned int aWarpIndex) { return (mSolo == aWarpIndex); };
-		void							toggleWarpSolo(unsigned int aWarpIndex) { mSolo = (aWarpIndex == mSolo) ? -1 : aWarpIndex; };
-		bool							isWarpDeleted(unsigned int aWarpIndex) { return mWarpList[aWarpIndex]->isDeleted(); };
-		void							toggleDeleteWarp(unsigned int aWarpIndex) { mWarpList[aWarpIndex]->toggleDeleteWarp(); };
-		bool							isWarpAnimationActive() { return mWarpAnimationActive; };
-		void							toggleWarpAnimationActive();
-		// common to warps and triangles
-		int								getSolo() { return mSolo; };
-		unsigned int					getSoloOrActiveIndex();
-		unsigned int					getCurrentEditIndex() { return mCurrentEditIndex; };
-		void							setCurrentEditIndex(unsigned int aIndex);
-
-
-		ci::gl::Texture2dRef			getRenderTexture();
-		void							save();
-		void							load();
-		// fbos
-		unsigned int 					createShaderFbo(const string& aShaderFilename, unsigned int aFboShaderIndex = 4);
-		unsigned int					createShaderFboFromString(const string& aFragmentShaderString, const string& aShaderFilename, const string& aName);
-		string							getFboName(unsigned int aFboIndex) { return mFboList[aFboIndex]->getName(); };
-		void							setFboInputTexture(unsigned int aFboIndex, unsigned int aInputTextureIndex);
-		unsigned int					getFboInputTextureIndex(unsigned int aFboIndex);
-		void							fboFlipV(unsigned int aFboIndex);
-		bool							isFboFlipV(unsigned int aFboIndex);
-		void							setFboFragmentShaderIndex(unsigned int aFboIndex, unsigned int aFboShaderIndex);
-		unsigned int					getFboFragmentShaderIndex(unsigned int aFboIndex);
-
-		// textures
-		ci::gl::TextureRef				getInputTexture(unsigned int aTextureIndex);
-		string							getInputTextureName(unsigned int aTextureIndex);
-		unsigned int					getInputTexturesCount();
-
-		int								getInputTextureXLeft(unsigned int aTextureIndex);
-		void							setInputTextureXLeft(unsigned int aTextureIndex, int aXLeft);
-		int								getInputTextureYTop(unsigned int aTextureIndex);
-		void							setInputTextureYTop(unsigned int aTextureIndex, int aYTop);
-		int								getInputTextureXRight(unsigned int aTextureIndex);
-		void							setInputTextureXRight(unsigned int aTextureIndex, int aXRight);
-		int								getInputTextureYBottom(unsigned int aTextureIndex);
-		void							setInputTextureYBottom(unsigned int aTextureIndex, int aYBottom);
-		bool							isFlipVInputTexture(unsigned int aTextureIndex);
-		bool							isFlipHInputTexture(unsigned int aTextureIndex);
-		void							inputTextureFlipV(unsigned int aTextureIndex);
-		void							inputTextureFlipH(unsigned int aTextureIndex);
-		bool							getInputTextureLockBounds(unsigned int aTextureIndex);
-		void							toggleInputTextureLockBounds(unsigned int aTextureIndex);
-		unsigned int					getInputTextureOriginalWidth(unsigned int aTextureIndex);
-		unsigned int					getInputTextureOriginalHeight(unsigned int aTextureIndex);
-		void							togglePlayPause(unsigned int aTextureIndex);
-		void							loadImageFile(const string& aFile, unsigned int aTextureIndex);
-		void							loadAudioFile(const string& aFile);
-		void							loadMovie(const string& aFile, unsigned int aTextureIndex);
-		bool							loadImageSequence(const string& aFolder, unsigned int aTextureIndex);
-		void							updateStream(string * aStringPtr);
-
-		// movie
-		bool							isMovie(unsigned int aTextureIndex);
-
-		// sequence
-		bool							isSequence(unsigned int aTextureIndex);
-		bool							isLoadingFromDisk(unsigned int aTextureIndex);
-		void							toggleLoadingFromDisk(unsigned int aTextureIndex);
-		void							syncToBeat(unsigned int aTextureIndex);
-		void							reverse(unsigned int aTextureIndex);
-		float							getSpeed(unsigned int aTextureIndex);
-		void							setSpeed(unsigned int aTextureIndex, float aSpeed);
-		int								getPosition(unsigned int aTextureIndex);
-		void							setPlayheadPosition(unsigned int aTextureIndex, int aPosition);
-		int								getMaxFrame(unsigned int aTextureIndex);
-		// shaders
-		void							updateShaderThumbFile(unsigned int aShaderIndex);
-		void							removeShader(unsigned int aShaderIndex);
-		void							setFragmentShaderString(unsigned int aShaderIndex, const string& aFragmentShaderString, const string& aName = "");
-		//string							getVertexShaderString(unsigned int aShaderIndex);
-		string							getFragmentShaderString(unsigned int aShaderIndex);
-		unsigned int					getShadersCount() { return mShaderList.size(); };
-		string							getShaderName(unsigned int aShaderIndex);
-		ci::gl::TextureRef				getShaderThumb(unsigned int aShaderIndex);
-		string							getFragmentString(unsigned int aShaderIndex) { return mShaderList[aShaderIndex]->getFragmentString(); };
-		// spout output
-		void							toggleSharedOutput(unsigned int aMixFboIndex = 0);
-		bool							isSharedOutputActive() { return mSharedOutputActive; };
-		unsigned int					getSharedMixIndex() { return mSharedFboIndex; };*/
 
 	private:
-		/*bool							mFlipV;
-		bool							mFlipH;
-		std::string						mFbosPath;
-		gl::Texture::Format				fmt;
-		gl::Fbo::Format					fboFmt;
-
-		//! mix shader
-		gl::GlslProgRef					mMixShader;*/
 
 		// Animation
 		VDAnimationRef					mVDAnimation;
@@ -360,7 +219,6 @@ namespace videodromm
 		VDSettingsRef					mVDSettings;
 
 		//! Fbos
-		//map<int, VDMixFbo>				mMixFbos;
 		// maintain a list of fbos specific to this mix
 		VDFboList						mFboList;
 		gl::Texture::Format				fmt;
@@ -370,51 +228,6 @@ namespace videodromm
 		gl::FboRef						mMixetteFbo;
 		gl::GlslProgRef					mGlslMixette;
 		ci::gl::Texture2dRef			mMixetteTexture;
-		std::string							mError;
-		//fs::path						mMixesFilepath;
-		/*
-		//! Shaders
-		VDShaderList					mShaderList;
-		void							initShaderList();
-		//! Textures
-		VDTextureList					mTextureList;
-		fs::path						mTexturesFilepath;
-		bool							initTextureList();
-		// blendmodes fbos
-		map<int, ci::gl::FboRef>		mBlendFbos;
-		int								mCurrentBlend;
-		gl::GlslProgRef					mGlslMix, mGlslBlend, mGlslFeedback;
-		// render
-		void							renderMix();
-		void							renderBlend();
-		// warping
-		string							fileWarpsName;
-		//fs::path						mWarpSettings;
-		fs::path						mWarpJson;*/
-
-		/*gl::FboRef						mRenderFbo;
-		int								warpMixToRender;
-		int								mSolo;
-		bool							mWarpAnimationActive;
-		unsigned int					mWarpActiveIndex;
-		// warp rendered texture
-		ci::gl::Texture2dRef			mRenderedTexture;
-
-		// common to warps and triangles
-		unsigned int					mCurrentEditIndex;
-		// shared texture output
-		bool							mSharedOutputActive;
-		unsigned int					mSharedFboIndex;
-		bool							mSpoutInitialized;
-		char							mSenderName[256];
-#if defined( CINDER_MSW )
-		// spout output
-		SpoutSender						mSpoutSender;
-#endif
-		// syphon output
-#if defined( CINDER_MAC )
-		syphonServer                    mSyphonServer;
-#endif
-		*/
+		std::string						mError;
 	};
 }

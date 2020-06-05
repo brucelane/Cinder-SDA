@@ -18,8 +18,8 @@ VDMediatorObservableRef VDMediatorObservable::addObserver(VDUniformObserverRef o
 }
 VDMediatorObservableRef VDMediatorObservable::setupOSCReceiver() {
 	//mVDOsc
-	mVDOsc = VDOsc::create(mVDSettings, mVDAnimation);
-	mVDOsc->setupOSCReceiver(shared_from_this());
+	mVDOscReceiver = VDOscReceiver::create(mVDSettings, mVDAnimation);
+	mVDOscReceiver->setupOSCReceiver(shared_from_this());
 	return shared_from_this();
 }
 
@@ -30,8 +30,10 @@ std::string VDMediatorObservable::getUniformName(unsigned int aIndex) {
 	return mVDAnimation->getUniformName(aIndex);
 }
 VDMediatorObservableRef VDMediatorObservable::setUniformValue(int aIndex, float aValue) {
-	for (auto observer : mObservers) {
-		observer->setUniformValue(aIndex, aValue);
+	if (aIndex != mVDSettings->IFPS) {
+		for (auto observer : mObservers) {
+			observer->setUniformValue(aIndex, aValue);
+		}
 	}
 	return shared_from_this();
 };

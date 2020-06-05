@@ -12,7 +12,7 @@
 // Animation
 //#include "VDAnimation.h"
 // Osc
-#include "VDOsc.h"
+#include "VDOscReceiver.h"
 #include <memory>
 #include <vector>
 //#include "cinder/osc/Osc.h"
@@ -24,8 +24,8 @@ using namespace asio::ip;
 using namespace ci::osc;*/
 
 namespace videodromm {
-	class VDOsc;
-	typedef std::shared_ptr<VDOsc> VDOscRef;
+	class VDOscReceiver;
+	typedef std::shared_ptr<VDOscReceiver> VDOscReceiverRef;
 
 	class VDUniformObserver;
 	typedef std::shared_ptr<class VDUniformObserver> VDUniformObserverRef;
@@ -54,7 +54,7 @@ namespace videodromm {
 		// Animation
 		VDAnimationRef						mVDAnimation;
 		// OSC
-		VDOscRef							mVDOsc;
+		VDOscReceiverRef							mVDOscReceiver;
 		VDMediatorObservable() {}
 		VDMediatorObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
 	};

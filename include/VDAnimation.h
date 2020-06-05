@@ -4,8 +4,6 @@
 */
 // TODO put audio in a separate class
 // TODO put timing in separate class?
-// TODO Implement a double map to replace map<int, string> controlIndexes and map<string, VDUniform> shaderUniforms
-// TODO remove struct
 // TODO implement lazy loading for audio
 
 #pragma once
@@ -39,7 +37,6 @@ namespace videodromm
 	// stores the pointer to the VDAnimation instance
 	typedef std::shared_ptr<class VDAnimation> VDAnimationRef;
 
-
 	class VDAnimation {
 	public:
 		VDAnimation(VDSettingsRef aVDSettings);
@@ -54,11 +51,6 @@ namespace videodromm
 		std::string							getAssetsPath() {
 			return mVDSettings->mAssetsPath;
 		}
-		/*Color							getBackgroundColor() { return mBackgroundColor; };
-		float							getExposure() { return mExposure; };
-		bool							getAutoBeatAnimation() { return mAutoBeatAnimation; };
-		void							setExposure(float aExposure);
-		void							setAutoBeatAnimation(bool aAutoBeatAnimation);*/
 
 		const int						mBlendModes = 28;
 		void							blendRenderEnable(bool render) { mBlendRender = render; };
@@ -193,15 +185,6 @@ namespace videodromm
 		bool							getBoolUniformValueByName(const std::string& aName) {
 			return mVDUniform->getBoolUniformValueByName(aName);
 		}
-		/*vec2							getVec2UniformValueByIndex(unsigned int aIndex) {
-			return shaderUniforms[aIndex].vec2Value;
-		};
-		vec3							getVec3UniformValueByIndex(unsigned int aIndex) {
-			return shaderUniforms[aIndex].vec3Value;
-		};
-		vec4							getVec4UniformValueByIndex(unsigned int aIndex) {
-			return shaderUniforms[aIndex].vec4Value;
-		};*/
 		float							getUniformValue(unsigned int aIndex) {
 			return mVDUniform->getUniformValue(aIndex);
 		}
@@ -264,36 +247,8 @@ namespace videodromm
 		ci::gl::TextureRef				mAudioTexture;
 		gl::Texture2d::Format			mAudioFormat;
 		unsigned char					dTexture[256];// MUST be < mWindowSize
-		// Live json params
-		/*fs::path						mJsonFilePath;
-		Parameter<Color>				mBackgroundColor;
-		Parameter<float>				mExposure;
-		Parameter<string>				mText;
-		Parameter<bool>					mAutoBeatAnimation;*/
+
 		// shaders
-
-		//shaderUniforms[mVDSettings->ITIME].floatValue = 0.3f;
-		//shaderUniforms[StringToIndex("ITIME")] = ...;
-
-
-
-		
-		/* private in vduniform 
-		void							createVec2Uniform(const string& aName, int aCtrlIndex, vec2 aValue = vec2(0.0)) {
-			mVDUniform->createVec2Uniform(aName, aCtrlIndex, aValue);
-		};
-		void							createVec3Uniform(const string& aName, int aCtrlIndex, vec3 aValue = vec3(0.0)) {
-			mVDUniform->createVec3Uniform(aName, aCtrlIndex, aValue);
-		};
-		void							createVec4Uniform(const string& aName, int aCtrlIndex, vec4 aValue = vec4(0.0)) {
-			mVDUniform->createVec4Uniform(aName, aCtrlIndex, aValue);
-		};
-		void							createIntUniform(const string& aName, int aCtrlIndex, int aValue = 1) {
-			mVDUniform->createIntUniform(aName, aCtrlIndex, aValue);
-		};
-		void							createBoolUniform(const string& aName, int aCtrlIndex, bool aValue = false) {
-			mVDUniform->createBoolUniform(aName, aCtrlIndex, aValue);
-		};*/
 		//! write a uniforms json file
 		void							saveUniforms();
 		ci::JsonTree					uniformToJson(int i);
@@ -314,19 +269,6 @@ namespace videodromm
 		int								mLastBar = 0;
 		std::unordered_map<int, float>	mBadTV;
 		bool							mBlendRender;
-		//map<int, string>				controlIndexes; // clé=0=ITIME de  iTime
-				//map<string, VDUniform>			shaderUniforms;
-				// multiindex de boost
-		/*map<int, VDUniform>				shaderUniforms;
-		int stringToIndex(const string& key) {
-			int rtn = 0;
-			if (key == "iTime") {
-				rtn = mVDSettings->ITIME;
-			}
-			else if (key == "iTimeFactor") {
-				rtn = mVDSettings->ITIMEFACTOR;
-			} // TODO others
-			return rtn;
-		}*/
+		
 	};
 }

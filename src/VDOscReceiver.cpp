@@ -1,19 +1,19 @@
-#include "VDOsc.h"
+#include "VDOscReceiver.h"
 
 using namespace videodromm;
 
-VDOscRef VDOsc::create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
+VDOscReceiverRef VDOscReceiver::create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 {
-	return std::shared_ptr<VDOsc>(new VDOsc(aVDSettings, aVDAnimation));
+	return std::shared_ptr<VDOscReceiver>(new VDOscReceiver(aVDSettings, aVDAnimation));
 }
 
-VDOsc::VDOsc(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
+VDOscReceiver::VDOscReceiver(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 	mVDSettings = aVDSettings;
 	mVDAnimation = aVDAnimation;
-	CI_LOG_V("VDOsc constructor");
+	CI_LOG_V("VDOscReceiver constructor");
 }
 //VDMediatorObservableRef aVDMediator
-void VDOsc::setupOSCReceiver(VDMediatorObservableRef aVDMediator) {
+void VDOscReceiver::setupOSCReceiver(VDMediatorObservableRef aVDMediator) {
 	mVDMediator = aVDMediator;
 	mOscReceiver = std::make_shared<osc::ReceiverUdp>(mVDSettings->mOSCReceiverPort);
 	// Romina

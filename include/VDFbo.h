@@ -111,13 +111,8 @@ namespace videodromm
 			rtn = mTextureList.size() - 1;
 			return rtn;
 		}
-		// video
-		/*ciWMFVideoPlayer				mVideo;
-		float							mVideoPos;
-		float							mVideoDuration;
-		bool							mIsVideoLoaded;
-	*/
-	//! shader
+
+		//! shader
 		gl::GlslProgRef					mShader;
 		VDShaderRef						shaderToLoad;
 		std::vector<ci::gl::GlslProg::Uniform> mUniforms;
@@ -127,7 +122,6 @@ namespace videodromm
 
 		std::string						mShaderFragmentString;
 		std::string						mFileNameWithExtension;
-		//fs::path						mFragFile;
 		bool							mActive;
 		int								mMicroSeconds;
 		bool							mGlobal = true;

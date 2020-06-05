@@ -37,12 +37,14 @@ namespace videodromm {
 			return obs;
 		}
 		VDUniformObserverRef setUniformValue(int aIndex, float aValue) {
-			osc::Message msg("/params");
-			msg.append(aIndex);
-			msg.append(aValue);
-			// Send the msg and also provide an error handler. If the message is important you could store it in the error callback to dispatch it again if there was a problem.
-			mSender.send(msg, std::bind(&VDOscObserver::onSendError,
-				this, std::placeholders::_1));
+			if (aIndex != 20) { // mVDSettings->IFPS
+				osc::Message msg("/params");
+				msg.append(aIndex);
+				msg.append(aValue);
+				// Send the msg and also provide an error handler. If the message is important you could store it in the error callback to dispatch it again if there was a problem.
+				mSender.send(msg, std::bind(&VDOscObserver::onSendError,
+					this, std::placeholders::_1));
+			}
 			return shared_from_this();
 		}
 		VDOscObserver* bind() {

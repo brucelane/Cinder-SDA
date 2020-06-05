@@ -42,12 +42,7 @@ namespace videodromm
 			return VDSessionFacadeRef(new VDSessionFacade(VDSessionRef(new VDSession(aVDSettings, aVDAnimation)), mediator));
 		}
 
-		float getUniformValue(unsigned int aCtrl) {
-			return mVDMediator->getUniformValue(aCtrl);
-		};
-		std::string getUniformName(unsigned int aIndex) {
-			return mVDMediator->getUniformName(aIndex);
-		}
+
 		VDSessionFacadeRef setUniformValue(unsigned int aCtrl, float aValue) {
 			mVDMediator->setUniformValue(aCtrl, aValue);
 			return shared_from_this();
@@ -75,16 +70,7 @@ namespace videodromm
 			return shared_from_this();
 		}
 
-		//mVDRouterBuilder = VDRouterBuilder::createVDRouter(aVDSettings, aVDAnimation)->setWarpBFboIndex(0, 1);
-		void							setIntUniformValueByIndex(unsigned int aCtrl, int aValue) {
-			//mVDRouterBuilder->changeIntValue(aCtrl, aValue);
-			mVDMediator->setUniformValue(aCtrl, aValue);
-		}
-		void							setBoolUniformValueByIndex(unsigned int aCtrl, float aValue) {
-			// done in router mVDAnimation->changeFloatValue(aCtrl, aValue);
-			//mVDRouterBuilder->changeBoolValue(aCtrl, aValue);
-			mVDMediator->setUniformValue(aCtrl, aValue);
-		}
+
 		VDSessionFacadeRef setAnim(unsigned int aCtrl, unsigned int aAnim) {
 			mVDSession->setAnim(aCtrl, aAnim);
 			return shared_from_this();
@@ -151,9 +137,6 @@ namespace videodromm
 		unsigned int getWarpBFboIndex(unsigned int aWarpIndex) {
 			return mVDSession->getWarpBFboIndex(aWarpIndex);
 		}
-		/*float getMaxVolume() {
-			return mVDSession->getUniformValue(mVDSettings->IMAXVOLUME);
-		};*/
 		float getMinUniformValue(unsigned int aIndex) {
 			return mVDSession->getMinUniformValue(aIndex);
 		}
@@ -211,16 +194,31 @@ namespace videodromm
 		int getUniformIndexForName(const std::string& aName) {
 			return mVDSession->getUniformIndexForName(aName);
 		};
+		float getUniformValue(unsigned int aCtrl) {
+			return mVDMediator->getUniformValue(aCtrl);
+		};
+		std::string getUniformName(unsigned int aIndex) {
+			return mVDMediator->getUniformName(aIndex);
+		}
+		void							setIntUniformValueByIndex(unsigned int aCtrl, int aValue) {
+			mVDMediator->setUniformValue(aCtrl, aValue);
+		}
+		void							setBoolUniformValueByIndex(unsigned int aCtrl, float aValue) {
+			mVDMediator->setUniformValue(aCtrl, aValue);
+		}
 		// end terminal operations 
+		// begin events
+		bool handleKeyDown(KeyEvent& event) {
+			return mVDSession->handleKeyDown(event);
+		}
+		// end events
 		VDSessionRef getInstance() const {
 			return mVDSession;
 		}
 
 	private:
-		VDSessionFacade(VDSessionRef session, VDMediatorObservableRef mediator) : mVDSession(session), mVDMediator(mediator), mOscSenderConnected(false), mOscReceiverConnected(false)  { }
+		VDSessionFacade(VDSessionRef session, VDMediatorObservableRef mediator) : mVDSession(session), mVDMediator(mediator), mOscSenderConnected(false), mOscReceiverConnected(false) { }
 		VDSessionRef mVDSession;
-		//VDSettingsRef mVDSettings;
-		//VDAnimationRef mVDAnimation;
 		VDMediatorObservableRef mVDMediator;
 		bool mOscSenderConnected = false;
 		bool mOscReceiverConnected = false;
@@ -230,8 +228,10 @@ namespace videodromm
 
 
 }
-
-//mVDMediator->setUniformValue(a, b);
-/*mVDMediator->update([](observer, { "a": 1, "b" : 2 }) -> {
+/*
+mVDRouterBuilder = VDRouterBuilder::createVDRouter(aVDSettings, aVDAnimation)->setWarpBFboIndex(0, 1);
+mVDMediator->setUniformValue(a, b);
+mVDMediator->update([](observer, { "a": 1, "b" : 2 }) -> {
 	observer->setUniformValue(a, b);
-});*/
+});
+*/

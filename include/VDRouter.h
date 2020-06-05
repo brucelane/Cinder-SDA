@@ -18,7 +18,7 @@
 // Animation
 #include "VDAnimation.h"
 // Osc
-//#include "VDOsc.h"
+//#include "VDOscReceiver.h"
 
 
 using namespace ci;

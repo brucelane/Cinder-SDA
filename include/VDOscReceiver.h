@@ -1,5 +1,5 @@
 /*
-	VDOsc
+	VDOscReceiver
 	
 */
 
@@ -39,26 +39,25 @@ namespace videodromm
 	class VDMediatorObservable;
 	typedef std::shared_ptr<VDMediatorObservable> VDMediatorObservableRef;
 
-	class VDOsc;
-	// stores the pointer to the VDOsc instance
-	typedef std::shared_ptr<VDOsc> VDOscRef;
-	class VDOsc {
+	class VDOscReceiver;
+	// stores the pointer to the VDOscReceiver instance
+	typedef std::shared_ptr<VDOscReceiver> VDOscReceiverRef;
+	class VDOscReceiver {
 	public:
-		VDOsc(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
-		static VDOscRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
+		VDOscReceiver(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
+		static VDOscReceiverRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
 
-		void						setupOSCReceiver(VDMediatorObservableRef aVDMediator);
+		void								setupOSCReceiver(VDMediatorObservableRef aVDMediator);
 	private:
 		// Settings
-		VDSettingsRef					mVDSettings;
+		VDSettingsRef						mVDSettings;
 		// Animation
-		VDAnimationRef					mVDAnimation;
+		VDAnimationRef						mVDAnimation;
 		//Mediator
-		VDMediatorObservableRef			mVDMediator;
-		float							mBarStart = 0.0f;
+		VDMediatorObservableRef				mVDMediator;
+		float								mBarStart = 0.0f;
 		// osc
 		std::shared_ptr<osc::ReceiverUdp>	mOscReceiver;
-//std::map<uint64_t, protocol::endpoint>	mConnections;
 	};
 }
 
