@@ -67,6 +67,7 @@ namespace videodromm {
 			IBG = 27,
 			IBB = 28,
 			IMAXVOLUME = 29,
+			ICONTOUR = 30,
 
 			IWEIGHT0 = 31,
 			IWEIGHT1 = 32,
@@ -76,9 +77,8 @@ namespace videodromm {
 			IWEIGHT5 = 36,
 			IWEIGHT6 = 37,
 			IWEIGHT7 = 38,
-			IWEIGHT8 = 39, // 20200304 was IELAPSED
+			IWEIGHT8 = 39,
 
-			ICONTOUR = 40,
 			IMOUSEX = 42,
 			IMOUSEY = 43,
 			IMOUSEZ = 44,
@@ -86,7 +86,7 @@ namespace videodromm {
 			IVFALLOFF = 46,
 			TIME = 47,
 			IBADTV = 48,
-			ITIMEFACTOR = 49,//iTimeFactor
+			ITIMEFACTOR = 49,
 			// int
 			IBLENDMODE = 50,
 			IBEAT = 51,
@@ -141,6 +141,10 @@ namespace videodromm {
 			SRCXRIGHT = 161,
 			SRCYLEFT = 162,
 			SRCYRIGHT = 163,
+			
+		};
+
+		enum VDTextureModes {
 			// texture modes
 			TEXTUREMODEMIX = 0,				// mix two shaders
 			TEXTUREMODEAUDIO = 1,			// audio spectrum

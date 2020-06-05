@@ -53,17 +53,23 @@ namespace videodromm
 			//mVDRouterBuilder->changeFloatValue(aCtrl, aValue);
 			return shared_from_this();
 		}
-		VDSessionFacadeRef setupOSCReceiver() {
-			//mVDRouterBuilder->setupOSCReceiver();
-			mVDMediator->setupOSCReceiver(/*shared_from_this()*/);
-			return shared_from_this();
-		}
 		VDSessionFacadeRef addUIObserver(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation) {
 			mVDMediator->addObserver(VDUIObserver::connect(aVDSettings, aVDAnimation));
 			return shared_from_this();
 		}
+		VDSessionFacadeRef setupOSCReceiver() {
+			//mVDRouterBuilder->setupOSCReceiver();
+			if (!mOscReceiverConnected) {
+				mOscReceiverConnected = true;
+				mVDMediator->setupOSCReceiver(/*shared_from_this()*/);
+			}
+			return shared_from_this();
+		}
 		VDSessionFacadeRef addOSCObserver(std::string host, unsigned int port) {
-			mVDMediator->addObserver(VDOscObserver::connect(host, port));
+			if (!mOscSenderConnected) {
+				mOscSenderConnected = true;
+				mVDMediator->addObserver(VDOscObserver::connect(host, port));
+			}
 			return shared_from_this();
 		}
 		VDSessionFacadeRef addSocketIOObserver(std::string host, unsigned int port) {
@@ -116,6 +122,12 @@ namespace videodromm
 		// begin terminal operations
 		bool getUseTimeWithTempo() {
 			return mVDSession->getUseTimeWithTempo();
+		};
+		bool isOscSenderConnected() {
+			return mOscSenderConnected;
+		};
+		bool isOscReceiverConnected() {
+			return mOscReceiverConnected;
 		};
 		ci::gl::TextureRef buildRenderedMixetteTexture(unsigned int aIndex) {
 			return mVDSession->getRenderedMixetteTexture(aIndex);
@@ -207,11 +219,13 @@ namespace videodromm
 		}
 
 	private:
-		VDSessionFacade(VDSessionRef session, VDMediatorObservableRef mediator) : mVDSession(session), mVDMediator(mediator) { }
+		VDSessionFacade(VDSessionRef session, VDMediatorObservableRef mediator) : mVDSession(session), mVDMediator(mediator), mOscSenderConnected(false), mOscReceiverConnected(false)  { }
 		VDSessionRef mVDSession;
 		//VDSettingsRef mVDSettings;
 		//VDAnimationRef mVDAnimation;
 		VDMediatorObservableRef mVDMediator;
+		bool mOscSenderConnected = false;
+		bool mOscReceiverConnected = false;
 		// Builder
 		//VDRouterBuilderRef mVDRouterBuilder;
 	};

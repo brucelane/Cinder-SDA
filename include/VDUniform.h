@@ -454,6 +454,10 @@ namespace videodromm
 				rtn = mVDSettings->IBB;
 			} // 28
 
+			// contour
+			else if (key == "iContour") {
+			rtn = mVDSettings->ICONTOUR;
+			} // 30
 
 			// weight mix fbo texture 0
 			else if (key == "iWeight0") {
@@ -491,10 +495,6 @@ namespace videodromm
 			else if (key == "iWeight8") {
 				rtn = mVDSettings->IWEIGHT8;
 			} // 39
-			// contour
-			else if (key == "iContour") {
-				rtn = mVDSettings->ICONTOUR;
-			} // 40
 
 
 			// iMouseX  

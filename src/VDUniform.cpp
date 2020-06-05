@@ -86,6 +86,8 @@ VDUniform::VDUniform(VDSettingsRef aVDSettings) {
 		createFloatUniform("iMaxVolume", mVDSettings->IMAXVOLUME, 0.0f); // 29
 
 
+		// contour
+		createFloatUniform("iContour", mVDSettings->ICONTOUR, 0.0f, 0.0f, 0.5f); // 30
 		// weight mix fbo texture 0
 		createFloatUniform("iWeight0", mVDSettings->IWEIGHT0, 1.0f); // 31
 		// weight texture 1
@@ -107,8 +109,6 @@ VDUniform::VDUniform(VDSettingsRef aVDSettings) {
 		// elapsed in bar 
 		//createFloatUniform("iElapsed", mVDSettings->IELAPSED, 0.0f); // 39
 
-		// contour
-		createFloatUniform("iContour", mVDSettings->ICONTOUR, 0.0f, 0.0f, 0.5f); // 40
 
 		// iMouseX  
 		createFloatUniform("iMouseX", mVDSettings->IMOUSEX, 320.0f, 0.0f, 1280.0f); // 42

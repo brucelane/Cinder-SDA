@@ -65,7 +65,7 @@ void VDRouter::changeFloatValue(unsigned int aControl, float aValue, bool forceS
 		}
 
 		// update iResolution vec3
-		if (aControl == 29 || aControl == 30) {
+		if (aControl == 121 || aControl == 122) {
 			mVDAnimation->setVec3UniformValueByIndex(mVDSettings->IRESOLUTION, vec3(mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONX), mVDAnimation->getUniformValue(mVDSettings->IRESOLUTIONY), 1.0));
 		}
 		sParams << "{\"params\" :[{\"name\" : " << aControl << ",\"value\" : " << mVDAnimation->getUniformValue(aControl) << "}]}";
