@@ -80,15 +80,15 @@ bool VDKeyboard::handleKeyDown(KeyEvent& event) {
 		break;
 	case KeyEvent::KEY_y:
 		// glitch
-		mVDMediator->setUniformValue(mVDSettings->IGLITCH, isModDown);
+		mVDMediator->setUniformValue(mVDSettings->IGLITCH, true);
 		break;
 	case KeyEvent::KEY_i:
 		// invert
-		mVDMediator->setUniformValue(mVDSettings->IINVERT, isModDown);
+		mVDMediator->setUniformValue(mVDSettings->IINVERT, true);
 		break;
 	case KeyEvent::KEY_o:
 		// toggle
-		mVDMediator->setUniformValue(mVDSettings->ITOGGLE, isModDown);
+		mVDMediator->setUniformValue(mVDSettings->ITOGGLE, true);
 		break;
 	case KeyEvent::KEY_z:
 		// zoom
@@ -134,6 +134,54 @@ bool VDKeyboard::handleKeyDown(KeyEvent& event) {
 	}
 
 	CI_LOG_V((handled ? "VDKeyboard keydown handled " : "VDKeyboard keydown not handled "));
+	event.setHandled(handled);
+	return event.isHandled();
+}
+bool VDKeyboard::handleKeyUp(KeyEvent& event) {
+	bool handled = true;
+#if defined( CINDER_COCOA )
+	bool isModDown = event.isMetaDown();
+#else // windows
+	bool isModDown = event.isControlDown();
+#endif
+
+			// Animation did not handle the key, so handle it here
+			switch (event.getCode()) {
+			case KeyEvent::KEY_y:
+				// glitch
+				mVDMediator->setUniformValue(mVDSettings->IGLITCH, false);
+				break;
+			case KeyEvent::KEY_t:
+				// trixels
+				mVDMediator->setUniformValue(mVDSettings->ITRIXELS, 0.0f);
+				break;
+			case KeyEvent::KEY_i:
+				// invert
+				mVDMediator->setUniformValue(mVDSettings->IINVERT, false);
+				break;
+			case KeyEvent::KEY_u:
+				// chromatic
+				mVDMediator->setUniformValue(mVDSettings->ICHROMATIC, 0.0f);
+				break;
+			case KeyEvent::KEY_p:
+				// pixelate
+				mVDMediator->setUniformValue(mVDSettings->IPIXELATE, 1.0f);
+				break;
+			case KeyEvent::KEY_o:
+				// toggle
+				mVDMediator->setUniformValue(mVDSettings->ITOGGLE, false);
+				break;
+			case KeyEvent::KEY_z:
+				// zoom
+				mVDMediator->setUniformValue(mVDSettings->IZOOM, 1.0f);
+				break;
+			default:
+				CI_LOG_V("VDKeyboard keyup: " + toString(event.getCode()));
+				handled = false;
+				break;
+			}
+	
+	CI_LOG_V((handled ? "VDKeyboard keyup handled " : "VDKeyboard keyup not handled "));
 	event.setHandled(handled);
 	return event.isHandled();
 }

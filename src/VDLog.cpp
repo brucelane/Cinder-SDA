@@ -3,7 +3,12 @@
 using namespace videodromm;
 
 VDLogRef VDLog::LOGGER;
-
+VDLogRef	VDLog::create() {
+	if (LOGGER.use_count() == 0) {
+		LOGGER = VDLogRef(new VDLog());
+	}
+	return LOGGER;
+}
 VDLog::VDLog()
 {
 	auto sysLogger = log::makeLogger<log::LoggerSystem>();

@@ -33,6 +33,7 @@ namespace videodromm
 
 		void								setupKeyboard(VDMediatorObservableRef aVDMediator);
 		bool								handleKeyDown(KeyEvent& event);
+		bool								handleKeyUp(KeyEvent& event);
 	private:
 		// Settings
 		VDSettingsRef						mVDSettings;

@@ -70,8 +70,15 @@ namespace videodromm
 		bool							isActive() { return mActive; };
 		void							setActive(bool active) { mActive = active; };
 		void							removeShader();*/
+		std::string					getDefaultVextexShaderString();
+		std::string					getDefaultFragmentShaderString();
+		std::string					getMixFragmentShaderString();
+		std::string					getHydraFragmentShaderString();
+		std::string					getMixetteFragmentShaderString();
+		std::string					getPostFragmentShaderString();
 		ci::gl::Texture2dRef			getThumbTexture();
 		void							setInputTexture(ci::gl::Texture2dRef aTextureRef) { mTexture = aTextureRef; };
+
 	private:
 		// Settings
 		VDSettingsRef					mVDSettings;
@@ -101,7 +108,13 @@ namespace videodromm
 		std::string							mName;
 		//! Input textures
 		gl::TextureRef					mTexture;
-
+		//! default vertex shader
+		std::string					mDefaultVextexShaderString;
+		std::string					mDefaultFragmentShaderString;
+		std::string					mMixFragmentShaderString;
+		std::string					mHydraFragmentShaderString;
+		std::string					mMixetteFragmentShaderString;
+		std::string					mPostFragmentShaderString;
 		//ci::gl::Texture2dRef			mThumbTexture;
 		/*string							mId;
 		bool							mActive;

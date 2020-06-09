@@ -2,7 +2,7 @@
 	VDLog
 	Handles logging to the filesystem and console.
 */
-// TODO rewrite as a singleton
+// rewriten as a singleton
 
 #pragma once
 
@@ -15,7 +15,6 @@
 
 using namespace ci;
 using namespace ci::app;
-//using namespace std;
 
 namespace videodromm
 {
@@ -25,12 +24,7 @@ namespace videodromm
 	class VDLog {
 	public:		
 
-		static VDLogRef	create() {
-			if (LOGGER.use_count() == 0) {
-				LOGGER = VDLogRef(new VDLog());
-			}
-			return LOGGER;
-		}
+		static VDLogRef	create();
 
 	private:
 		static VDLogRef LOGGER;

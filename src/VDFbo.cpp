@@ -1,7 +1,9 @@
 #include "VDFbo.h"
 
-namespace videodromm {
-	VDFbo::VDFbo(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const JsonTree &json)
+using namespace videodromm;
+
+//namespace videodromm {
+	VDFbo::VDFbo(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const JsonTree& json)
 		:mValid(false)
 	{
 		CI_LOG_V("VDFbo constructor");
@@ -15,7 +17,7 @@ namespace videodromm {
 		//string textureFileName = "0.jpg"; 
 		//mTextureName = mCurrentSeqFilename = mLastCachedFilename = textureFileName;
 		mInputTextureIndex = 0;
-		
+
 		if (json.hasChild("shader")) {
 			JsonTree shaderJsonTree(json.getChild("shader"));
 			mShaderName = mShaderFileName = (shaderJsonTree.hasChild("shadername")) ? shaderJsonTree.getValueForKey<std::string>("shadername") : "inputImage.fs";
@@ -60,7 +62,7 @@ namespace videodromm {
 
 	bool VDFbo::loadFragmentStringFromFile(const std::string& aFileName) {
 		mValid = false;
-		
+
 		if (aFileName.length() > 0) {
 			/*if (mType == MOVIE) {
 				try {
@@ -95,15 +97,15 @@ namespace videodromm {
 				// load default fragment shader
 				try {
 					mShaderName = mShaderFileName = "default.fs";
-					mShader = gl::GlslProg::create(mVDSettings->getDefaultVextexShaderString(), mVDSettings->getDefaultFragmentShaderString());
+					mShader = gl::GlslProg::create(shaderToLoad->getDefaultVextexShaderString(), shaderToLoad->getDefaultFragmentShaderString());
 					mValid = true;
 					CI_LOG_V("fbo default vtx-frag compiled");
 				}
-				catch (gl::GlslProgCompileExc &exc) {
+				catch (gl::GlslProgCompileExc& exc) {
 					mError = std::string(exc.what());
 					CI_LOG_V("fbo unable to load/compile vtx-frag shader:" + std::string(exc.what()));
 				}
-				catch (const std::exception &e) {
+				catch (const std::exception& e) {
 					mError = std::string(e.what());
 					CI_LOG_V("fbo unable to load vtx-frag shader:" + std::string(e.what()));
 				}
@@ -160,19 +162,25 @@ namespace videodromm {
 			else {
 				mOutputFragmentString = "/* " + mName + " */\n" + mOriginalFragmentString;
 			}
+			fs::path mDefaultVertexFilePath = getAssetPath("") / "defaultvertex.fs";
+			if (!fs::exists(mDefaultVertexFilePath)) {
+				mError = mDefaultVertexFilePath.string() + " does not exist";
+				CI_LOG_V(mError);
+				mVDSettings->mErrorMsg = mError + "\n" + mVDSettings->mErrorMsg.substr(0, mVDSettings->mMsgLength);
+			}
 			// try to compile a first time to get active mUniforms
-			mShader = gl::GlslProg::create(mVDSettings->getDefaultVextexShaderString(), mOutputFragmentString);
+			mShader = gl::GlslProg::create(loadString(loadFile(mDefaultVertexFilePath)), mOutputFragmentString);
 			// update only if success
 			mShaderFragmentString = mOutputFragmentString;
 			mVDSettings->mMsg = mName + " compiled(fbo)\n" + mVDSettings->mMsg.substr(0, mVDSettings->mMsgLength);
 			mValid = true;
 		}
-		catch (gl::GlslProgCompileExc &exc)
+		catch (gl::GlslProgCompileExc& exc)
 		{
 			mError = mName + std::string(exc.what());
 			CI_LOG_V("setFragmentString, unable to compile live fragment shader:" + mError + " frag:" + mName);
 		}
-		catch (const std::exception &e)
+		catch (const std::exception& e)
 		{
 			mError = mName + std::string(e.what());
 			CI_LOG_V("setFragmentString, error on live fragment shader:" + mError + " frag:" + mName);
@@ -214,7 +222,7 @@ namespace videodromm {
 			int texIndex = 0;
 			int channelIndex = 0;
 			mUniforms = mShader->getActiveUniforms();
-			for (const auto &uniform : mUniforms) {
+			for (const auto& uniform : mUniforms) {
 				name = uniform.getName(); // TODO uniform.getType()
 				// CI_LOG_E(mShader->getLabel() + ", getShader uniform name:" + uniform.getName() + ", type:" + toString( uniform.getType() ));
 				if (mVDAnimation->isExistingUniform(name)) {
@@ -294,7 +302,7 @@ namespace videodromm {
 
 						break;
 					case GL_FLOAT_MAT4: // 35676 GL_FLOAT_MAT4 0x8B5C ciModelViewProjection
-						
+
 
 						break;
 					default:
@@ -369,4 +377,44 @@ namespace videodromm {
 		}
 		return json;
 	}
-}
+
+	bool									VDFbo::isValid() {
+		return mValid;
+	};
+
+	std::string								VDFbo::getName() { return mName; };
+	std::string								VDFbo::getShaderName() { return mShaderName; };
+	std::string								VDFbo::getTextureName() { return mTextureList[0]->getTextureName(); };
+	ci::gl::Texture2dRef					VDFbo::getInputTexture() { return mTextureList[0]->getTexture(); };
+	std::string								VDFbo::getStatus() { return mTextureList[0]->getStatus(); };
+	void									VDFbo::setImageInputTexture(ci::gl::Texture2dRef aTextureRef, const std::string& aTextureFilename) {
+		mTextureList[0]->setImageInputTexture(aTextureRef, aTextureFilename);
+	};
+	void									VDFbo::updateThumbFile() {
+		isReady = false;
+		getTexture();
+		if (shaderToLoad) shaderToLoad->getThumbTexture();
+	}
+	std::vector<ci::gl::GlslProg::Uniform>	VDFbo::getUniforms() { return mUniforms; };
+	bool									VDFbo::getGlobal() {
+		return mGlobal;
+	};
+	void									VDFbo::toggleGlobal() {
+		mGlobal = !mGlobal;
+	};
+	unsigned int					VDFbo::createInputTexture(const JsonTree& json) {
+		unsigned int rtn = 0;
+		VDTextureRef texRef = VDTexture::create(mVDSettings, mVDAnimation, json);
+		mTextureList.push_back(texRef);
+		rtn = mTextureList.size() - 1;
+		return rtn;
+	}
+//}
+/*void									flipV() {
+	mVDAnimation->setBoolUniformValueByIndex(mVDSettings->IFLIPV, !mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPV));
+};
+void									flipH() {
+	mVDAnimation->setBoolUniformValueByIndex(mVDSettings->IFLIPH, !mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPH));
+};
+bool									isFlipH() { return mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPV); };
+bool									isFlipV() { return mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPH); };*/

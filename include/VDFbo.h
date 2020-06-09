@@ -25,15 +25,12 @@
 #include "VDTexture.h"
 //!  Uniforms
 #include "VDUniform.h"
-// video
-//#include "ciWMFVideoPlayer.h"
 
 #include <atomic>
 #include <vector>
 
 using namespace ci;
 using namespace ci::app;
-//using namespace std;
 
 namespace videodromm
 {
@@ -50,7 +47,7 @@ namespace videodromm
 		static VDFboRef create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const JsonTree &json) {
 			return std::make_shared<VDFbo>(aVDSettings, aVDAnimation, json);
 		}
-		//typedef enum { UNKNOWN, IMAGE, SEQUENCE, MOVIE, CAMERA, SHARED, AUDIO, STREAM } TextureType;
+
 		// get live rendered texture
 		ci::gl::Texture2dRef					getTexture();
 		ci::gl::Texture2dRef					getRenderedTexture() {
@@ -59,39 +56,20 @@ namespace videodromm
 		}
 		bool									setFragmentString(const std::string& aFragmentShaderString, const std::string& aName = "");
 		bool									loadFragmentStringFromFile(const std::string& aFileName);
-		bool									isValid() {
-			return mValid;
-		};
-		/*void									flipV() {
-			mVDAnimation->setBoolUniformValueByIndex(mVDSettings->IFLIPV, !mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPV));
-		};
-		void									flipH() {
-			mVDAnimation->setBoolUniformValueByIndex(mVDSettings->IFLIPH, !mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPH));
-		};
-		bool									isFlipH() { return mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPV); };
-		bool									isFlipV() { return mVDAnimation->getBoolUniformValueByIndex(mVDSettings->IFLIPH); };*/
-		std::string								getName() { return mName; };
-		std::string								getShaderName() { return mShaderName; };
-		std::string								getTextureName() { return mTextureList[0]->getTextureName(); };
-		ci::gl::Texture2dRef					getInputTexture() { return mTextureList[0]->getTexture(); };
-		std::string								getStatus() { return mTextureList[0]->getStatus(); };
-		void									setImageInputTexture(ci::gl::Texture2dRef aTextureRef, const std::string& aTextureFilename) {
-			mTextureList[0]->setImageInputTexture( aTextureRef, aTextureFilename);
-		};
-		void									updateThumbFile() {
-			isReady = false;
-			getTexture();
-			if (shaderToLoad) shaderToLoad->getThumbTexture();
-		}
-		std::vector<ci::gl::GlslProg::Uniform>	getUniforms() { return mUniforms; };
+		bool									isValid();
+
+		std::string								getName();
+		std::string								getShaderName();
+		std::string								getTextureName();
+		ci::gl::Texture2dRef					getInputTexture();
+		std::string								getStatus();
+		void									setImageInputTexture(ci::gl::Texture2dRef aTextureRef, const std::string& aTextureFilename);
+		void									updateThumbFile();
+		std::vector<ci::gl::GlslProg::Uniform>	getUniforms();
 		ci::JsonTree							toJson(bool save, unsigned int aIndex) const;
 		// uniforms
-		bool									getGlobal() {
-			return mGlobal;
-		};
-		void									toggleGlobal() {
-			mGlobal = !mGlobal;
-		};
+		bool									getGlobal();
+		void									toggleGlobal();
 		
 		
 	private:
@@ -104,13 +82,7 @@ namespace videodromm
 		//! Input textures
 		VDTextureList					mTextureList;
 		unsigned int					mInputTextureIndex;
-		unsigned int					createInputTexture(const JsonTree &json) {
-			unsigned int rtn = 0;
-			VDTextureRef texRef = VDTexture::create(mVDSettings, mVDAnimation, json);
-			mTextureList.push_back(texRef);
-			rtn = mTextureList.size() - 1;
-			return rtn;
-		}
+		unsigned int					createInputTexture(const JsonTree& json);
 
 		//! shader
 		gl::GlslProgRef					mShader;
@@ -128,7 +100,7 @@ namespace videodromm
 
 		// include shader lines
 		std::string						shaderInclude;
-		std::string							mError;
+		std::string						mError;
 		bool							mValid = false;
 		//! Fbo
 		gl::FboRef						mFbo;

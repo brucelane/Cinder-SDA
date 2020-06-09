@@ -31,6 +31,9 @@ VDMediatorObservableRef VDMediatorObservable::setupKeyboard() {
 bool VDMediatorObservable::handleKeyDown(KeyEvent& event) {
 	return mVDKeyboard->handleKeyDown(event);
 }
+bool VDMediatorObservable::handleKeyUp(KeyEvent& event) {
+	return mVDKeyboard->handleKeyUp(event);
+}
 float VDMediatorObservable::getUniformValue(unsigned int aIndex) {
 	return mVDAnimation->getUniformValue(aIndex);
 }

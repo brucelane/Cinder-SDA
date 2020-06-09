@@ -49,6 +49,7 @@ namespace videodromm {
 		VDMediatorObservableRef				setUniformValue(int aIndex, float aValue);
 		VDMediatorObservableRef				updateShaderText(int aIndex, float aValue);
 		bool								handleKeyDown(KeyEvent& event);
+		bool								handleKeyUp(KeyEvent& event);
 	private:
 		std::vector<VDUniformObserverRef>	mObservers;
 		// Settings

@@ -35,31 +35,13 @@ namespace videodromm
 		int							getWindowsResolution();
 		float						formatFloat(float f);
 
-
-		Area						getSrcAreaLeftOrTop() {
-			return mSrcAreaLeftOrTop;
-		};
-		Area						getSrcAreaRightOrBottom() {
-			return mSrcAreaRightOrBottom;
-		};
-		void						moveX1LeftOrTop(int x1) {
-			x1LeftOrTop = x1;
-			mSrcAreaLeftOrTop = Area(x1LeftOrTop, y1LeftOrTop, x2LeftOrTop, y2LeftOrTop);
-		};
-		void						moveY1LeftOrTop(int y1) {
-			y1LeftOrTop = y1;
-			mSrcAreaLeftOrTop = Area(x1LeftOrTop, y1LeftOrTop, x2LeftOrTop, y2LeftOrTop);
-		};
+		Area						getSrcAreaLeftOrTop();
+		Area						getSrcAreaRightOrBottom();
+		void						moveX1LeftOrTop(int x1);
+		void						moveY1LeftOrTop(int y1);
 		// file system
-		fs::path					getPath(std::string path) {
-			fs::path p = app::getAssetPath("");
-			if (path.length() > 0) { p += fs::path("/" + path); }
-			return p;
-		};
-		std::string						getFileNameFromFullPath(std::string path) {
-			fs::path fullPath = path;
-			return fullPath.filename().string();
-		};
+		fs::path					getPath(std::string path);
+		std::string					getFileNameFromFullPath(std::string path);
 	private:
 		// Settings
 		VDSettingsRef				mVDSettings;

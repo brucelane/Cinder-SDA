@@ -33,7 +33,13 @@ namespace videodromm {
 			CI_LOG_V(mError);
 			mVDSettings->mErrorMsg = mError + "\n" + mVDSettings->mErrorMsg.substr(0, mVDSettings->mMsgLength);
 		}
-		mGlslMixette = gl::GlslProg::create(mVDSettings->getDefaultVextexShaderString(), loadString(loadFile(mMixetteFilePath)));
+		fs::path mDefaultVertexFilePath = getAssetPath("") / "defaultvertex.fs";
+		if (!fs::exists(mDefaultVertexFilePath)) {
+			mError = mDefaultVertexFilePath.string() + " does not exist";
+			CI_LOG_V(mError);
+			mVDSettings->mErrorMsg = mError + "\n" + mVDSettings->mErrorMsg.substr(0, mVDSettings->mMsgLength);
+		}
+		mGlslMixette = gl::GlslProg::create(loadString(loadFile(mDefaultVertexFilePath)), loadString(loadFile(mMixetteFilePath)));
 		// initialize the textures list with audio texture
 		/*mTexturesFilepath = getAssetPath("") / mVDSettings->mAssetsPath / "textures.xml";
 		initTextureList();

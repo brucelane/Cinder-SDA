@@ -210,6 +210,22 @@ namespace videodromm
 		}
 		// end terminal operations 
 		// begin events
+		bool handleMouseMove(MouseEvent event)
+		{
+			return mVDSession->handleMouseMove(event);
+		}
+		bool handleMouseDown(MouseEvent event)
+		{
+			return mVDSession->handleMouseDown(event);
+		}
+		bool handleMouseDrag(MouseEvent event)
+		{
+			return mVDSession->handleMouseDrag(event);
+		}
+		bool handleMouseUp(MouseEvent event)
+		{
+			return mVDSession->handleMouseUp(event);
+		}
 		bool handleKeyDown(KeyEvent& event) {
 			bool handled = true;
 			if (!mVDSession->handleKeyDown(event)) {
@@ -217,10 +233,20 @@ namespace videodromm
 					handled = false;
 				}
 			}
-			return mVDMediator->handleKeyDown(event);
 			event.setHandled(handled);
 			return event.isHandled();
 		}
+		bool handleKeyUp(KeyEvent& event) {
+			bool handled = true;
+			if (!mVDSession->handleKeyUp(event)) {
+				if (!mVDMediator->handleKeyUp(event)) {
+					handled = false;
+				}
+			}
+			event.setHandled(handled);
+			return event.isHandled();
+		}
+
 		// end events
 		VDSessionRef getInstance() const {
 			return mVDSession;

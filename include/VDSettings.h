@@ -28,8 +28,8 @@ namespace videodromm {
 	class VDSettings
 	{
 	public:
-		VDSettings(std::string filename);
-		static VDSettingsRef create(std::string filename);
+		VDSettings(const std::string& filename);
+		static VDSettingsRef create(const std::string& filename);
 
 		enum VDParams {
 			//! maximum number of fbos, shaders, textures
@@ -143,7 +143,7 @@ namespace videodromm {
 			SRCYRIGHT = 163,
 			
 		};
-
+		enum VDTextureType { UNKNOWN, IMAGE, SEQUENCE, MOVIE, CAMERA, SHARED, AUDIO, STREAM };
 		enum VDTextureModes {
 			// texture modes
 			TEXTUREMODEMIX = 0,				// mix two shaders
@@ -348,22 +348,8 @@ namespace videodromm {
 		int							uiLargePreviewW;
 		int							uiLargePreviewH;
 		int							uiPreviewH;
-		std::string					getDefaultVextexShaderString() { return mDefaultVextexShaderString; };
-		std::string					getDefaultFragmentShaderString() { return mDefaultFragmentShaderString; };
-		std::string					getMixFragmentShaderString() { return mMixFragmentShaderString; };
-		std::string					getHydraFragmentShaderString() { return mHydraFragmentShaderString; };
-		std::string					getMixetteFragmentShaderString() { return mMixetteFragmentShaderString; };
-		std::string					getPostFragmentShaderString() { return mPostFragmentShaderString; };
 	private:
-		std::string					settingsFileName = "VD";
-		//! default vertex shader
-		std::string					mDefaultVextexShaderString;
-		std::string					mDefaultFragmentShaderString;
-		std::string					mMixFragmentShaderString;
-		std::string					mHydraFragmentShaderString;
-		std::string					mMixetteFragmentShaderString;
-		std::string					mPostFragmentShaderString;
-
+		std::string					settingsFileName;
 	};
 
 }

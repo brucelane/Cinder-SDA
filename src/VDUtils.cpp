@@ -97,4 +97,27 @@ void VDUtils::splitWarp(int fboWidth, int fboHeight) {
 	mSrcAreaRightOrBottom = Area(x1RightOrBottom, y1RightOrBottom, x2RightOrBottom, y2RightOrBottom);
 
 }
-
+Area						VDUtils::getSrcAreaLeftOrTop() {
+	return mSrcAreaLeftOrTop;
+};
+Area						VDUtils::getSrcAreaRightOrBottom() {
+	return mSrcAreaRightOrBottom;
+};
+void						VDUtils::moveX1LeftOrTop(int x1) {
+	x1LeftOrTop = x1;
+	mSrcAreaLeftOrTop = Area(x1LeftOrTop, y1LeftOrTop, x2LeftOrTop, y2LeftOrTop);
+};
+void						VDUtils::moveY1LeftOrTop(int y1) {
+	y1LeftOrTop = y1;
+	mSrcAreaLeftOrTop = Area(x1LeftOrTop, y1LeftOrTop, x2LeftOrTop, y2LeftOrTop);
+};
+// file system
+fs::path					VDUtils::getPath(std::string path) {
+	fs::path p = app::getAssetPath("");
+	if (path.length() > 0) { p += fs::path("/" + path); }
+	return p;
+};
+std::string						VDUtils::getFileNameFromFullPath(std::string path) {
+	fs::path fullPath = path;
+	return fullPath.filename().string();
+};

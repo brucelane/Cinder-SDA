@@ -538,34 +538,7 @@ bool VDSession::handleKeyUp(KeyEvent& event) {
 		if (!mVDAnimation->handleKeyUp(event)) {
 			// Animation did not handle the key, so handle it here
 			switch (event.getCode()) {
-			case KeyEvent::KEY_y:
-				// glitch
-				//! 20200526 mVDSocketio->changeBoolValue(mVDSettings->IGLITCH, false);
-				break;
-			case KeyEvent::KEY_t:
-				// trixels
-				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->ITRIXELS, 0.0f);
-				break;
-			case KeyEvent::KEY_i:
-				// invert
-				//! 20200526 mVDSocketio->changeBoolValue(mVDSettings->IINVERT, false);
-				break;
-			case KeyEvent::KEY_u:
-				// chromatic
-				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->ICHROMATIC, 0.0f);
-				break;
-			case KeyEvent::KEY_p:
-				// pixelate
-				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IPIXELATE, 1.0f);
-				break;
-			case KeyEvent::KEY_o:
-				// toggle
-				//! 20200526 mVDSocketio->changeBoolValue(mVDSettings->ITOGGLE, false);
-				break;
-			case KeyEvent::KEY_z:
-				// zoom
-				//! 20200526 mVDSocketio->changeFloatValue(mVDSettings->IZOOM, 1.0f);
-				break;
+			
 			default:
 				CI_LOG_V("session keyup: " + toString(event.getCode()));
 				handled = false;
