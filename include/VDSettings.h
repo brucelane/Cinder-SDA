@@ -198,8 +198,8 @@ namespace videodromm {
 		uint16_t					mOSCDestinationPort;
 		std::string					mOSCDestinationHost2;
 		uint16_t					mOSCDestinationPort2;
-		uint16_t					mOSCReceiverPort;
-		std::string					mOSCMsg;
+
+
 		std::string					mMsg;
 		std::string					mErrorMsg;
 		std::string					mShaderMsg;

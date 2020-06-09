@@ -132,6 +132,25 @@ void VDSession::loadFbos() {
 	} //while
 
 }
+int  VDSession::getMode() { 
+	return mMode; 
+};
+void VDSession::setMode(int aMode) { 
+	mMode = aMode; 
+};
+int VDSession::getModesCount() { 
+	return mModesList.size() - 1; 
+};
+void VDSession::toggleUI() {
+	mShowUI = !mShowUI; 
+};
+bool VDSession::showUI() { 
+	return mShowUI; 
+};
+std::string VDSession::getModeName(unsigned int aMode) {
+	if (aMode > mModesList.size() - 1) aMode = mModesList.size() - 1;
+	return mModesList[aMode];
+}
 
 void VDSession::update(unsigned int aClassIndex) {
 

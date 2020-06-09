@@ -47,7 +47,9 @@ namespace videodromm
 		VDOscReceiver(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
 		static VDOscReceiverRef	create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
 
-		void								setupOSCReceiver(VDMediatorObservableRef aVDMediator);
+		void								setupOSCReceiver(VDMediatorObservableRef aVDMediator, int aOSCReceiverPort);
+		void								setOSCMsg(const std::string& aMsg);
+		std::string							getOSCMsg();
 	private:
 		// Settings
 		VDSettingsRef						mVDSettings;
@@ -58,6 +60,9 @@ namespace videodromm
 		float								mBarStart = 0.0f;
 		// osc
 		std::shared_ptr<osc::ReceiverUdp>	mOscReceiver;
+
+		std::string							mOSCMsg;
+
 	};
 }
 

@@ -83,6 +83,20 @@ bool VDSessionFacade::isOscSenderConnected() {
 bool VDSessionFacade::isOscReceiverConnected() {
 	return mOscReceiverConnected;
 };
+int VDSessionFacade::getOSCReceiverPort() {
+	return mVDMediator->getOSCReceiverPort();
+};
+void VDSessionFacade::setOSCReceiverPort(int aReceiverPort) {
+	mVDMediator->setOSCReceiverPort(aReceiverPort);
+};
+void VDSessionFacade::setOSCMsg(const std::string& aMsg) {
+	if (mOscReceiverConnected) {
+		mVDMediator->setOSCMsg(aMsg);
+	}
+};
+std::string VDSessionFacade::getOSCMsg() {
+	return (mOscReceiverConnected) ? mVDMediator->getOSCMsg() : "";
+};
 ci::gl::TextureRef VDSessionFacade::buildRenderedMixetteTexture(unsigned int aIndex) {
 	return mVDSession->getRenderedMixetteTexture(aIndex);
 }

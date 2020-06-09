@@ -11,6 +11,7 @@ VDMediatorObservable::VDMediatorObservable(VDSettingsRef aVDSettings, VDAnimatio
 	CI_LOG_V("VDMediatorObservable constructor");
 	mVDSettings = aVDSettings;
 	mVDAnimation = aVDAnimation;
+	mOSCReceiverPort = 10001;
 }
 VDMediatorObservableRef VDMediatorObservable::addObserver(VDUniformObserverRef o) {
 	mObservers.push_back(o);
@@ -19,8 +20,45 @@ VDMediatorObservableRef VDMediatorObservable::addObserver(VDUniformObserverRef o
 VDMediatorObservableRef VDMediatorObservable::setupOSCReceiver() {
 	// Osc Receiver
 	mVDOscReceiver = VDOscReceiver::create(mVDSettings, mVDAnimation);
-	mVDOscReceiver->setupOSCReceiver(shared_from_this());
+	mOSCReceiverPort = 10001;
+	fs::path jsonFile = getAssetPath("") / mOSCJsonFileName;
+	loadOSCReceiverFromJsonFile(jsonFile);
+	mVDOscReceiver->setupOSCReceiver(shared_from_this(), mOSCReceiverPort);
+	saveOSCReceiverToJson();
 	return shared_from_this();
+}
+void VDMediatorObservable::loadOSCReceiverFromJsonFile(const fs::path& jsonFile) {
+	if (fs::exists(jsonFile)) {
+		JsonTree json(loadFile(jsonFile));
+		if (json.hasChild("uniform")) {
+			JsonTree u(json.getChild("uniform"));
+			mOSCReceiverPort = (u.hasChild("index")) ? u.getValueForKey<int>("index") : 251;
+		}		
+	}
+}
+//! to json
+JsonTree VDMediatorObservable::saveOSCReceiverToJson() const
+{
+	JsonTree json;
+	JsonTree receiver = ci::JsonTree::makeArray("receiver");
+	receiver.addChild(ci::JsonTree("receiverport", mOSCReceiverPort));
+	json.addChild(receiver);
+	fs::path jsonFile = getAssetPath("") / mOSCJsonFileName;
+	json.write(jsonFile);
+	return json;
+}
+
+int VDMediatorObservable::getOSCReceiverPort() {
+	return mOSCReceiverPort;
+};
+void VDMediatorObservable::setOSCReceiverPort(int aReceiverPort) {
+	mOSCReceiverPort = aReceiverPort;
+};
+void VDMediatorObservable::setOSCMsg(const std::string& aMsg) {
+	mVDOscReceiver->setOSCMsg(aMsg);
+};
+std::string VDMediatorObservable::getOSCMsg() {
+	return mVDOscReceiver->getOSCMsg();
 }
 VDMediatorObservableRef VDMediatorObservable::setupKeyboard() {
 	// Keyboard

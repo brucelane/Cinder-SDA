@@ -11,11 +11,19 @@ VDOscReceiver::VDOscReceiver(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimat
 	mVDSettings = aVDSettings;
 	mVDAnimation = aVDAnimation;
 	CI_LOG_V("VDOscReceiver constructor");
+	mOSCMsg = "";
+
 }
 
-void VDOscReceiver::setupOSCReceiver(VDMediatorObservableRef aVDMediator) {
+void VDOscReceiver::setOSCMsg(const std::string& aMsg) {
+	mOSCMsg = aMsg;
+};
+std::string VDOscReceiver::getOSCMsg() {
+	return mOSCMsg;
+}
+void VDOscReceiver::setupOSCReceiver(VDMediatorObservableRef aVDMediator, int aOSCReceiverPort) {
 	mVDMediator = aVDMediator;
-	mOscReceiver = std::make_shared<osc::ReceiverUdp>(mVDSettings->mOSCReceiverPort);
+	mOscReceiver = std::make_shared<osc::ReceiverUdp>(aOSCReceiverPort);
 
 	mOscReceiver->setListener("/*",
 		[&](const osc::Message& msg) {
@@ -387,7 +395,7 @@ void VDOscReceiver::setupOSCReceiver(VDMediatorObservableRef aVDMediator) {
 			}
 			if (addr != "/play") {
 				ss << " f:" << f << " i:" << i;
-				mVDSettings->mOSCMsg = ss.str();
+				mOSCMsg = ss.str();
 			}
 
 		});
@@ -410,6 +418,7 @@ void VDOscReceiver::setupOSCReceiver(VDMediatorObservableRef aVDMediator) {
 				return false;
 			}
 			else
+				
 				return true;
 		});
 }

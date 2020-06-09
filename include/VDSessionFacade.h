@@ -51,6 +51,10 @@ namespace videodromm
 		bool					getUseTimeWithTempo();
 		bool					isOscSenderConnected();
 		bool					isOscReceiverConnected();
+		int						getOSCReceiverPort();
+		void					setOSCReceiverPort(int aReceiverPort);
+		void					setOSCMsg(const std::string& aMsg);
+		std::string				getOSCMsg();
 		ci::gl::TextureRef		buildRenderedMixetteTexture(unsigned int aIndex);
 		ci::gl::TextureRef		buildFboTexture(unsigned int aIndex);
 		ci::gl::TextureRef		buildFboRenderedTexture(unsigned int aFboIndex);

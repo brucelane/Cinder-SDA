@@ -43,6 +43,10 @@ namespace videodromm {
 		static VDMediatorObservableRef		createVDMediatorObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
 		VDMediatorObservableRef				addObserver(VDUniformObserverRef o);
 		VDMediatorObservableRef				setupOSCReceiver();
+		int									getOSCReceiverPort();
+		void								setOSCReceiverPort(int aReceiverPort);
+		void								setOSCMsg(const std::string& aMsg);
+		std::string							getOSCMsg();
 		VDMediatorObservableRef				setupKeyboard();
 		float								getUniformValue(unsigned int aIndex);
 		std::string							getUniformName(unsigned int aIndex);
@@ -58,9 +62,13 @@ namespace videodromm {
 		VDAnimationRef						mVDAnimation;
 		// OSC
 		VDOscReceiverRef					mVDOscReceiver;
+		int									mOSCReceiverPort;
+		const std::string					mOSCJsonFileName = "oscreceiver.json";
+		void								loadOSCReceiverFromJsonFile(const fs::path& jsonFile);
+		JsonTree							saveOSCReceiverToJson() const;
 		// Keyboard
 		VDKeyboardRef						mVDKeyboard;
-		VDMediatorObservable() {}
+		//VDMediatorObservable() {}
 		VDMediatorObservable(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation);
 	};
 

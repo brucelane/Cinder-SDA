@@ -118,9 +118,9 @@ bool VDSettings::save()
 	OSCEnabled.setAttribute("value", toString(mOSCEnabled));
 	settings.push_back(OSCEnabled);
 
-	XmlTree OSCReceiverPort("OSCReceiverPort", "");
+	/*XmlTree OSCReceiverPort("OSCReceiverPort", "");
 	OSCReceiverPort.setAttribute("value", toString(mOSCReceiverPort));
-	settings.push_back(OSCReceiverPort);
+	settings.push_back(OSCReceiverPort);*/
 
 	XmlTree OSCDestinationPort("OSCDestinationPort", "");
 	OSCDestinationPort.setAttribute("value", toString(mOSCDestinationPort));
@@ -258,10 +258,10 @@ bool VDSettings::restore()
 				XmlTree OSCEnabled = settings.getChild("OSCEnabled");
 				mOSCEnabled = OSCEnabled.getAttributeValue<bool>("value");
 			}
-			if (settings.hasChild("OSCReceiverPort")) {
+			/*if (settings.hasChild("OSCReceiverPort")) {
 				XmlTree OSCReceiverPort = settings.getChild("OSCReceiverPort");
 				mOSCReceiverPort = OSCReceiverPort.getAttributeValue<int>("value");
-			}
+			}*/
 			if (settings.hasChild("IsOSCSender")) {
 				XmlTree IsOSCSender = settings.getChild("IsOSCSender");
 				mIsOSCSender = IsOSCSender.getAttributeValue<bool>("value");
@@ -552,8 +552,8 @@ void VDSettings::reset()
 	mOSCDestinationPort = 7001;
 	mOSCDestinationHost2 = "127.0.0.1";
 	mOSCDestinationPort2 = 7002;
-	mOSCReceiverPort = 7000;
-	mOSCMsg = "";
+	//mOSCReceiverPort = 7000;
+
 	mMsg = "";
 	mErrorMsg = "";
 	mSocketIOMsg = "";

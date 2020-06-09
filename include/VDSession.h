@@ -360,15 +360,14 @@ namespace videodromm {
 		ci::gl::TextureRef				getHydraTexture() { return mHydraFbo->getColorTexture(); };*/
 
 		// modeint
-		int								getMode() { return mMode; };
-		void							setMode(int aMode) { mMode = aMode; };
-		int								getModesCount() { return mModesList.size() - 1; };
-		void							toggleUI() { mShowUI = !mShowUI; };
-		bool							showUI() { return mShowUI; };
-		std::string							getModeName(unsigned int aMode) {
-			if (aMode > mModesList.size() - 1) aMode = mModesList.size() - 1;
-			return mModesList[aMode];
-		}
+		int								getMode();
+		void							setMode(int aMode);
+		int								getModesCount();
+		void							toggleUI();
+		bool							showUI();
+		std::string						getModeName(unsigned int aMode);
+		
+
 	private:
 		int								mMode = 1;
 
@@ -486,6 +485,7 @@ namespace videodromm {
 		void							loadFbos();
 
 		bool							odd = false;
+
 	};
 
 }
