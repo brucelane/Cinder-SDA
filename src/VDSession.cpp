@@ -569,3 +569,128 @@ unsigned int VDSession::fboFromJson(const JsonTree& json, unsigned int aFboIndex
 }
 
 #pragma endregion mix
+ci::gl::TextureRef VDSession::getFboRenderedTexture(unsigned int aFboIndex) {
+	return mVDMix->getFboRenderedTexture(aFboIndex);
+}
+ci::gl::TextureRef VDSession::getFboTexture(unsigned int aFboIndex) {
+	return mVDMix->getFboTexture(aFboIndex);
+}
+ci::gl::TextureRef VDSession::getMixetteTexture(unsigned int aFboIndex) {
+	return mVDMix->getMixetteTexture(aFboIndex);
+}
+ci::gl::TextureRef VDSession::getRenderedMixetteTexture(unsigned int aFboIndex) {
+	return mVDMix->getRenderedMixetteTexture(aFboIndex);
+}
+ci::gl::TextureRef VDSession::getPostFboTexture() {
+	return mPostFbo->getColorTexture();
+};
+ci::gl::TextureRef VDSession::getWarpFboTexture() {
+	return mWarpsFbo->getColorTexture();
+};
+ci::gl::TextureRef VDSession::getRenderedWarpFboTexture() {
+	return mWarpTexture;
+};
+void VDSession::resize() {
+	//mRenderFbo = gl::Fbo::create(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight, fboFmt);
+	// tell the fbos our window has been resized, so they properly scale up or down
+	Warp::handleResize(mWarpList);
+	Warp::setSize(mWarpList, ivec2(mVDSettings->mFboWidth, mVDSettings->mFboHeight));
+}
+unsigned int VDSession::getWarpCount() { return mWarpList.size(); };
+std::string	 VDSession::getWarpName(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getName(); };// or trycatch
+int VDSession::getWarpWidth(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getWidth(); };
+int VDSession::getWarpHeight(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getHeight(); };
+void VDSession::setWarpWidth(unsigned int aWarpIndex, int aWidth) {
+	mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->setWidth(aWidth);
+	mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->resize();
+};
+void VDSession::setWarpHeight(unsigned int aWarpIndex, int aHeight) {
+	Warp::handleResize(mWarpList);
+	Warp::setSize(mWarpList, ivec2(mVDSettings->mFboWidth, aHeight));
+	mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->setHeight(aHeight);
+
+};
+unsigned int VDSession::getWarpAFboIndex(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getAFboIndex(); };
+unsigned int VDSession::getWarpBFboIndex(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getBFboIndex(); };
+void VDSession::setWarpAFboIndex(unsigned int aWarpIndex, unsigned int aWarpFboIndex) {
+	if (aWarpIndex < mWarpList.size() && aWarpFboIndex < mVDMix->getFboListSize()) {
+		mWarpList[aWarpIndex]->setAFboIndex(aWarpFboIndex);
+		updateWarpName(aWarpIndex);
+	}
+}
+void VDSession::setWarpBFboIndex(unsigned int aWarpIndex, unsigned int aWarpFboIndex) {
+	if (aWarpIndex < mWarpList.size() && aWarpFboIndex < mVDMix->getFboListSize()) {
+		mWarpList[aWarpIndex]->setBFboIndex(aWarpFboIndex);
+		updateWarpName(aWarpIndex);
+	}
+}
+
+void VDSession::createWarp() {
+	auto warp = WarpBilinear::create();
+	warp->setName("New");
+	warp->setAFboIndex(0);
+	warp->setBFboIndex(0);
+	warp->setAShaderIndex(0);
+	warp->setBShaderIndex(0);
+	warp->setAShaderFilename("inputImage.fs");
+	warp->setBShaderFilename("inputImage.fs");
+	warp->setATextureFilename("audio");
+	warp->setBTextureFilename("audio");
+	mWarpList.push_back(WarpBilinear::create());
+}
+std::string VDSession::getFboShaderName(unsigned int aFboIndex) {
+	return mVDMix->getFboShaderName(aFboIndex);
+}
+std::string VDSession::getFboTextureName(unsigned int aFboIndex) {
+	return mVDMix->getFboTextureName(aFboIndex);
+}
+void VDSession::saveWarps() {
+	/*int i = 0;
+	for (auto &warp : mWarpList) {
+		//
+		warp->setAShaderFilename(getFboShaderName(warp->getAFboIndex()));
+		warp->setATextureFilename(getFboTextureName(warp->getAFboIndex()));
+		JsonTree		json;
+		string jsonFileName = "warp" + toString(i) + ".json";
+		fs::path jsonFile = getAssetPath("") / mVDSettings->mAssetsPath / jsonFileName;
+		// write file
+		json.pushBack(warp->toJson());
+		json.write(jsonFile);
+		i++;
+	}
+	// save warp settings*/
+	Warp::writeSettings(mWarpList, writeFile(mSettings));
+}
+void VDSession::setAnim(unsigned int aCtrl, unsigned int aAnim) {
+	mVDAnimation->setAnim(aCtrl, aAnim);
+}
+// control values
+void VDSession::toggleValue(unsigned int aCtrl) {
+	//! 20200526 mVDSocketio->toggleValue(aCtrl);
+};
+
+float VDSession::getMinUniformValue(unsigned int aIndex) {
+	return mVDAnimation->getMinUniformValue(aIndex);
+};
+float VDSession::getMaxUniformValue(unsigned int aIndex) {
+	return mVDAnimation->getMaxUniformValue(aIndex);
+};
+int VDSession::getSampler2DUniformValueByName(const std::string& aName) {
+	return mVDAnimation->getSampler2DUniformValueByName(aName);
+};
+int VDSession::getIntUniformValueByName(const std::string& aName) {
+	return mVDAnimation->getIntUniformValueByName(aName);
+};
+int VDSession::getIntUniformValueByIndex(unsigned int aCtrl) {
+	return mVDAnimation->getIntUniformValueByIndex(aCtrl);
+};
+bool VDSession::getBoolUniformValueByName(const std::string& aName) {
+	return mVDAnimation->getBoolUniformValueByName(aName);
+};
+bool VDSession::getBoolUniformValueByIndex(unsigned int aCtrl) {
+	return mVDAnimation->getBoolUniformValueByIndex(aCtrl);
+}
+
+float VDSession::getUniformValueByName(const std::string& aCtrlName) {
+	return mVDAnimation->getUniformValueByName(aCtrlName);
+};

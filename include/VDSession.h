@@ -57,101 +57,32 @@ namespace videodromm {
 		void							loadFromJsonFile(const fs::path& jsonFile);
 		
 		//! Mix
-		ci::gl::TextureRef				getFboRenderedTexture(unsigned int aFboIndex) {
-			return mVDMix->getFboRenderedTexture(aFboIndex);
-		}
-		ci::gl::TextureRef				getFboTexture(unsigned int aFboIndex) {
-			return mVDMix->getFboTexture(aFboIndex);
-		}
-		ci::gl::TextureRef				getMixetteTexture(unsigned int aFboIndex) {
-			return mVDMix->getMixetteTexture(aFboIndex);
-		}
-		ci::gl::TextureRef				getRenderedMixetteTexture(unsigned int aFboIndex) {
-			return mVDMix->getRenderedMixetteTexture(aFboIndex);
-		}
-		ci::gl::TextureRef				getPostFboTexture() {
-			return mPostFbo->getColorTexture();
-		};
-		ci::gl::TextureRef				getWarpFboTexture() {
-			return mWarpsFbo->getColorTexture();
-		};
-		ci::gl::TextureRef				getRenderedWarpFboTexture() {
-			return mWarpTexture;
-		};
+		ci::gl::TextureRef				getFboRenderedTexture(unsigned int aFboIndex);
+		ci::gl::TextureRef				getFboTexture(unsigned int aFboIndex);
+		ci::gl::TextureRef				getMixetteTexture(unsigned int aFboIndex);
+		ci::gl::TextureRef				getRenderedMixetteTexture(unsigned int aFboIndex);
+		ci::gl::TextureRef				getPostFboTexture();
+		ci::gl::TextureRef				getWarpFboTexture();
+		ci::gl::TextureRef				getRenderedWarpFboTexture();
 		//!
 		void							reset();
 		void							resetSomeParams();
-		void							resize() {
-			//mRenderFbo = gl::Fbo::create(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight, fboFmt);
-			// tell the fbos our window has been resized, so they properly scale up or down
-			Warp::handleResize(mWarpList);
-			Warp::setSize(mWarpList, ivec2(mVDSettings->mFboWidth, mVDSettings->mFboHeight));
-		}
-		unsigned int					getWarpCount() { return mWarpList.size(); };
-		std::string						getWarpName(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getName(); };// or trycatch
-		int								getWarpWidth(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getWidth(); };
-		int								getWarpHeight(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getHeight(); };
-		void							setWarpWidth(unsigned int aWarpIndex, int aWidth) {
-			mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->setWidth(aWidth);
-			mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->resize();
-		};
-		void							setWarpHeight(unsigned int aWarpIndex, int aHeight) {
-			Warp::handleResize(mWarpList);
-			Warp::setSize(mWarpList, ivec2(mVDSettings->mFboWidth, aHeight));
-			mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->setHeight(aHeight);
+		void							resize();
+		unsigned int					getWarpCount();
+		std::string						getWarpName(unsigned int aWarpIndex);// or trycatch
+		int								getWarpWidth(unsigned int aWarpIndex);
+		int								getWarpHeight(unsigned int aWarpIndex);
+		void							setWarpWidth(unsigned int aWarpIndex, int aWidth);
+		void							setWarpHeight(unsigned int aWarpIndex, int aHeight);
+		unsigned int					getWarpAFboIndex(unsigned int aWarpIndex);
+		unsigned int					getWarpBFboIndex(unsigned int aWarpIndex);
+		void							setWarpAFboIndex(unsigned int aWarpIndex, unsigned int aWarpFboIndex);
+		void							setWarpBFboIndex(unsigned int aWarpIndex, unsigned int aWarpFboIndex);
 
-		};
-		unsigned int					getWarpAFboIndex(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getAFboIndex(); };
-		unsigned int					getWarpBFboIndex(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getBFboIndex(); };
-		void							setWarpAFboIndex(unsigned int aWarpIndex, unsigned int aWarpFboIndex) {
-			if (aWarpIndex < mWarpList.size() && aWarpFboIndex < mVDMix->getFboListSize()) {
-				mWarpList[aWarpIndex]->setAFboIndex(aWarpFboIndex);
-				updateWarpName(aWarpIndex);
-			}
-		}
-		void							setWarpBFboIndex(unsigned int aWarpIndex, unsigned int aWarpFboIndex) {
-			if (aWarpIndex < mWarpList.size() && aWarpFboIndex < mVDMix->getFboListSize()) {
-				mWarpList[aWarpIndex]->setBFboIndex(aWarpFboIndex);
-				updateWarpName(aWarpIndex);
-			}
-		}
-
-		void							createWarp() {
-			auto warp = WarpBilinear::create();
-			warp->setName("New");
-			warp->setAFboIndex(0);
-			warp->setBFboIndex(0);
-			warp->setAShaderIndex(0);
-			warp->setBShaderIndex(0);
-			warp->setAShaderFilename("inputImage.fs");
-			warp->setBShaderFilename("inputImage.fs");
-			warp->setATextureFilename("audio");
-			warp->setBTextureFilename("audio");
-			mWarpList.push_back(WarpBilinear::create());
-		}
-		std::string							getFboShaderName(unsigned int aFboIndex) {
-			return mVDMix->getFboShaderName(aFboIndex);
-		}
-		std::string							getFboTextureName(unsigned int aFboIndex) {
-			return mVDMix->getFboTextureName(aFboIndex);
-		}
-		void							saveWarps() {
-			/*int i = 0;
-			for (auto &warp : mWarpList) {
-				//
-				warp->setAShaderFilename(getFboShaderName(warp->getAFboIndex()));
-				warp->setATextureFilename(getFboTextureName(warp->getAFboIndex()));
-				JsonTree		json;
-				string jsonFileName = "warp" + toString(i) + ".json";
-				fs::path jsonFile = getAssetPath("") / mVDSettings->mAssetsPath / jsonFileName;
-				// write file
-				json.pushBack(warp->toJson());
-				json.write(jsonFile);
-				i++;
-			}
-			// save warp settings*/
-			Warp::writeSettings(mWarpList, writeFile(mSettings));
-		}
+		void							createWarp();
+		std::string						getFboShaderName(unsigned int aFboIndex);
+		std::string						getFboTextureName(unsigned int aFboIndex);
+		void							saveWarps();
 
 		bool							handleMouseMove(MouseEvent& event);
 		bool							handleMouseDown(MouseEvent& event);
@@ -160,39 +91,17 @@ namespace videodromm {
 		bool							save();
 		void							restore();
 
-		void							setAnim(unsigned int aCtrl, unsigned int aAnim) {
-			mVDAnimation->setAnim(aCtrl, aAnim);
-		}
+		void							setAnim(unsigned int aCtrl, unsigned int aAnim);
 		// control values
-		void							toggleValue(unsigned int aCtrl) {
-			//! 20200526 mVDSocketio->toggleValue(aCtrl);
-		};
-
-		float							getMinUniformValue(unsigned int aIndex) {
-			return mVDAnimation->getMinUniformValue(aIndex);
-		};
-		float							getMaxUniformValue(unsigned int aIndex) {
-			return mVDAnimation->getMaxUniformValue(aIndex);
-		};
-		int								getSampler2DUniformValueByName(const std::string& aName) {
-			return mVDAnimation->getSampler2DUniformValueByName(aName);
-		};
-		int								getIntUniformValueByName(const std::string& aName) {
-			return mVDAnimation->getIntUniformValueByName(aName);
-		};
-		int								getIntUniformValueByIndex(unsigned int aCtrl) {
-			return mVDAnimation->getIntUniformValueByIndex(aCtrl);
-		};
-		bool							getBoolUniformValueByName(const std::string& aName) {
-			return mVDAnimation->getBoolUniformValueByName(aName);
-		};
-		bool							getBoolUniformValueByIndex(unsigned int aCtrl) {
-			return mVDAnimation->getBoolUniformValueByIndex(aCtrl);
-		}
-
-		float							getUniformValueByName(const std::string& aCtrlName) {
-			return mVDAnimation->getUniformValueByName(aCtrlName);
-		};
+		void							toggleValue(unsigned int aCtrl);
+		float							getMinUniformValue(unsigned int aIndex);
+		float							getMaxUniformValue(unsigned int aIndex);
+		int								getSampler2DUniformValueByName(const std::string& aName);
+		int								getIntUniformValueByName(const std::string& aName);
+		int								getIntUniformValueByIndex(unsigned int aCtrl);
+		bool							getBoolUniformValueByName(const std::string& aName);
+		bool							getBoolUniformValueByIndex(unsigned int aCtrl);
+		float							getUniformValueByName(const std::string& aCtrlName);
 
 		// tempo
 		void							tapTempo() { mVDAnimation->tapTempo(); };
