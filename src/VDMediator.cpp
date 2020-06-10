@@ -11,7 +11,7 @@ VDMediatorObservable::VDMediatorObservable(VDSettingsRef aVDSettings, VDAnimatio
 	CI_LOG_V("VDMediatorObservable constructor");
 	mVDSettings = aVDSettings;
 	mVDAnimation = aVDAnimation;
-	mOSCReceiverPort = 10001;
+	mOSCReceiverPort = OSC_DEFAULT_PORT;
 }
 VDMediatorObservableRef VDMediatorObservable::addObserver(VDUniformObserverRef o) {
 	mObservers.push_back(o);
@@ -20,7 +20,7 @@ VDMediatorObservableRef VDMediatorObservable::addObserver(VDUniformObserverRef o
 VDMediatorObservableRef VDMediatorObservable::setupOSCReceiver() {
 	// Osc Receiver
 	mVDOscReceiver = VDOscReceiver::create(mVDSettings, mVDAnimation);
-	mOSCReceiverPort = 10001;
+	mOSCReceiverPort = OSC_DEFAULT_PORT;
 	fs::path jsonFile = getAssetPath("") / mOSCJsonFileName;
 	loadOSCReceiverFromJsonFile(jsonFile);
 	mVDOscReceiver->setupOSCReceiver(shared_from_this(), mOSCReceiverPort);
@@ -30,11 +30,30 @@ VDMediatorObservableRef VDMediatorObservable::setupOSCReceiver() {
 void VDMediatorObservable::loadOSCReceiverFromJsonFile(const fs::path& jsonFile) {
 	if (fs::exists(jsonFile)) {
 		JsonTree json(loadFile(jsonFile));
-		if (json.hasChild("uniform")) {
-			JsonTree u(json.getChild("uniform"));
-			mOSCReceiverPort = (u.hasChild("index")) ? u.getValueForKey<int>("index") : 251;
+		if (json.hasChild("receiver")) {
+			JsonTree u(json.getChild("receiver"));
+			if (validateJson(u)) {
+				// (u.hasChild("port")) ? u.getValueForKey<int>("port") : OSC_DEFAULT_PORT;
+				mOSCReceiverPort = u.getValueForKey<int>("port");
+			}
 		}		
 	}
+}
+// => VDJsonManager
+bool VDMediatorObservable::validateJson(const JsonTree& tree) {
+	bool rtn = false;
+	if (tree.hasChild("port")) {
+		if (tree.getNodeType() == cinder::JsonTree::NodeType::NODE_VALUE) {
+			int p = tree.getValueForKey<int>("port");
+			if (p > 0 && p < 65536) {
+				rtn = true;
+			}
+		}
+	}
+	if (!rtn) {
+		CI_LOG_E("json not well formatted");
+	}
+	return rtn;
 }
 //! to json
 JsonTree VDMediatorObservable::saveOSCReceiverToJson() const

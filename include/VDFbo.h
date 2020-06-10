@@ -47,9 +47,9 @@ namespace videodromm
 		static VDFboRef create(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const JsonTree &json) {
 			return std::make_shared<VDFbo>(aVDSettings, aVDAnimation, json);
 		}
-
+		// fbo mix several fbos   fbo=shader+texture(s)
 		// get live rendered texture
-		ci::gl::Texture2dRef					getTexture();
+		ci::gl::Texture2dRef					getTexture(); //TODO 20200610; = 0
 		ci::gl::Texture2dRef					getRenderedTexture() {
 			//last frame rendered
 			return mRenderedTexture;

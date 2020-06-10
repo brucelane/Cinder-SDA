@@ -15,6 +15,7 @@
 #include <memory>
 #include <vector>
 
+#define OSC_DEFAULT_PORT 10001
 
 using namespace ci;
 using namespace ci::app;
@@ -62,6 +63,7 @@ namespace videodromm {
 		VDAnimationRef						mVDAnimation;
 		// OSC
 		VDOscReceiverRef					mVDOscReceiver;
+		bool								validateJson(const JsonTree& tree);
 		int									mOSCReceiverPort;
 		const std::string					mOSCJsonFileName = "oscreceiver.json";
 		void								loadOSCReceiverFromJsonFile(const fs::path& jsonFile);
