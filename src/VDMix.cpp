@@ -59,7 +59,7 @@ namespace videodromm {
 		mWarpJson = getAssetPath("") / mVDSettings->mAssetsPath / "warps.json";
 
 		mCurrentBlend = 0;
-		for (size_t i = 0; i < mVDAnimation->getBlendModesCount(); i++)
+		for (size_t i {0}; i < mVDAnimation->getBlendModesCount(); i++)
 		{
 			mBlendFbos[i] = gl::Fbo::create(mVDSettings->mPreviewFboWidth, mVDSettings->mPreviewFboHeight, fboFmt);
 		}
@@ -90,7 +90,7 @@ namespace videodromm {
 		mWarpActiveIndex = 0;
 		mSolo = -1;
 		// 20180416
-		for (int i = 0; i < 5; i++)
+		for (int i {0}; i < 5; i++)
 		{
 			if (i < mTextureList.size() - 1) {
 				if (i < mFboList.size() - 1) {
@@ -953,7 +953,7 @@ namespace videodromm {
 #pragma endregion textures
 		// shaders
 		/*void VDMix::updateShaderThumbFile(unsigned int aShaderIndex) {
-			for (int i = 0; i < mFboList.size(); i++)
+			for (int i {0}; i < mFboList.size(); i++)
 			{
 				if (mFboList[i]->getShaderIndex() == aShaderIndex) mFboList[i]->updateThumbFile();
 			}
@@ -966,7 +966,7 @@ namespace videodromm {
 			if (aShaderIndex > mShaderList.size() - 1) aShaderIndex = mShaderList.size() - 1;
 			mShaderList[aShaderIndex]->setFragmentString(aFragmentShaderString, aName);
 			// if live coding shader compiles and is used by a fbo reload it
-			for (int i = 0; i < mFboList.size(); i++)
+			for (int i {0}; i < mFboList.size(); i++)
 			{
 				if (mFboList[i]->getShaderIndex() == aShaderIndex) setFboFragmentShaderIndex(i, aShaderIndex);
 			}
@@ -1015,7 +1015,7 @@ namespace videodromm {
 		}
 		ci::gl::TextureRef VDMix::getShaderThumb(unsigned int aShaderIndex) {
 			unsigned int found = 0;
-			for (int i = 0; i < mFboList.size(); i++)
+			for (int i {0}; i < mFboList.size(); i++)
 			{
 				if (mFboList[i]->getShaderIndex() == aShaderIndex) found = i;
 			}
@@ -1023,7 +1023,7 @@ namespace videodromm {
 		}
 		void VDMix::updateStream(string * aStringPtr) {
 			int found = -1;
-			for (int i = 0; i < mTextureList.size(); i++)
+			for (int i {0}; i < mTextureList.size(); i++)
 			{
 				if (mTextureList[i]->getType() == mTextureList[i]->STREAM) found = i;
 			}

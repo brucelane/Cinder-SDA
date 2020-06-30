@@ -21,7 +21,6 @@
 
 using namespace ci;
 using namespace ci::app;
-//using namespace std;
 using namespace ci::osc;
 using namespace asio;
 using namespace asio::ip;

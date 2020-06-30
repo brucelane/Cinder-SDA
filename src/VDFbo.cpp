@@ -212,7 +212,7 @@ using namespace videodromm;
 				}
 				t++;
 			}*/
-			for (size_t i = 1; i < 14; i++)
+			for (size_t i{1} ; i < 14; i++)
 			{
 				mTextureList[0]->getTexture(i)->bind(253 + i);
 			}
@@ -258,7 +258,7 @@ using namespace videodromm;
 							mShader->uniform(name, (uint32_t)(0));
 						}
 						//mShader->uniform(name, 253);
-						for (size_t i = 1; i < 14; i++)
+						for (size_t i{1} ; i < 14; i++)
 						{
 							mShader->uniform(name, (uint32_t)(253 + i));
 						}
@@ -329,7 +329,7 @@ using namespace videodromm;
 			gl::drawSolidRect(Rectf(0, 0, mVDSettings->mFboWidth, mVDSettings->mFboHeight));
 			mRenderedTexture = mFbo->getColorTexture();
 			if (!isReady) {
-				std::string filename = mName + "-" + mTextureList[0]->getTextureName() + ".jpg";
+				std::string filename = mName + "-" + mTextureList[0]->getName() + ".jpg";
 				fs::path fr = getAssetPath("") / "thumbs" / filename;
 
 				if (!fs::exists(fr)) {
@@ -362,8 +362,8 @@ using namespace videodromm;
 		shader.pushBack(ci::JsonTree("shadertype", "fs"));
 		json.addChild(shader);
 		JsonTree texture = ci::JsonTree::makeArray("texture");
-		texture.addChild(ci::JsonTree("texturename", mTextureList[0]->getTextureName()));
-		texture.pushBack(ci::JsonTree("texturetype", mTextureList[0]->getType()));
+		texture.addChild(ci::JsonTree("texturename", mTextureList[0]->getName()));
+		// mode is enum not string texture.pushBack(ci::JsonTree("texturetype", mTextureList[0]->getType()));
 		texture.pushBack(ci::JsonTree("texturemode", mTextureList[0]->getMode()));
 		json.addChild(texture);
 
@@ -384,10 +384,11 @@ using namespace videodromm;
 
 	std::string								VDFbo::getName() { return mName; };
 	std::string								VDFbo::getShaderName() { return mShaderName; };
-	std::string								VDFbo::getTextureName() { return mTextureList[0]->getTextureName(); };
+	std::string								VDFbo::getTextureName() { return mTextureList[0]->getName(); };
 	ci::gl::Texture2dRef					VDFbo::getInputTexture() { return mTextureList[0]->getTexture(); };
 	std::string								VDFbo::getStatus() { return mTextureList[0]->getStatus(); };
 	void									VDFbo::setImageInputTexture(ci::gl::Texture2dRef aTextureRef, const std::string& aTextureFilename) {
+		// TODO 20200630
 		mTextureList[0]->setImageInputTexture(aTextureRef, aTextureFilename);
 	};
 	void									VDFbo::updateThumbFile() {

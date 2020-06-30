@@ -60,7 +60,7 @@ JsonTree VDMediatorObservable::saveOSCReceiverToJson() const
 {
 	JsonTree json;
 	JsonTree receiver = ci::JsonTree::makeArray("receiver");
-	receiver.addChild(ci::JsonTree("receiverport", mOSCReceiverPort));
+	receiver.addChild(ci::JsonTree("port", mOSCReceiverPort));
 	json.addChild(receiver);
 	fs::path jsonFile = getAssetPath("") / mOSCJsonFileName;
 	json.write(jsonFile);

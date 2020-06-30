@@ -12,11 +12,11 @@ VDAnimation::VDAnimation(VDSettingsRef aVDSettings) {
 	mLineInInitialized = false;
 	mWaveInitialized = false;
 	mAudioName = "not initialized";
-	for (int i = 0; i < 7; i++)
+	for (int i{0}; i < 7; i++)
 	{
 		freqIndexes[i] = i * 7;
 	}
-	for (int i = 0; i < mFFTWindowSize; i++)
+	for (int i{0}; i < mFFTWindowSize; i++)
 	{
 		iFreqs[i] = 0.0f;
 	}
@@ -113,7 +113,7 @@ void VDAnimation::saveUniforms()
 	// create uniforms json
 	JsonTree uniformsJson = JsonTree::makeArray("uniforms");
 
-	for (unsigned i = 0; i < ctrlSize; ++i) {
+	for (unsigned i{0}; i < ctrlSize; ++i) {
 		JsonTree		u(uniformToJson(i));
 		// create <uniform>
 		uniformsJson.pushBack(u);
@@ -306,7 +306,7 @@ ci::gl::TextureRef VDAnimation::getAudioTexture() {
 		if (mDataSize > 0 && mDataSize < mFFTWindowSize) {// TODO 20200221 CHECK was + 1
 			float db;
 			unsigned char signal[mFFTWindowSize];
-			for (size_t i = 0; i < mDataSize; i++) {
+			for (size_t i{0}; i < mDataSize; i++) {
 				float f = mMagSpectrum[i];
 				db = audio::linearToDecibel(f);
 				f = db * getUniformValue(mVDSettings->IAUDIOX);
@@ -349,12 +349,12 @@ ci::gl::TextureRef VDAnimation::getAudioTexture() {
 	}
 	else {
 		// generate random values
-		// 20200222 for (int i = 0; i < 128; ++i) dTexture[i] = (unsigned char)(i);
+		// 20200222 for (int i{0}; i < 128; ++i) dTexture[i] = (unsigned char)(i);
 		// 20200222 mAudioTexture = gl::Texture::create(dTexture, GL_RED, 64, 2, mAudioFormat);
 		// get freqs from Speckthor in VDRouter.cpp
 		float db;
 		unsigned char signal[mFFTWindowSize];
-		for (size_t i = 0; i < mFFTWindowSize; i++) {
+		for (size_t i{0}; i < mFFTWindowSize; i++) {
 			float f = iFreqs[i];
 			if (f > getUniformValue(mVDSettings->IMAXVOLUME))
 			{
@@ -468,7 +468,7 @@ void VDAnimation::update() {
 		previousTime = mVDUniform->getUniformValue(mVDSettings->ITEMPOTIME);
 
 		// TODO (modulo < 0.1) ? tempoMvg->setNameColor(ColorA::white()) : tempoMvg->setNameColor(UIController::DEFAULT_NAME_COLOR);
-		for (unsigned int anim = 1; anim < 29; anim++)
+		for (unsigned int anim{1} ; anim < 29; anim++)
 		{
 			//unsigned int animType = mVDUniform->getUniformAnim(anim)
 			switch (mVDUniform->getUniformAnim(anim)) {				
@@ -554,7 +554,7 @@ void VDAnimation::calculateTempo()
 {
 	// NORMAL AVERAGE
 	double tAverage = 0;
-	for (int i = 0; i < buffer.size(); i++)
+	for (int i{0}; i < buffer.size(); i++)
 	{
 		tAverage += buffer[i];
 	}

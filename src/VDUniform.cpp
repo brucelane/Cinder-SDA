@@ -6,7 +6,7 @@ VDUniform::VDUniform(VDSettingsRef aVDSettings) {
 	CI_LOG_V("VDUniform ctor");
 	mVDSettings = aVDSettings;
 	// textures
-	for (size_t i = 0; i < 30; i++)
+	for (size_t i{0} ; i < 30; i++)
 	{
 		createSampler2DUniform("iChannel" + toString(i), 300 + i, i);// TODO verify doesn't mess up type (uint!)
 	}
@@ -241,7 +241,7 @@ void VDUniform::loadUniforms(const ci::DataSourceRef& source) {
 		JsonTree u(json.getChild("uniforms"));
 
 		// iterate uniforms
-		for (size_t i = 0; i < u.getNumChildren(); i++) {
+		for (size_t i{0} ; i < u.getNumChildren(); i++) {
 			JsonTree child(u.getChild(i));
 
 			if (child.hasChild("uniform")) {

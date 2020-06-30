@@ -131,7 +131,7 @@ void VDOscReceiver::setupOSCReceiver(VDMediatorObservableRef aVDMediator, int aO
 				{
 					found = true;
 					mVDAnimation->setUniformValue(mVDSettings->IMAXVOLUME, 0.0f);
-					for (int a = 0; a < msg.getNumArgs(); a++) {
+					for (int a{0}; a < msg.getNumArgs(); a++) {
 						// get the argument type 'f'
 						if (msg.getArgType(i) == ArgType::FLOAT) {
 							f = msg[a].flt() * 200.0f * mVDAnimation->getUniformValue(mVDSettings->IAUDIOX);

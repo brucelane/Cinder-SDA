@@ -504,7 +504,7 @@ void VDSettings::reset()
 	//liveMeter = 0.0f;
 
 	// shader uniforms
-	for (int i = 0; i < 4; i++)
+	for (int i{0}; i < 4; i++)
 	{
 		iChannelTime[i] = i;
 	}
@@ -515,7 +515,7 @@ void VDSettings::reset()
 	currentSelectedIndex = 0;
 	selectedWarp = 0;
 
-	for (int a = 0; a < MAX; a++)
+	for (int a{0}; a < MAX; a++)
 	{
 		iChannels[a] = a;
 	}
