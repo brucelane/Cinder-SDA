@@ -9,6 +9,7 @@
 	</platform>
 	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
 	<asset>assets/0.jpg</asset>
+	<asset>assets/defaultvertex.fs</asset>
 	<asset>assets/passthrough.vs</asset>
 	<asset>assets/post.glsl</asset>
 	<asset>assets/mixette.glsl</asset>

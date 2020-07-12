@@ -76,7 +76,7 @@ namespace videodromm
 		// Settings
 		VDSettingsRef					mVDSettings;
 		// Animation
-		VDAnimationRef					mVDAnimation;
+		const VDAnimationRef			mVDAnimation;
 		// uniforms
 		VDUniformRef					mVDUniform;
 		//! Input textures

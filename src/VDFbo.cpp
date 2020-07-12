@@ -4,11 +4,12 @@ using namespace videodromm;
 
 //namespace videodromm {
 	VDFbo::VDFbo(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const JsonTree& json)
-		:mValid(false)
+		:mVDSettings{ aVDSettings },
+		mVDAnimation{ aVDAnimation },
+		mValid(false)
 	{
 		CI_LOG_V("VDFbo constructor");
-		mVDSettings = aVDSettings;
-		mVDAnimation = aVDAnimation;
+		
 		mVDUniform = VDUniform::create(mVDSettings);
 		std::string shaderFileName = "inputImage.fs";
 		mShaderName = mShaderFileName;

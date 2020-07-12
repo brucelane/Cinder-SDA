@@ -241,7 +241,7 @@ namespace videodromm
 		// Settings
 		VDSettingsRef					mVDSettings;
 		VDUniformRef					mVDUniform;
-		std::map<int, int>					freqIndexes;
+		std::map<int, int>				freqIndexes;
 		bool							mAudioBuffered;
 		ci::gl::TextureRef				mAudioTexture;
 		gl::Texture2d::Format			mAudioFormat;
