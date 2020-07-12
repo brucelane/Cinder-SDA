@@ -8,7 +8,8 @@
 #include "cinder/Log.h"
 #include "cinder/Timeline.h"
 
-
+// Params
+#include "VDParams.h"
 // Settings
 #include "VDSettings.h"
 // Animation
@@ -104,10 +105,12 @@ namespace videodromm
 		virtual int						getMaxFrame();
 		//virtual ci::gl::Texture2dRef	getNextTexture();
 	protected:
+		// Params
+		VDParamsRef						mVDParams;
 		// Settings
-		VDSettingsRef						mVDSettings;
+		VDSettingsRef					mVDSettings;
 		// Animation
-		VDAnimationRef						mVDAnimation;
+		VDAnimationRef					mVDAnimation;
 		std::string						mName;
 		bool							mFlipV;
 		bool							mFlipH;

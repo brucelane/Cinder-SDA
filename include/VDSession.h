@@ -15,8 +15,8 @@
 #include "VDSettings.h"
 // Utils
 #include "VDUtils.h"
-// Builder
-//#include "VDFactory.h"
+// Params
+#include "VDParams.h"
 // Animation
 #include "VDAnimation.h"
 // Fbos
@@ -368,8 +368,9 @@ namespace videodromm {
 		
 
 	private:
-		int								mMode = 1;
 
+		int								mMode = 1;
+		VDParamsRef						mVDParams;
 		// Settings
 		VDSettingsRef					mVDSettings;
 		// Settings
@@ -378,12 +379,12 @@ namespace videodromm {
 		VDUtilsRef						mVDUtils;
 
 		// Message router
-		//VDRouterRef						mVDRouter;
+		//VDRouterRef					mVDRouter;
 		// Log
 		VDLogRef						mVDLog;
 		// Mix
 		VDMixRef						mVDMix;
-		const std::string					sessionFileName = "session.json";
+		const std::string				sessionFileName = "session.json";
 		fs::path						sessionPath;
 		// tempo
 		float							mFpb;

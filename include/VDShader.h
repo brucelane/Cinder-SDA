@@ -21,6 +21,8 @@
 #include "VDSettings.h"
 // Animation
 #include "VDAnimation.h"
+// Params
+#include "VDParams.h"
 // std regex
 #include <regex>
 
@@ -73,6 +75,8 @@ namespace videodromm
 		void							setInputTexture(ci::gl::Texture2dRef aTextureRef) { mTexture = aTextureRef; };
 
 	private:
+		// Params
+		VDParamsRef						mVDParams;
 		// Settings
 		VDSettingsRef					mVDSettings;
 		// Animation

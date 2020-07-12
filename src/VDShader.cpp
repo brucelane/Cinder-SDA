@@ -14,6 +14,8 @@ was VDShader::VDShader(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, c
 VDShader::VDShader(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const std::string& aFileOrPath, const std::string& aShaderFragmentString, gl::TextureRef aTexture) {
 	mVDSettings = aVDSettings;
 	mVDAnimation = aVDAnimation;
+	// Params
+	mVDParams = VDParams::create();
 	mFragmentShaderString = aShaderFragmentString;
 	mTexture = aTexture;
 	mValid = false;
@@ -52,8 +54,8 @@ VDShader::VDShader(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, const
 			// file exists
 			if (loadFragmentStringFromFile()) {
 				fboFmt.setColorTextureFormat(fmt);
-				mRenderedTexture = ci::gl::Texture::create(mVDSettings->mPreviewFboWidth, mVDSettings->mPreviewFboHeight, ci::gl::Texture::Format().loadTopDown());
-				mThumbFbo = gl::Fbo::create(mVDSettings->mPreviewWidth, mVDSettings->mPreviewHeight, fboFmt);
+				mRenderedTexture = ci::gl::Texture::create(mVDParams->getPreviewFboWidth(), mVDParams->getPreviewFboHeight(), ci::gl::Texture::Format().loadTopDown());
+				mThumbFbo = gl::Fbo::create(mVDParams->getPreviewWidth(), mVDParams->getPreviewHeight(), fboFmt);
 				getThumbTexture();
 			}
 			else {
@@ -1218,7 +1220,7 @@ ci::gl::Texture2dRef VDShader::getFboTexture() {
 					break;
 				case 2: // vec2
 					if (name == "RENDERSIZE") {
-						mShader->uniform(name, vec2(mVDSettings->mPreviewFboWidth, mVDSettings->mPreviewFboHeight));
+						mShader->uniform(name, vec2(mVDParams->getPreviewFboWidth(), mVDParams->getPreviewFboHeight()));
 					}
 					else {
 						mShader->uniform(name, mVDAnimation->getVec2UniformValueByName(name));
@@ -1249,13 +1251,13 @@ ci::gl::Texture2dRef VDShader::getFboTexture() {
 				}
 			}
 		}
-		mShader->uniform("RENDERSIZE", vec2(mVDSettings->mPreviewFboWidth, mVDSettings->mPreviewFboHeight));
+		mShader->uniform("RENDERSIZE", vec2(mVDParams->getPreviewFboWidth(), mVDParams->getPreviewFboHeight()));
 		mShader->uniform("TIME", (float)getElapsedSeconds());// mVDAnimation->getUniformValue(0));
 
 		gl::ScopedGlslProg glslScope(mShader);
 		// TODO: test gl::ScopedViewport sVp(0, 0, mFbo->getWidth(), mFbo->getHeight());	
 
-		gl::drawSolidRect(Rectf(0, 0, mVDSettings->mPreviewFboWidth, mVDSettings->mPreviewFboHeight));
+		gl::drawSolidRect(Rectf(0, 0, mVDParams->getPreviewFboWidth(), mVDParams->getPreviewFboHeight()));
 		mRenderedTexture = mThumbFbo->getColorTexture();
 
 		std::string filename = mName + ".jpg";

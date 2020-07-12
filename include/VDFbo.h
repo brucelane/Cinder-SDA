@@ -25,6 +25,8 @@
 #include "VDTexture.h"
 //!  Uniforms
 #include "VDUniform.h"
+// Params
+#include "VDParams.h"
 
 #include <atomic>
 #include <vector>
@@ -73,6 +75,8 @@ namespace videodromm
 		
 		
 	private:
+		// Params
+		VDParamsRef						mVDParams;
 		// Settings
 		VDSettingsRef					mVDSettings;
 		// Animation

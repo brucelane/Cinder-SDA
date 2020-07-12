@@ -30,7 +30,7 @@ namespace videodromm {
 		VDSettings(const std::string& filename);
 		static VDSettingsRef create(const std::string& filename);
 
-		enum VDParams {
+		enum VDParameters {
 			//! maximum number of fbos, shaders, textures
 			MAX = 14,
 			// uniform indexes
@@ -185,9 +185,9 @@ namespace videodromm {
 		// json
 		ci::JsonTree				toJson(bool save = false) const;
 		// params
-		int							mPreviewWidth, mPreviewHeight, mPreviewFboWidth, mPreviewFboHeight;
-		float						mAspectRatio;
-		int							mMainWindowX, mMainWindowY, mMarginSmall, mMainWindowWidth, mMainWindowHeight, mFboWidth, mFboHeight;
+
+
+		int							mMainWindowX, mMainWindowY, mMarginSmall, mMainWindowWidth, mMainWindowHeight;
 		float						mCodeEditorWidth, mCodeEditorHeight;
 		// MIDI
 		bool						mMIDIEnabled;
@@ -328,25 +328,7 @@ namespace videodromm {
 		std::string						mInfo;
 		// ableton liveOSC
 		std::string						mTrackName;
-		// imgui positions and sizes
-		int							uiMargin;
-		// mPreviewFboWidth 80 mPreviewFboHeight 60 margin 10 inBetween 15
-		int							uiXPosCol1;
-		int							uiXPosCol2;
-		int							uiXPosCol3;
-		//int							uiYPos;
-		int							uiYPosRow1; // top
-		int							uiYPosRow2; // details, textures
-		int							uiYPosRow3;
-		int							uiYPosRow4;
-		int							uiYPosRow5;
-		int							uiYPosRow6;
-		int							uiLargeW;
-		int							uiLargeH;
-		int							uiSmallH;
-		int							uiLargePreviewW;
-		int							uiLargePreviewH;
-		int							uiPreviewH;
+
 	private:
 		std::string					settingsFileName;
 	};

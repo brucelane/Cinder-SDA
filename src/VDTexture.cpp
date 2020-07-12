@@ -16,11 +16,13 @@ VDTexture::VDTexture(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation, con
 	mVDSettings = aVDSettings;
 	mVDAnimation = aVDAnimation;
 	CI_LOG_V("VDTexture constructor");
-	mTexture = ci::gl::Texture::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, ci::gl::Texture::Format().loadTopDown(mFlipV));
-	mInputSurface = Surface(mVDSettings->mFboWidth, mVDSettings->mFboHeight, true);
+	// Params
+	mVDParams = VDParams::create();
+	mTexture = ci::gl::Texture::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), ci::gl::Texture::Format().loadTopDown(mFlipV));
+	mInputSurface = Surface(mVDParams->getFboWidth(), mVDParams->getFboHeight(), true);
 
 	fboFmt.setColorTextureFormat(fmt);
-	mFbo = gl::Fbo::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, fboFmt);
+	mFbo = gl::Fbo::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), fboFmt);
 }
 VDTexture::VDTexture(TextureType aType)
 	: mPath("")

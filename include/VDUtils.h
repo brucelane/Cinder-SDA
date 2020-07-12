@@ -30,7 +30,7 @@ namespace videodromm
 			return std::shared_ptr<VDUtils>(new VDUtils(aVDSettings));
 		}
 		// TODO move to private when shadamixa upgraded
-		void						splitWarp(int fboWidth, int fboHeight);
+		//void						splitWarp(int fboWidth, int fboHeight);
 		int							getWindowsResolution();
 		float						formatFloat(float f);
 
@@ -44,7 +44,7 @@ namespace videodromm
 	private:
 		// Settings
 		VDSettingsRef				mVDSettings;
-		Area						mSrcAreaLeftOrTop; // left or top
+		/*Area						mSrcAreaLeftOrTop; // left or top
 		Area						mSrcAreaRightOrBottom; // right or bottom
 		int							x1LeftOrTop;
 		int							y1LeftOrTop;
@@ -53,7 +53,7 @@ namespace videodromm
 		int							x1RightOrBottom;
 		int							y1RightOrBottom;
 		int							x2RightOrBottom;
-		int							y2RightOrBottom;
+		int							y2RightOrBottom;*/
 
 	};
 }

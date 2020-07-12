@@ -98,18 +98,6 @@ bool VDSettings::save()
 	RenderY.setAttribute("value", toString(mRenderY));
 	settings.push_back(RenderY);
 
-	XmlTree AspectRatio("AspectRatio", "");
-	AspectRatio.setAttribute("value", toString(mAspectRatio));
-	settings.push_back(AspectRatio);
-
-	XmlTree FboWidth("FboWidth", "");
-	FboWidth.setAttribute("value", toString(mFboWidth));
-	settings.push_back(FboWidth);
-
-	XmlTree FboHeight("FboHeight", "");
-	FboHeight.setAttribute("value", toString(mFboHeight));
-	settings.push_back(FboHeight);
-
 	XmlTree MIDIEnabled("MIDIEnabled", "");
 	MIDIEnabled.setAttribute("value", toString(mMIDIEnabled));
 	settings.push_back(MIDIEnabled);
@@ -238,18 +226,8 @@ bool VDSettings::restore()
 				XmlTree AutoLayout = settings.getChild("AutoLayout");
 				mAutoLayout = AutoLayout.getAttributeValue<bool>("value");
 			}
-			if (settings.hasChild("AspectRatio")) {
-				XmlTree AspectRatio = settings.getChild("AspectRatio");
-				mAspectRatio = AspectRatio.getAttributeValue<float>("value");
-			}
-			if (settings.hasChild("FboWidth")) {
-				XmlTree FboWidth = settings.getChild("FboWidth");
-				mFboWidth = FboWidth.getAttributeValue<int>("value");
-			}
-			if (settings.hasChild("FboHeight")) {
-				XmlTree FboHeight = settings.getChild("FboHeight");
-				mFboHeight = FboHeight.getAttributeValue<int>("value");
-			}
+			
+			
 			if (settings.hasChild("MIDIEnabled")) {
 				XmlTree MIDIEnabled = settings.getChild("MIDIEnabled");
 				mMIDIEnabled = MIDIEnabled.getAttributeValue<bool>("value");
@@ -433,27 +411,7 @@ void VDSettings::resetSomeParams() {
 	mTransitionTime = 1.0f;
 
 	autoInvert = false;
-	// imgui
-	uiMargin = 3;
-	// mPreviewFboWidth 80 mPreviewFboHeight 60 margin 10 inBetween 15 mPreviewWidth = 160;mPreviewHeight = 120;
-	uiPreviewH = mPreviewHeight + uiMargin;
-	uiLargeW = (mPreviewFboWidth + uiMargin) * 3;
-	uiLargeH = (mPreviewFboHeight + uiMargin) * 6;
-	uiLargePreviewW = mPreviewFboWidth * 1.7;
-	uiLargePreviewH = mPreviewHeight * 2.8;
 
-	uiXPosCol1 = uiLargeW + uiMargin * 2;
-	uiXPosCol2 = uiXPosCol1 + uiMargin * 2 + mPreviewFboWidth;
-	uiXPosCol3 = uiXPosCol2 + uiMargin;
-	//uiYPos;
-	uiYPosRow1 = 18;
-	uiYPosRow2 = uiYPosRow1 + uiLargeH + uiMargin;
-	uiYPosRow3 = uiYPosRow2 + uiLargePreviewH + uiMargin;
-	uiYPosRow4 = uiYPosRow3 + uiLargePreviewH + uiMargin;
-	uiYPosRow5 = uiYPosRow4 + uiLargePreviewH + uiMargin;
-	uiYPosRow6 = uiYPosRow5 + uiLargePreviewH + uiMargin;
-	
-	uiSmallH = uiYPosRow2 -uiYPosRow1 - uiMargin;
 
 	shaderEditIndex = 0;
 }
@@ -482,14 +440,8 @@ void VDSettings::reset()
 	mLeftRenderXY = mRightRenderXY = mPreviewRenderXY = mWarp1RenderXY = mWarp2RenderXY = vec2(0.0f);
 	mRenderPosXY = vec2(0.0, 320.0);
 	mPreviewFragXY = vec2(0.0, 0.0);
-	mAspectRatio = 0.5625; // ratio 4:3 (0.75) 16:9 (0.5625)
-	mFboWidth = 1280;
-	mFboHeight = mFboWidth * mAspectRatio;
-	mPreviewFboWidth = 70;
-	mPreviewFboHeight = mPreviewFboWidth* mAspectRatio;
-	// jpg / gif thumb for HeavyM ShaderLibrary
-	mPreviewWidth = 120;
-	mPreviewHeight = 68; // mPreviewWidth * mAspectRatio;
+
+
 	mRenderCodeEditorXY.x = 0;
 	mRenderCodeEditorXY.y = 0;
 	mCodeEditorWidth = 800;

@@ -23,7 +23,8 @@
 #include "VDAnimation.h"
 // Fbos
 #include "VDFbo.h"
-
+// Params
+#include "VDParams.h"
 
 // Syphon
 #if defined( CINDER_MAC )
@@ -105,10 +106,10 @@ namespace videodromm
 			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getInputTexture();
 		}
 		int								getFboInputTextureWidth(unsigned int aFboIndex) {
-			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getInputTexture() ? mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getInputTexture()->getWidth() : mVDSettings->mFboWidth;
+			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getInputTexture() ? mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getInputTexture()->getWidth() : mVDParams->getFboWidth();
 		};
 		int								getFboInputTextureHeight(unsigned int aFboIndex) {
-			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getInputTexture() ? mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getInputTexture()->getHeight() : mVDSettings->mFboHeight;
+			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getInputTexture() ? mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getInputTexture()->getHeight() : mVDParams->getFboHeight();
 		};
 		std::string							getFboName(unsigned int aFboIndex) {
 			return mFboList[math<int>::min(aFboIndex, mFboList.size() - 1)]->getName();
@@ -211,7 +212,8 @@ namespace videodromm
 		ci::gl::TextureRef				getRenderedMixetteTexture(unsigned int aFboIndex) { return mMixetteTexture; };
 
 	private:
-
+		// Params
+		VDParamsRef						mVDParams;
 		// Animation
 		VDAnimationRef					mVDAnimation;
 		// Settings

@@ -9,7 +9,9 @@ using namespace videodromm;
 		mValid(false)
 	{
 		CI_LOG_V("VDFbo constructor");
-		
+		// Params
+		mVDParams = VDParams::create();
+
 		mVDUniform = VDUniform::create(mVDSettings);
 		std::string shaderFileName = "inputImage.fs";
 		mShaderName = mShaderFileName;
@@ -39,14 +41,14 @@ using namespace videodromm;
 		shaderInclude = loadString(loadAsset("shadertoy.vd"));
 
 		// init texture
-		//mTexture = ci::gl::Texture::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, ci::gl::Texture::Format().loadTopDown());
-		mRenderedTexture = ci::gl::Texture::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, ci::gl::Texture::Format().loadTopDown());
+		//mTexture = ci::gl::Texture::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), ci::gl::Texture::Format().loadTopDown());
+		mRenderedTexture = ci::gl::Texture::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), ci::gl::Texture::Format().loadTopDown());
 		isReady = false;
 
 		// init texture
 		// init the fbo whatever happens next
 		fboFmt.setColorTextureFormat(fmt);
-		mFbo = gl::Fbo::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, fboFmt);
+		mFbo = gl::Fbo::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), fboFmt);
 		mError = "";
 		mActive = true;
 		mValid = loadFragmentStringFromFile(mShaderName);
@@ -267,7 +269,7 @@ using namespace videodromm;
 					case GL_FLOAT_VEC2://GL_FLOAT_VEC2: // vec2 35664 GL_FLOAT_VEC2 0x8B50
 						if (name == "RENDERSIZE") {
 							//mShader->uniform(name, vec2(mTexture->getWidth(), mTexture->getHeight()));
-							mShader->uniform(name, vec2(mVDSettings->mFboWidth, mVDSettings->mFboHeight));
+							mShader->uniform(name, vec2(mVDParams->getFboWidth(), mVDParams->getFboHeight()));
 						}
 						else {
 							mShader->uniform(name, mVDAnimation->getVec2UniformValueByName(name));
@@ -321,13 +323,13 @@ using namespace videodromm;
 					}
 				}
 			}
-			mShader->uniform("RENDERSIZE", vec2(mVDSettings->mFboWidth, mVDSettings->mFboHeight));
+			mShader->uniform("RENDERSIZE", vec2(mVDParams->getFboWidth(), mVDParams->getFboHeight()));
 			mShader->uniform("TIME", (float)getElapsedSeconds());// mVDAnimation->getUniformValue(0));
 
 			gl::ScopedGlslProg glslScope(mShader);
 			// TODO: test gl::ScopedViewport sVp(0, 0, mFbo->getWidth(), mFbo->getHeight());	
 
-			gl::drawSolidRect(Rectf(0, 0, mVDSettings->mFboWidth, mVDSettings->mFboHeight));
+			gl::drawSolidRect(Rectf(0, 0, mVDParams->getFboWidth(), mVDParams->getFboHeight()));
 			mRenderedTexture = mFbo->getColorTexture();
 			if (!isReady) {
 				std::string filename = mName + "-" + mTextureList[0]->getName() + ".jpg";

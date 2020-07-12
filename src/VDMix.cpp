@@ -12,21 +12,24 @@ namespace videodromm {
 		/*: mFlipV(false)
 		, mFlipH(false)*/
 	{
+		// Params
+		mVDParams = VDParams::create();
+
 		CI_LOG_V("VDMix readSettings");
 		// Settings
 		mVDSettings = aVDSettings;
 		// Animation
 		mVDAnimation = aVDAnimation;
 
-		mDefaultTexture = ci::gl::Texture::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, ci::gl::Texture::Format().loadTopDown());
-		mMixetteTexture = ci::gl::Texture::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, ci::gl::Texture::Format().loadTopDown());
+		mDefaultTexture = ci::gl::Texture::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), ci::gl::Texture::Format().loadTopDown());
+		mMixetteTexture = ci::gl::Texture::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), ci::gl::Texture::Format().loadTopDown());
 		// init fbo format
 		fmt.setWrap(GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER);
 		fmt.setBorderColor(Color::black());
 		// uncomment this to enable 4x antialiasing
 		//fboFmt.setSamples( 4 );
 		fboFmt.setColorTextureFormat(fmt);
-		mMixetteFbo = gl::Fbo::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, fboFmt);
+		mMixetteFbo = gl::Fbo::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), fboFmt);
 		fs::path mMixetteFilePath = getAssetPath("") / "mixette.glsl";
 		if (!fs::exists(mMixetteFilePath)) {
 			mError = mMixetteFilePath.string() + " does not exist";
@@ -61,7 +64,7 @@ namespace videodromm {
 		mCurrentBlend = 0;
 		for (size_t i {0}; i < mVDAnimation->getBlendModesCount(); i++)
 		{
-			mBlendFbos[i] = gl::Fbo::create(mVDSettings->mPreviewFboWidth, mVDSettings->mPreviewFboHeight, fboFmt);
+			mBlendFbos[i] = gl::Fbo::create(mVDParams->getPreviewFboWidth(), mVDParams->getPreviewFboHeight(), fboFmt);
 		}
 		try
 		{
@@ -148,18 +151,18 @@ namespace videodromm {
 		if (aMixFboIndex > mMixFbos.size() - 1) aMixFboIndex = 0;
 		if (!mMixFbos[aMixFboIndex].texture) {
 			// should never happen
-			mMixFbos[aMixFboIndex].texture = gl::Texture2d::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight);
+			mMixFbos[aMixFboIndex].texture = gl::Texture2d::create(mVDParams->getFboWidth(), mVDParams->getFboHeight());
 		}
 		if (!mMixFbos[aMixFboIndex].fbo) {
 			// should never happen
-			mMixFbos[aMixFboIndex].fbo = gl::Fbo::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, fboFmt);
+			mMixFbos[aMixFboIndex].fbo = gl::Fbo::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), fboFmt);
 		}
 		// texturing sharing
 		if (mSharedOutputActive && mSharedFboIndex == aMixFboIndex) {
 #if defined( CINDER_MSW )
 			// spout
 			if (mSpoutInitialized) {
-				mSpoutSender.SendTexture(mMixFbos[mSharedFboIndex].texture->getId(), mMixFbos[mSharedFboIndex].texture->getTarget(), mVDSettings->mFboWidth, mVDSettings->mFboHeight);
+				mSpoutSender.SendTexture(mMixFbos[mSharedFboIndex].texture->getId(), mMixFbos[mSharedFboIndex].texture->getTarget(), mVDParams->getFboWidth(), mVDParams->getFboHeight());
 			}
 #endif
 #if defined( CINDER_MAC )
@@ -178,7 +181,7 @@ namespace videodromm {
 #if defined( CINDER_MSW )
 		if (mSharedOutputActive && !mSpoutInitialized) {
 			// Initialize a sender
-			mSpoutInitialized = mSpoutSender.CreateSender(mSenderName, mVDSettings->mFboWidth, mVDSettings->mFboHeight);
+			mSpoutInitialized = mSpoutSender.CreateSender(mSenderName, mVDParams->getFboWidth(), mVDParams->getFboHeight());
 		}
 #endif
 	}
@@ -229,13 +232,13 @@ namespace videodromm {
 
 		aShaderIndex = math<int>::min(aShaderIndex, getShadersCount() - 1);
 		bShaderIndex = math<int>::min(bShaderIndex, getShadersCount() - 1);
-		mMixFbos[newIndex].fbo = gl::Fbo::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, fboFmt);
-		mMixFbos[newIndex].texture = gl::Texture2d::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight);
+		mMixFbos[newIndex].fbo = gl::Fbo::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), fboFmt);
+		mMixFbos[newIndex].texture = gl::Texture2d::create(mVDParams->getFboWidth(), mVDParams->getFboHeight());
 		mMixFbos[newIndex].name = wName;
 
 		mWarpList.push_back(WarpBilinear::create());// 20170103 was WarpPerspectiveBilinear
 		Warp::handleResize(mWarpList);
-		Warp::setSize(mWarpList, ivec2(mVDSettings->mFboWidth, mVDSettings->mFboHeight)); // create small new warps
+		Warp::setSize(mWarpList, ivec2(mVDParams->getFboWidth(), mVDParams->getFboHeight())); // create small new warps
 		Warp::handleResize(mWarpList);
 
 		//int i = mWarpList.size() - 1; // must have at least 1 warp!
@@ -309,8 +312,8 @@ namespace videodromm {
 		while (mMixFbos.size() < mWarpList.size())
 		{
 			CI_LOG_V("mMixFbos.size() < mWarpList.size(), we create a new mixFbo");
-			mMixFbos[m].fbo = gl::Fbo::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, fboFmt);
-			mMixFbos[m].texture = gl::Texture2d::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight);
+			mMixFbos[m].fbo = gl::Fbo::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), fboFmt);
+			mMixFbos[m].texture = gl::Texture2d::create(mVDParams->getFboWidth(), mVDParams->getFboHeight());
 			mMixFbos[m].name = "new";
 			m++;
 		}
@@ -428,7 +431,7 @@ namespace videodromm {
 
 		mGlslMix->uniform("iBlendmode", mVDSettings->iBlendmode);
 		mGlslMix->uniform("TIME", mVDAnimation->getUniformValue(mVDSettings->ITIME));
-		// was vec3(mVDSettings->mFboWidth, mVDSettings->mFboHeight, 1.0)):
+		// was vec3(mVDParams->getFboWidth(), mVDParams->getFboHeight(), 1.0)):
 		mGlslMix->uniform("iResolution", vec3(mVDAnimation->getUniformValueByName("iResolutionX"), mVDAnimation->getUniformValueByName("iResolutionY"), 1.0));
 		//mGlslMix->uniform("iChannelResolution", mVDSettings->iChannelResolution, 4);
 		// 20180318 mGlslMix->uniform("iMouse", mVDAnimation->getVec4UniformValueByName("iMouse"));
@@ -487,7 +490,7 @@ namespace videodromm {
 			mCurrentBlend = getElapsedFrames() % mVDAnimation->getBlendModesCount();
 			mGlslBlend->uniform("iBlendmode", mCurrentBlend);
 			mGlslBlend->uniform("TIME", mVDAnimation->getUniformValue(mVDSettings->ITIME));
-			mGlslBlend->uniform("iResolution", vec3(mVDSettings->mPreviewFboWidth, mVDSettings->mPreviewFboHeight, 1.0));
+			mGlslBlend->uniform("iResolution", vec3(mVDParams->getPreviewFboWidth(), mVDParams->getPreviewFboHeight(), 1.0));
 			//mGlslBlend->uniform("iChannelResolution", mVDSettings->iChannelResolution, 4);
 			// 20180318 mGlslBlend->uniform("iMouse", mVDAnimation->getVec4UniformValueByName("iMouse"));
 			mGlslBlend->uniform("iWeight0", mVDAnimation->getUniformValueByName("iWeight0"));
@@ -752,8 +755,8 @@ namespace videodromm {
 								XmlTree		xml;
 								xml.setTag("details");
 								xml.setAttribute("path", "0.jpg");
-								xml.setAttribute("width", mVDSettings->mFboWidth);
-								xml.setAttribute("height", mVDSettings->mFboHeight);
+								xml.setAttribute("width", mVDParams->getFboWidth());
+								xml.setAttribute("height", mVDParams->getFboHeight());
 								t->fromXml(xml);
 								mTextureList.push_back(t);
 							}
@@ -985,8 +988,8 @@ namespace videodromm {
 				XmlTree			fboXml;
 				fboXml.setTag(aShaderFilename);
 				fboXml.setAttribute("id", shaderId);
-				fboXml.setAttribute("width", mVDSettings->mFboWidth);
-				fboXml.setAttribute("height", mVDSettings->mFboHeight);
+				fboXml.setAttribute("width", mVDParams->getFboWidth());
+				fboXml.setAttribute("height", mVDParams->getFboHeight());
 				fboXml.setAttribute("shadername", aName);
 				// 20180328 fboXml.setAttribute("inputtextureindex", math<int>::min(rtn, mTextureList.size() - 1));
 				fboXml.setAttribute("inputtextureindex", 0);

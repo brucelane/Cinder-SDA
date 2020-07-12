@@ -6,14 +6,14 @@ VDUtils::VDUtils(VDSettingsRef aVDSettings)
 {
 	mVDSettings = aVDSettings;
 	//CI_LOG_V("VDUtils constructor");
-	x1LeftOrTop = 0;
+	/*x1LeftOrTop = 0;
 	y1LeftOrTop = 0;
-	x2LeftOrTop = mVDSettings->mFboWidth;
-	y2LeftOrTop = mVDSettings->mFboHeight;
+	x2LeftOrTop = mVDParams->getFboWidth();
+	y2LeftOrTop = mVDParams->getFboHeight();
 	x1RightOrBottom = 0;
 	y1RightOrBottom = 0;
-	x2RightOrBottom = mVDSettings->mFboWidth;
-	y2RightOrBottom = mVDSettings->mFboHeight;
+	x2RightOrBottom = mVDParams->getFboWidth();
+	y2RightOrBottom = mVDParams->getFboHeight();*/
 
 }
 float VDUtils::formatFloat(float f)
@@ -68,15 +68,15 @@ int VDUtils::getWindowsResolution()
 	//CI_LOG_V("VDUtils mRenderWidth:" + toString(mVDSettings->mRenderWidth) + " mRenderHeight:" + toString(mVDSettings->mRenderHeight));
 	//CI_LOG_V("VDUtils mRenderX:" + toString(mVDSettings->mRenderX) + " mRenderY:" + toString(mVDSettings->mRenderY));
 	//mVDSettings->mRenderResoXY = vec2(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight);	
-	splitWarp(mVDSettings->mFboWidth, mVDSettings->mFboHeight);	
+	//splitWarp(mVDParams->getFboWidth(), mVDParams->getFboHeight());	
 	return w;
 }
-void VDUtils::splitWarp(int fboWidth, int fboHeight) {
+/*void VDUtils::splitWarp(int fboWidth, int fboHeight) {
 
 	x1LeftOrTop = x1RightOrBottom = 0;
 	y1LeftOrTop = y1RightOrBottom = 0;
-	x2LeftOrTop = x2RightOrBottom = mVDSettings->mFboWidth;
-	y2LeftOrTop = y2RightOrBottom = mVDSettings->mFboHeight;
+	x2LeftOrTop = x2RightOrBottom = mVDParams->getFboWidth();
+	y2LeftOrTop = y2RightOrBottom = mVDParams->getFboHeight();
 
 	if (mVDSettings->mSplitWarpH) {
 		x2LeftOrTop = (fboWidth / 2) - 1;
@@ -110,7 +110,7 @@ void						VDUtils::moveX1LeftOrTop(int x1) {
 void						VDUtils::moveY1LeftOrTop(int y1) {
 	y1LeftOrTop = y1;
 	mSrcAreaLeftOrTop = Area(x1LeftOrTop, y1LeftOrTop, x2LeftOrTop, y2LeftOrTop);
-};
+};*/
 // file system
 fs::path					VDUtils::getPath(std::string path) {
 	fs::path p = app::getAssetPath("");

@@ -158,7 +158,7 @@ VDUniform::VDUniform(VDSettingsRef aVDSettings) {
 
 		createVec3Uniform("iColor", mVDSettings->ICOLOR, vec3(0.45, 0.0, 1.0)); // 61
 		createVec3Uniform("iBackgroundColor", mVDSettings->IBACKGROUNDCOLOR); // 62
-		//createVec3Uniform("iChannelResolution[0]", 63, vec3(mVDSettings->mFboWidth, mVDSettings->mFboHeight, 1.0));
+		//createVec3Uniform("iChannelResolution[0]", 63, vec3(mVDParams->getFboWidth(), mVDParams->getFboHeight(), 1.0));
 
 		// vec4
 		createVec4Uniform("iMouse", mVDSettings->IMOUSE, vec4(320.0f, 240.0f, 0.0f, 0.0f));//70

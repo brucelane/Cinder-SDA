@@ -11,6 +11,8 @@ VDSession::VDSession(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 	CI_LOG_V("VDSession ctor");
 	mVDSettings = aVDSettings;
 	mVDAnimation = aVDAnimation;
+	// Params
+	mVDParams = VDParams::create();
 	// Utils
 	mVDUtils = VDUtils::create(mVDSettings);
 	// Animation
@@ -26,14 +28,14 @@ VDSession::VDSession(VDSettingsRef aVDSettings, VDAnimationRef aVDAnimation)
 	//format.setSamples( 4 ); // uncomment this to enable 4x antialiasing
 
 	fboFmt.setColorTextureFormat(fmt);
-	mWarpsFbo = gl::Fbo::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, format.depthTexture());
-	mPostFbo = gl::Fbo::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, format.depthTexture());
+	mWarpsFbo = gl::Fbo::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), format.depthTexture());
+	mPostFbo = gl::Fbo::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), format.depthTexture());
 	mGlslPost = gl::GlslProg::create(gl::GlslProg::Format().vertex(loadAsset("passthrough.vs")).fragment(loadAsset("post.glsl")));
-	mWarpTexture = ci::gl::Texture::create(mVDSettings->mFboWidth, mVDSettings->mFboHeight, ci::gl::Texture::Format().loadTopDown());
+	mWarpTexture = ci::gl::Texture::create(mVDParams->getFboWidth(), mVDParams->getFboHeight(), ci::gl::Texture::Format().loadTopDown());
 	// adjust the content size of the warps
 
 	// TODO 20200305 was 20200302 if (getFboRenderedTexture(0)) Warp::setSize(mWarpList, getFboRenderedTexture(0)->getSize());
-	Warp::setSize(mWarpList, ivec2(mVDSettings->mFboWidth, mVDSettings->mFboHeight)); //
+	Warp::setSize(mWarpList, ivec2(mVDParams->getFboWidth(), mVDParams->getFboHeight())); //
 	// initialize warps
 	mSettings = getAssetPath("") / mVDSettings->mAssetsPath / "warps.xml";
 	if (fs::exists(mSettings)) {
@@ -179,7 +181,7 @@ void VDSession::renderPostToFbo()
 		gl::ScopedGlslProg prog(mGlslPost);
 
 		// not used yet mGlslPost->uniform("TIME", getUniformValue(mVDSettings->ITIME) - mVDSettings->iStart);;
-		mGlslPost->uniform("iResolution", vec3(mVDSettings->mFboWidth, mVDSettings->mFboHeight, 1.0));
+		mGlslPost->uniform("iResolution", vec3(mVDParams->getFboWidth(), mVDParams->getFboHeight(), 1.0));
 		mGlslPost->uniform("iChannel0", 40); // texture 0
 		mGlslPost->uniform("iSobel", mVDAnimation->getUniformValue(mVDSettings->ISOBEL));
 		mGlslPost->uniform("iExposure", mVDAnimation->getUniformValue(mVDSettings->IEXPOSURE));
@@ -189,7 +191,7 @@ void VDSession::renderPostToFbo()
 		mGlslPost->uniform("iFlipV", (int)getBoolUniformValueByIndex(mVDSettings->IFLIPPOSTV));
 		mGlslPost->uniform("iFlipH", (int)getBoolUniformValueByIndex(mVDSettings->IFLIPPOSTH));
 		mGlslPost->uniform("iInvert", (int)getBoolUniformValueByIndex(mVDSettings->IINVERT));
-		gl::drawSolidRect(Rectf(0, 0, mVDSettings->mFboWidth, mVDSettings->mFboHeight));
+		gl::drawSolidRect(Rectf(0, 0, mVDParams->getFboWidth(), mVDParams->getFboHeight()));
 	}
 }
 void VDSession::renderWarpsToFbo()
@@ -219,7 +221,7 @@ void VDSession::renderWarpsToFbo()
 
 		}
 		//gl::color(0.5, 0.0, 1.0, 0.4f);
-		//gl::drawSolidRect(Rectf(0, 0, mVDSettings->mFboWidth/2, mVDSettings->mFboHeight/2));
+		//gl::drawSolidRect(Rectf(0, 0, mVDParams->getFboWidth()/2, mVDParams->getFboHeight()/2));
 		mWarpTexture = mWarpsFbo->getColorTexture();
 	}
 }
@@ -349,7 +351,7 @@ void VDSession::fileDrop(FileDropEvent event) {
 	std::string ext = "";
 	//string fileName = "";
 
-	unsigned int index = (int)(event.getX() / (mVDSettings->uiLargePreviewW + mVDSettings->uiMargin));
+	unsigned int index = (int)(event.getX() / (mVDParams->getUILargePreviewW() + mVDParams->getUIMargin()));
 	int y = (int)(event.getY());
 	//if (index < 2 || y < mVDSettings->uiYPosRow3 || y > mVDSettings->uiYPosRow3 + mVDSettings->uiPreviewH) index = 0;
 	ci::fs::path mPath = event.getFile(event.getNumFiles() - 1);
@@ -613,7 +615,7 @@ void VDSession::resize() {
 	//mRenderFbo = gl::Fbo::create(mVDSettings->mRenderWidth, mVDSettings->mRenderHeight, fboFmt);
 	// tell the fbos our window has been resized, so they properly scale up or down
 	Warp::handleResize(mWarpList);
-	Warp::setSize(mWarpList, ivec2(mVDSettings->mFboWidth, mVDSettings->mFboHeight));
+	Warp::setSize(mWarpList, ivec2(mVDParams->getFboWidth(), mVDParams->getFboHeight()));
 }
 unsigned int VDSession::getWarpCount() { return mWarpList.size(); };
 std::string	 VDSession::getWarpName(unsigned int aWarpIndex) { return mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->getName(); };// or trycatch
@@ -625,7 +627,7 @@ void VDSession::setWarpWidth(unsigned int aWarpIndex, int aWidth) {
 };
 void VDSession::setWarpHeight(unsigned int aWarpIndex, int aHeight) {
 	Warp::handleResize(mWarpList);
-	Warp::setSize(mWarpList, ivec2(mVDSettings->mFboWidth, aHeight));
+	Warp::setSize(mWarpList, ivec2(mVDParams->getFboWidth(), aHeight));
 	mWarpList[math<int>::min(aWarpIndex, mWarpList.size() - 1)]->setHeight(aHeight);
 
 };

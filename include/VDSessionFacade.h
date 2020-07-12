@@ -98,12 +98,16 @@ namespace videodromm
 		// end events
 		VDSessionRef			getInstance() const;
 
+
 	private:
 		VDSessionFacade(VDSessionRef session, VDMediatorObservableRef mediator) : mVDSession(session), mVDMediator(mediator), mOscSenderConnected(false), mOscReceiverConnected(false) { }
-		VDSessionRef mVDSession;
-		VDMediatorObservableRef mVDMediator;
-		bool mOscSenderConnected = false;
-		bool mOscReceiverConnected = false;
+		VDSessionRef						mVDSession;
+		VDMediatorObservableRef				mVDMediator;
+		bool								mOscSenderConnected = false;
+		bool								mOscReceiverConnected = false;
+
+
+	
 	};
 
 
